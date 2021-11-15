@@ -2,6 +2,8 @@ body {
   background: #fafafad5;
   color: #333333;
   margin-top: 5rem;
+  font-family: 'Roboto' !important;
+  font-size: 22px;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -14,19 +16,10 @@ html {
 
 .content-section {
   background: #ffffff;
-  padding: 10px 20px;
+  padding: 5px 5px;
   border: 1px solid #dddddd;
   border-radius: 3px;
   margin-bottom: 20px;
-}
-
-div.dataTables_length {
-  padding-left: 2em;
-}
-
-div.dataTables_length,
-div.dataTables_filter {
-  padding-top: 0.55em;
 }
 
 .article-title {

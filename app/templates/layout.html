@@ -5,6 +5,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
+    <!-- Fonte e FavIcon -->
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" />
+    <link type='text/css' rel='stylesheet' href='https://fonts.googleapis.com/css?family=Roboto'>
+
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
@@ -12,21 +16,21 @@
     <!-- DataTables CSS -->
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/dataTables.bootstrap4.min.css">
 
-    <!-- Font Awesome -->
+    <!-- Font Awesome CSS -->
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css">
     
     <!-- Título da Página -->
     {% if title %}
-        <title>UniSales - {{ title }}</title>
+        <title>UniGerencia - {{ title }}</title>
     {% else %}
-        <title>UniSales</title>
+        <title>UniGerencia</title>
     {% endif %}
 </head>
 <body>
     <header class="site-header">
       <nav class="navbar navbar-expand-md navbar-dark bg-primary fixed-top">
         <div class="container">
-          <a class="navbar-brand mr-4" href="/">UniSales</a>
+          <a class="navbar-brand mr-4" href="/">UniGerencia</a>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
@@ -50,13 +54,9 @@
       </nav>
     </header>
     <main role="main" class="container">
-        {% block home %}{% endblock %}
-        {% block post %}{% endblock %}
-        {% block about %}{% endblock %}
-        {% block error %}{% endblock %}
-        <div class="row">
-          <div class="col-md-3"></div>
-          <div class="col-md-6">
+        {% block content %}{% endblock %}
+        <div class="row justify-content-center">
+          <div class="col-md-8">
             {% with messages = get_flashed_messages(with_categories=true) %}
               {% if messages %}
                 {% for category, message in messages %}
@@ -69,6 +69,7 @@
                 {% endfor %}
               {% endif %}
             {% endwith %}
+            {% block post %}{% endblock %}
             {% block user %}{% endblock %}
           </div>
         </div>
@@ -85,10 +86,11 @@
     <script>
       $(document).ready(function() {
         $('#table').DataTable({
+          responsive: true,
           "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
           "order": [[ 0, "desc" ]],
           "language": {
-            "lengthMenu": "Exibir _MENU_ registros por página",
+            "lengthMenu": "Exibir _MENU_ registros",
             "loadingRecords": "Carregando...",
             "processing": "Processando...",
             "search": "Pesquisa:",
