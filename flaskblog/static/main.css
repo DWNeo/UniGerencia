@@ -1,5 +1,5 @@
 body {
-  background: #fafafa;
+  background: #fafafad5;
   color: #333333;
   margin-top: 5rem;
 }
@@ -8,20 +8,8 @@ h1, h2, h3, h4, h5, h6 {
   color: #444444;
 }
 
-.bg-steel {
-  background-color: #5f788a;
-}
-
-.site-header .navbar-nav .nav-link {
-  color: #cbd5db;
-}
-
-.site-header .navbar-nav .nav-link:hover {
-  color: #ffffff;
-}
-
-.site-header .navbar-nav .nav-link.active {
-  font-weight: 500;
+html {
+  scroll-behavior: smooth;
 }
 
 .content-section {
@@ -30,6 +18,15 @@ h1, h2, h3, h4, h5, h6 {
   border: 1px solid #dddddd;
   border-radius: 3px;
   margin-bottom: 20px;
+}
+
+div.dataTables_length {
+  padding-left: 2em;
+}
+
+div.dataTables_length,
+div.dataTables_filter {
+  padding-top: 0.55em;
 }
 
 .article-title {
