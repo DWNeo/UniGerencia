@@ -1,10 +1,10 @@
 {% extends "layout.html" %}
-{% block content %}
+{% block user %}
     <div class="content-section">
         <form method="POST" action="">
             {{ form.hidden_tag() }}
             <fieldset class="form-group">
-                <legend class="border-bottom mb-4">Join Today</legend>
+                <legend class="border-bottom mb-4">Registre-se</legend>
                 <div class="form-group">
                     {{ form.username.label(class="form-control-label") }}
 
@@ -64,9 +64,9 @@
             </div>
         </form>
     </div>
-    <div class="border-top pt-3">
+    <div class="border-top pt-2 pb-4 text-align-center">
         <small class="text-muted">
-            Already Have An Account? <a class="ml-2" href="{{ url_for('users.login') }}">Sign In</a>
+            Já possui uma conta? <a class="ml-2" href="{{ url_for('users.login') }}">Login</a>
         </small>
     </div>
-{% endblock content %}
+{% endblock user %}
