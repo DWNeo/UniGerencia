@@ -1,2 +1,2 @@
 # Flask-Projeto
-Projeto de aplicativo Web utilizando o microframework Flask como parte da disciplina de Projeto Integrador IV.
+Aplicativo Web em desenvolvimento que faz uso do micro framework Flask, do Bootstrap 4 e de um banco de dados embarcado SQLite.
