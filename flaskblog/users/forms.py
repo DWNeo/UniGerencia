@@ -7,68 +7,78 @@ from flaskblog.models import User
 
 
 class RegistrationForm(FlaskForm):
-    username = StringField('Username',
-                           validators=[DataRequired(), Length(min=2, max=20)])
+    class Meta:
+        locales = ['pt_BR', 'pt']
+    username = StringField('Usuário',
+                           validators=[DataRequired(message='Este campo é obrigatório.'), 
+                           Length(min=2, max=20, message='Este campo precisa ter entre 2 e 20 caracteres.')])
     email = StringField('Email',
-                        validators=[DataRequired(), Email()])
-    password = PasswordField('Password', validators=[DataRequired()])
-    confirm_password = PasswordField('Confirm Password',
-                                     validators=[DataRequired(), EqualTo('password')])
-    submit = SubmitField('Sign Up')
+                        validators=[DataRequired(message='Este campo é obrigatório.'), 
+                        Email(message='Este email é inválido.')])
+    password = PasswordField('Senha', validators=[DataRequired(message='Este campo é obrigatório.')])
+    confirm_password = PasswordField('Confirmar Senha',
+                                     validators=[DataRequired(message='Este campo é obrigatório.'), 
+                                     EqualTo('password', message='Os dois campos não são identicos.')])
+    submit = SubmitField('Registrar')
 
     def validate_username(self, username):
         user = User.query.filter_by(username=username.data).first()
         if user:
-            raise ValidationError('That username is taken. Please choose a different one.')
+            raise ValidationError('Este usuário já está sendo utilizado. Por favor, escolha um diferente.')
 
     def validate_email(self, email):
         user = User.query.filter_by(email=email.data).first()
         if user:
-            raise ValidationError('That email is taken. Please choose a different one.')
+            raise ValidationError('Este email já está sendo utilizado. Por favor, escolha um diferente.')
 
 
 class LoginForm(FlaskForm):
     email = StringField('Email',
-                        validators=[DataRequired(), Email()])
-    password = PasswordField('Password', validators=[DataRequired()])
-    remember = BooleanField('Remember Me')
+                        validators=[DataRequired(message='Este campo é obrigatório.'), 
+                        Email(message='Este email é inválido.')])
+    password = PasswordField('Senha', validators=[DataRequired(message='Este campo é obrigatório.')])
+    remember = BooleanField('Lembrar')
     submit = SubmitField('Login')
 
 
 class UpdateAccountForm(FlaskForm):
-    username = StringField('Username',
-                           validators=[DataRequired(), Length(min=2, max=20)])
+    username = StringField('Usuário',
+                           validators=[DataRequired(message='Este campo é obrigatório.'), 
+                           Length(min=2, max=20, message='Este campo precisa ter entre 2 e 20 caracteres.')])
     email = StringField('Email',
-                        validators=[DataRequired(), Email()])
-    picture = FileField('Update Profile Picture', validators=[FileAllowed(['jpg', 'png'])])
-    submit = SubmitField('Update')
+                        validators=[DataRequired(message='Este campo é obrigatório.'), 
+                        Email(message='Este email é inválido.')])
+    picture = FileField('Atualizar Foto de Perfil', validators=[FileAllowed(['jpg', 'png'], message='Formato de imagem inválido.')])
+    submit = SubmitField('Atualizar')
 
     def validate_username(self, username):
         if username.data != current_user.username:
             user = User.query.filter_by(username=username.data).first()
             if user:
-                raise ValidationError('That username is taken. Please choose a different one.')
+                raise ValidationError('Este usuário já está sendo utilizado. Por favor, escolha um diferente.')
 
     def validate_email(self, email):
         if email.data != current_user.email:
             user = User.query.filter_by(email=email.data).first()
             if user:
-                raise ValidationError('That email is taken. Please choose a different one.')
+                raise ValidationError('Este email já está sendo utilizado. Por favor, escolha um diferente.')
 
 
 class RequestResetForm(FlaskForm):
     email = StringField('Email',
-                        validators=[DataRequired(), Email()])
-    submit = SubmitField('Request Password Reset')
+                        validators=[DataRequired(message='Este campo é obrigatório.'), 
+                        Email(message='Este email é inválido.')])
+    submit = SubmitField('Redefinir Senha')
 
     def validate_email(self, email):
         user = User.query.filter_by(email=email.data).first()
         if user is None:
-            raise ValidationError('There is no account with that email. You must register first.')
+            raise ValidationError('Não existe uma conta com esse email. Por favor, cadastre uma conta primeiro.')
 
 
 class ResetPasswordForm(FlaskForm):
-    password = PasswordField('Password', validators=[DataRequired()])
-    confirm_password = PasswordField('Confirm Password',
-                                     validators=[DataRequired(), EqualTo('password')])
-    submit = SubmitField('Reset Password')
+    password = PasswordField('Nova Senha', validators=[DataRequired(message='Este campo é obrigatório.')])
+    confirm_password = PasswordField('Confirmar Senha',
+                                     validators=[DataRequired(message='Este campo é obrigatório.'), 
+                                     EqualTo('password', message='Os dois campos não são identicos.')])
+    submit = SubmitField('Redefinir Senha')
