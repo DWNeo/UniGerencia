@@ -17,7 +17,7 @@ def new_post():
         db.session.add(post)
         db.session.commit()
         flash('Sua mensagem foi postada com sucesso!', 'success')
-        return redirect(url_for('main.home'))
+        return redirect(url_for('principal.inicio'))
     return render_template('posts/novo_post.html', title='Novo Post',
                            form=form, legend='Novo Post')
 
@@ -40,7 +40,7 @@ def update_post(post_id):
         post.content = form.content.data
         db.session.commit()
         flash('Seu post foi atualizado com sucesso!', 'success')
-        return redirect(url_for('main.home', post_id=post.id))
+        return redirect(url_for('principal.inicio', post_id=post.id))
     elif request.method == 'GET':
         form.title.data = post.title
         form.content.data = post.content
@@ -57,4 +57,4 @@ def delete_post(post_id):
     db.session.delete(post)
     db.session.commit()
     flash('Seu post foi excluído com sucesso!', 'success')
-    return redirect(url_for('main.home'))
+    return redirect(url_for('principal.inicio'))

@@ -28,16 +28,16 @@ def create_app(config_class=Config):
     login_manager.init_app(app)
     mail.init_app(app)
 
+    from app.principal.routes import principal
     from app.users.routes import users
     from app.posts.routes import posts
-    from app.main.routes import main
     from app.erros.handlers import erros
     from app.equipamentos.routes import equipamentos
     from app.salas.routes import salas
     #from app.usuarios.routes import usuarios
+    app.register_blueprint(principal)
     app.register_blueprint(users)
     app.register_blueprint(posts)
-    app.register_blueprint(main)
     app.register_blueprint(erros)
     app.register_blueprint(equipamentos)
     app.register_blueprint(salas)

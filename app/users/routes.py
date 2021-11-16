@@ -9,10 +9,10 @@ from app.users.utils import save_picture, send_reset_email
 users = Blueprint('users', __name__)
 
 
-@users.route("/register", methods=['GET', 'POST'])
+@users.route("/registrar", methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
-        return redirect(url_for('main.home'))
+        return redirect(url_for('principal.inicio'))
     form = RegistrationForm()
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
@@ -21,20 +21,20 @@ def register():
         db.session.commit()
         flash('Sua conta foi registrada com sucesso! Você já pode realizar o login.', 'success')
         return redirect(url_for('users.login'))
-    return render_template('users/register.html', title='Registre-se', form=form)
+    return render_template('users/registrar.html', title='Registre-se', form=form)
 
 
 @users.route("/login", methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('main.home'))
+        return redirect(url_for('principal.inicio'))
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
             next_page = request.args.get('next')
-            return redirect(next_page) if next_page else redirect(url_for('main.home'))
+            return redirect(next_page) if next_page else redirect(url_for('principal.inicio'))
         else:
             flash('Erro ao realizar login. Por favor, verifique o email e senha inseridos.', 'danger')
     return render_template('users/login.html', title='Login', form=form)
@@ -43,10 +43,10 @@ def login():
 @users.route("/logout")
 def logout():
     logout_user()
-    return redirect(url_for('main.home'))
+    return redirect(url_for('principal.inicio'))
 
 
-@users.route("/account", methods=['GET', 'POST'])
+@users.route("/perfil", methods=['GET', 'POST'])
 @login_required
 def account():
     form = UpdateAccountForm()
@@ -62,12 +62,12 @@ def account():
     elif request.method == 'GET':
         form.username.data = current_user.username
         form.email.data = current_user.email
-    image_file = url_for('static', filename='profile_pics/' + current_user.image_file)
-    return render_template('users/account.html', title='Perfil',
+    image_file = url_for('static', filename='img_perfil/' + current_user.image_file)
+    return render_template('users/perfil.html', title='Perfil',
                            image_file=image_file, form=form)
 
 
-@users.route("/user/<string:username>")
+@users.route("/usuario/<string:username>")
 @login_required
 def user_posts(username):
     page = request.args.get('page', 1, type=int)
@@ -75,26 +75,26 @@ def user_posts(username):
     posts = Post.query.filter_by(author=user)\
         .order_by(Post.date_posted.desc())\
         .paginate(page=page, per_page=5)
-    return render_template('users/user_posts.html', posts=posts, user=user)
+    return render_template('users/posts_usuario.html', posts=posts, user=user)
 
 
-@users.route("/reset_password", methods=['GET', 'POST'])
+@users.route("/redefinir_senha", methods=['GET', 'POST'])
 def reset_request():
     if current_user.is_authenticated:
-        return redirect(url_for('main.home'))
+        return redirect(url_for('principal.inicio'))
     form = RequestResetForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         send_reset_email(user)
         flash('Um email foi enviado com instruções de como proceder com a redifinição da senha.', 'info')
         return redirect(url_for('users.login'))
-    return render_template('users/reset_request.html', title='Redefinição de Senha', form=form)
+    return render_template('users/redefinir_senha.html', title='Redefinição de Senha', form=form)
 
 
-@users.route("/reset_password/<token>", methods=['GET', 'POST'])
+@users.route("/redefinir_senha/<token>", methods=['GET', 'POST'])
 def reset_token(token):
     if current_user.is_authenticated:
-        return redirect(url_for('main.home'))
+        return redirect(url_for('principal.inicio'))
     user = User.verify_reset_token(token)
     if user is None:
         flash('Este token é inválido ou já expirou.', 'warning')
@@ -106,4 +106,4 @@ def reset_token(token):
         db.session.commit()
         flash('Sua senha foi atualizada com sucesso! Você já pode realizar login usando ela.', 'success')
         return redirect(url_for('users.login'))
-    return render_template('users/reset_token.html', title='Redefinir Senha', form=form)
+    return render_template('users/redefinir_token.html', title='Redefinir Senha', form=form)

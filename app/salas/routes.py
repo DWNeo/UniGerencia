@@ -19,7 +19,7 @@ def nova_sala():
         db.session.add(sala)
         db.session.commit()
         flash('A sala foi cadastrada com sucesso!', 'success')
-        return redirect(url_for('main.home'))
+        return redirect(url_for('principal.inicio'))
     return render_template('salas/nova_sala.html', title='Nova Sala',
                            form=form, legend='Nova Sala')
 
@@ -43,7 +43,7 @@ def atualiza_sala(sala_id):
         sala.status = form.status.data
         db.session.commit()
         flash('A sala foi atualizada com sucesso!', 'success')
-        return redirect(url_for('main.home', eqp_id=sala.id))
+        return redirect(url_for('principal.inicio', eqp_id=sala.id))
     elif request.method == 'GET':
         #form.numero.data = sala.numero
         form.setor.data = sala.setor
@@ -60,4 +60,4 @@ def exclui_sala(sala_id):
     db.session.delete(sala)
     db.session.commit()
     flash('A Sala foi excluída com sucesso!', 'success')
-    return redirect(url_for('main.home'))
+    return redirect(url_for('principal.inicio'))

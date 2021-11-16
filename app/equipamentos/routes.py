@@ -19,7 +19,7 @@ def novo_equipamento():
         db.session.add(equipamento)
         db.session.commit()
         flash('O equipamento foi cadastrado com sucesso!', 'success')
-        return redirect(url_for('main.home'))
+        return redirect(url_for('principal.inicio'))
     return render_template('equipamentos/novo_equipamento.html', title='Novo Equipamento',
                            form=form, legend='Novo Equipamento')
 
@@ -43,7 +43,7 @@ def atualiza_equipamento(eqp_id):
         equipamento.status = form.status.data
         db.session.commit()
         flash('O equipamento foi atualizado com sucesso!', 'success')
-        return redirect(url_for('main.home', eqp_id=equipamento.id))
+        return redirect(url_for('principal.inicio', eqp_id=equipamento.id))
     elif request.method == 'GET':
         #form.patrimonio.data = equipamento.patrimonio
         form.descricao.data = equipamento.descricao
@@ -60,4 +60,4 @@ def exclui_equipamento(eqp_id):
     db.session.delete(equipamento)
     db.session.commit()
     flash('O equipamento foi excluído com sucesso!', 'success')
-    return redirect(url_for('main.home'))
+    return redirect(url_for('principal.inicio'))
