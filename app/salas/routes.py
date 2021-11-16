@@ -1,6 +1,6 @@
-from flask import (render_template, url_for, flash,
+from flask import (render_template, url_for, flash, abort,
                    redirect, request, Blueprint)
-from flask_login import login_required
+from flask_login import login_required, current_user
 from app import db
 from app.models import Sala
 from app.salas.forms import SalaForm, AtualizaSalaForm
@@ -8,9 +8,11 @@ from app.salas.forms import SalaForm, AtualizaSalaForm
 salas = Blueprint('salas', __name__)
 
 
-@salas.route("/sala/nova", methods=['GET', 'POST'])
+@salas.route("/salas/nova", methods=['GET', 'POST'])
 @login_required
 def nova_sala():
+    if current_user.admin == False:
+        abort(403)
     form = SalaForm()
     if form.validate_on_submit():
         sala = Sala(numero=form.numero.data, 
@@ -24,17 +26,25 @@ def nova_sala():
                            form=form, legend='Nova Sala')
 
 
-@salas.route("/sala/<int:sala_id>")
+@salas.route("/salas/<int:sala_id>")
 @login_required
 def sala(sala_id):
+    if current_user.admin == False:
+        abort(403)
     sala = Sala.query.get_or_404(sala_id)
+    if sala.ativo == False:
+        abort(404)
     return render_template('salas/sala.html', title=sala.numero, post=sala)
 
 
-@salas.route("/sala/<int:sala_id>/atualizar", methods=['GET', 'POST'])
+@salas.route("/salas/<int:sala_id>/atualizar", methods=['GET', 'POST'])
 @login_required
 def atualiza_sala(sala_id):
+    if current_user.admin == False:
+        abort(403)
     sala = Sala.query.get_or_404(sala_id)
+    if sala.ativo == False:
+        abort(404)
     form = AtualizaSalaForm()
     if form.validate_on_submit():
         #sala.numero = form.numero.data
@@ -53,11 +63,15 @@ def atualiza_sala(sala_id):
                            form=form, legend='Atualizar Sala')
 
 
-@salas.route("/sala/<int:sala_id>/excluir", methods=['POST'])
+@salas.route("/salas/<int:sala_id>/excluir", methods=['POST'])
 @login_required
 def exclui_sala(sala_id):
+    if current_user.admin == False:
+        abort(403)
     sala = Sala.query.get_or_404(sala_id)
-    db.session.delete(sala)
+    if sala.ativo == False:
+        abort(404)
+    sala.ativo = False
     db.session.commit()
     flash('A Sala foi excluída com sucesso!', 'success')
     return redirect(url_for('principal.inicio'))

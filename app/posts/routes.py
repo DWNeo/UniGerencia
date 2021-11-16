@@ -8,7 +8,7 @@ from app.posts.forms import PostForm
 posts = Blueprint('posts', __name__)
 
 
-@posts.route("/post/novo", methods=['GET', 'POST'])
+@posts.route("/posts/novo", methods=['GET', 'POST'])
 @login_required
 def new_post():
     form = PostForm()
@@ -22,17 +22,17 @@ def new_post():
                            form=form, legend='Novo Post')
 
 
-@posts.route("/post/<int:post_id>")
+@posts.route("/posts/<int:post_id>")
 def post(post_id):
     post = Post.query.get_or_404(post_id)
     return render_template('posts/post.html', title=post.title, post=post)
 
 
-@posts.route("/post/<int:post_id>/atualizar", methods=['GET', 'POST'])
+@posts.route("/posts/<int:post_id>/atualizar", methods=['GET', 'POST'])
 @login_required
 def update_post(post_id):
     post = Post.query.get_or_404(post_id)
-    if post.author != current_user:
+    if post.author != current_user and current_user.admin == False:
         abort(403)
     form = PostForm()
     if form.validate_on_submit():
@@ -48,13 +48,13 @@ def update_post(post_id):
                            form=form, legend='Atualizar Post')
 
 
-@posts.route("/post/<int:post_id>/excluir", methods=['POST'])
+@posts.route("/posts/<int:post_id>/excluir", methods=['POST'])
 @login_required
 def delete_post(post_id):
     post = Post.query.get_or_404(post_id)
-    if post.author != current_user:
+    if post.author != current_user and current_user.admin == False:
         abort(403)
-    db.session.delete(post)
+    post.ativo = False
     db.session.commit()
     flash('Seu post foi excluído com sucesso!', 'success')
     return redirect(url_for('principal.inicio'))

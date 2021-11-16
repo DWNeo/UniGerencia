@@ -1,6 +1,6 @@
-from flask import (render_template, url_for, flash,
+from flask import (render_template, url_for, flash, abort,
                    redirect, request, Blueprint)
-from flask_login import login_required
+from flask_login import login_required, current_user
 from app import db
 from app.models import Equipamento
 from app.equipamentos.forms import EquipamentoForm, AtualizaEquipamentoForm
@@ -8,9 +8,11 @@ from app.equipamentos.forms import EquipamentoForm, AtualizaEquipamentoForm
 equipamentos = Blueprint('equipamentos', __name__)
 
 
-@equipamentos.route("/equipamento/novo", methods=['GET', 'POST'])
+@equipamentos.route("/equipamentos/novo", methods=['GET', 'POST'])
 @login_required
 def novo_equipamento():
+    if current_user.admin == False:
+        abort(403)
     form = EquipamentoForm()
     if form.validate_on_submit():
         equipamento = Equipamento(patrimonio=form.patrimonio.data, 
@@ -24,17 +26,25 @@ def novo_equipamento():
                            form=form, legend='Novo Equipamento')
 
 
-@equipamentos.route("/equipamento/<int:eqp_id>")
+@equipamentos.route("/equipamentos/<int:eqp_id>")
 @login_required
 def equipamento(eqp_id):
+    if current_user.admin == False:
+        abort(403)
     equipamento = Equipamento.query.get_or_404(eqp_id)
+    if equipamento.ativo == False:
+        abort(404)
     return render_template('equipamentos/equipamento.html', title=equipamento.patrimonio, post=equipamento)
 
 
-@equipamentos.route("/equipamento/<int:eqp_id>/atualizar", methods=['GET', 'POST'])
+@equipamentos.route("/equipamentos/<int:eqp_id>/atualizar", methods=['GET', 'POST'])
 @login_required
 def atualiza_equipamento(eqp_id):
+    if current_user.admin == False:
+        abort(403)
     equipamento = Equipamento.query.get_or_404(eqp_id)
+    if equipamento.ativo == False:
+        abort(404)
     form = AtualizaEquipamentoForm()
     if form.validate_on_submit():
         #equipamento.patrimonio = form.patrimonio.data
@@ -53,11 +63,15 @@ def atualiza_equipamento(eqp_id):
                            form=form, legend='Atualizar Equipamento')
 
 
-@equipamentos.route("/equipamento/<int:eqp_id>/excluir", methods=['POST'])
+@equipamentos.route("/equipamentos/<int:eqp_id>/excluir", methods=['POST'])
 @login_required
 def exclui_equipamento(eqp_id):
+    if current_user.admin == False:
+        abort(403)
     equipamento = Equipamento.query.get_or_404(eqp_id)
-    db.session.delete(equipamento)
+    if equipamento.ativo == False:
+        abort(404)
+    equipamento.ativo = False
     db.session.commit()
     flash('O equipamento foi excluído com sucesso!', 'success')
     return redirect(url_for('principal.inicio'))
