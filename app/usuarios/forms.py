@@ -68,7 +68,6 @@ class UpdateAccountForm(FlaskForm):
                                      validators=[DataRequired(message='Este campo é obrigatório.'), 
                                      EqualTo('password', message='Os dois campos não são identicos.')])
     picture = FileField('Atualizar Foto de Perfil', validators=[FileAllowed(['jpg', 'png'], message='Formato de imagem inválido.')])
-    admin = BooleanField('Administrador')
     submit = SubmitField('Atualizar')
 
     def validate_identification(self, identification):

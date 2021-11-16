@@ -58,6 +58,8 @@ def perfil():
         if form.picture.data:
             picture_file = save_picture(form.picture.data)
             current_user.image_file = picture_file
+        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+        current_user.password = hashed_password
         current_user.name = form.name.data
         current_user.identification = form.identification.data
         current_user.username = form.username.data
@@ -103,18 +105,12 @@ def atualiza_usuario(usuario_id):
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
         usuario.password = hashed_password
         usuario.name = form.name.data
-        #usuario.username = form.username.data
-        #usuario.identification = form.identification.data
-        #usuario.email = form.email.data
         usuario.admin = form.admin.data
         db.session.commit()
         flash('A conta do usuário foi atualizada com sucesso!', 'success')
         return redirect(url_for('principal.inicio'))
     elif request.method == 'GET':
         form.name.data = usuario.name
-        #form.username.data = usuario.username
-        #form.identification.data = usuario.identification
-        #form.email.data = usuario.email
         form.admin.data = usuario.admin
     image_file = url_for('static', filename='img_perfil/' + usuario.image_file)
     return render_template('usuarios/atualizar_usuario.html', title='Atualizar Usuário',
