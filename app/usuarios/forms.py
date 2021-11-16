@@ -7,6 +7,8 @@ from app.models import User
 
 
 class RegistrationForm(FlaskForm):
+    class Meta:
+        locales = ['pt_BR', 'pt']
     username = StringField('Usuário',
                            validators=[DataRequired(message='Este campo é obrigatório.'), 
                            Length(min=2, max=20, message='Este campo precisa ter entre 2 e 20 caracteres.')])

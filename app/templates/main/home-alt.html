@@ -1,0 +1,672 @@
+{% extends "layout.html" %}
+{% block content %}
+      <div class="content-section">
+        <nav class="pb-3">
+          <div class="nav nav-pills nav-justified flex-column flex-sm-row" id="pills-tab" role="tablist">
+            <a class="nav-item nav-link active" id="pills-1-tab" data-toggle="pill" href="#pills-1" role="tab"><i class="fas fa-bookmark"></i>&nbsp;Posts</a>
+            <a class="nav-item nav-link" id="pills-2-tab" data-toggle="pill" href="#pills-2" role="tab" aria-controls="pills-2" aria-selected="true"><i class="fas fa-laptop"></i>&nbsp;Equipamentos</a>
+            <a class="nav-item nav-link" id="pills-3-tab" data-toggle="pill" href="#pills-3" role="tab" aria-controls="pills-3" aria-selected="false"><i class="fas fa-chalkboard-teacher"></i>&nbsp;Salas</a>
+            <a class="nav-item nav-link disabled" id="pills-4-tab" data-toggle="pill" href="#pills-4" role="tab" aria-controls="pills-4" aria-selected="false"><i class="fas fa-users"></i>&nbsp;Usuários</a>
+            <div class="nav-item dropdown pl-20">
+              <a class="nav-link dropdown-toggle bg-success text-light" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-plus"></i>&nbsp;Novo Registro
+              </a>
+              <div class="dropdown-menu">
+                <a class="dropdown-item" href="{{ url_for('posts.new_post') }}" data-toggle="modal" data-target="#newPost">Post</a>
+                <a class="dropdown-item" href="{{ url_for('equipamentos.novo_equipamento') }}">Equipamento</a>
+                <a class="dropdown-item" href="{{ url_for('salas.nova_sala') }}">Sala</a>
+                <a class="dropdown-item disabled" href="#">Usuário</a>
+                <!-- 
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item disabled" href="#">Tipo de Equipamento</a>
+                <a class="dropdown-item disabled" href="#">Tipo de Acessório</a> 
+                -->
+              </div>
+            </div>
+          </div>
+        </nav>
+        <div class="tab-content flex-md-row" id="nav-tabContent">
+          <div class="tab-pane fade show active" id="pills-1" role="tabpanel" aria-labelledby="pills-1-tab">
+            <div class="row">
+              <div class="col-md-12">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                  {% if messages %}
+                    {% for category, message in messages %}
+                      <div class="alert alert-{{ category }} alert-dismissable" role="alert">
+                        <button type="button" class="close" data-dismiss="alert">
+                          <span>x</span>
+                        </button>
+                        {{ message }}
+                      </div>
+                    {% endfor %}
+                  {% endif %}
+                {% endwith %}
+                <table id="table" class="table display table-sm table-hover table-responsive-sm" style="width:100%">
+                  <thead class="thead-light">
+                    <tr>
+                      <th scope="col">ID</th>
+                      <th scope="col">Data & Hora</th>
+                      <th scope="col">Título</th>
+                      <th scope="col">Autor</th>
+                      <th scope="col">Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for post in posts.items %}
+                    <tr>
+                      <td>{{ post.id }}</td>
+                      <td>{{ post.date_posted.strftime('%d-%m-%Y %H:%M:%S') }}</td>
+                      <td>{{ post.title }}</td>
+                      <td>{{ post.author.username }}</td>
+                      <td>
+                        <a class="btn-sm btn-outline-info" href="{{ url_for('posts.post', post_id=post.id) }}" data-toggle="modal" data-target="#viewPost{{ post.id }}" alt="Visualizar"><i class="fas fa-search"></i></a>
+                        {% if current_user == post.author %}
+                        <a class="btn-sm btn-outline-secondary" href="{{ url_for('posts.update_post', post_id=post.id) }}" data-toggle="modal" data-target="#updatePost{{ post.id }}" alt="Atualizar"><i class="fas fa-edit"></i></a>
+                        <a class="btn-sm btn-outline-danger" href="{{ url_for('posts.delete_post', post_id=post.id) }}" data-toggle="modal" data-target="#deletePost{{ post.id }}" alt="Excluir"><i class="fas fa-trash"></i></a>
+                        {% endif %}
+                      </td>
+                    </tr>
+                    <!-- Modal Visualizar -->
+                    <div class="modal fade" id="viewPost{{post.id}}" tabindex="-1" role="dialog">
+                      <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="viewPostLabel">Visualizar Registro</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</spans>
+                            </button>
+                          </div>
+                          <div class="modal-body">
+                            <article class="media content-section">
+                              <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + post.author.image_file) }}">
+                              <div class="media-body">
+                                <div class="article-metadata">
+                                  <a class="mr-2" href="{{ url_for('users.user_posts', username=post.author.username) }}">{{ post.author.username }}</a>
+                                  <small class="text-muted">{{ post.date_posted.strftime('%Y-%m-%d') }}</small>
+                                </div>
+                                <h2 class="article-title">{{ post.title }}</h2>
+                                <p class="article-content">{{ post.content }}</p>
+                              </div>
+                            </article>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Fechar</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Modal Excluir-->
+                    <div class="modal fade" id="deletePost{{post.id}}" tabindex="-1" role="dialog">
+                      <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="deletePostLabel">Excluir Registro</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</spans>
+                            </button>
+                          </div>
+                          <div class="modal-body">
+                            <p>Deseja mesmo excluir este registro?</p>
+                            <p><strong>Atenção: Esta operação não pode ser desfeita.</strong></p>
+                          </div>
+                          <div class="modal-footer">
+                            <a type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</a>
+                            <form action="{{ url_for('posts.delete_post', post_id=post.id) }}" method="POST">
+                              <input class="btn btn-outline-danger" type="submit" value="Excluir">
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Modal Atualizar -->
+                    <div class="modal fade" id="updatePost{{post.id}}" tabindex="-1" role="dialog">
+                      <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="updatePostLabel">Atualizar Registro</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</spans>
+                            </button>
+                          </div>
+                          <div class="modal-body">
+                            <form method="POST" action="{{ url_for('posts.update_post', post_id=post.id) }}">
+                              {{ form.hidden_tag() }}
+                              <fieldset class="form-group">
+                                  <div class="form-group">
+                                      {{ form.title.label(class="form-control-label") }}
+                                      {% if form.title.errors %}
+                                          {{ form.title(class="form-control form-control-lg is-invalid") }}
+                                          <div class="invalid-feedback">
+                                              {% for error in form.title.errors %}
+                                                  <span>{{ error }}</span>
+                                              {% endfor %}
+                                          </div>
+                                      {% else %}
+                                          {{ form.title(class="form-control form-control-lg", value=post.title) }}
+                                      {% endif %}
+                                  </div>
+                                  <div class="form-group">
+                                      {{ form.content.label(class="form-control-label") }}
+                                      {% if form.content.errors %}
+                                          {{ form.content(class="form-control form-control-lg is-invalid") }}
+                                          <div class="invalid-feedback">
+                                              {% for error in form.content.errors %}
+                                                  <span>{{ error }}</span>
+                                              {% endfor %}
+                                          </div>
+                                      {% else %}
+                                        {% set f = form.content.process_data(post.content) %}
+                                        {{ form.content(class="form-control form-control-lg") }}
+                                      {% endif %}
+                                  </div>
+                              </fieldset>
+                          </div>
+                          <div class="modal-footer">
+                            <a type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</a>
+                            <div class="form-group pt-3">
+                              {{ form.submit(class="btn btn-outline-info") }}
+                            </div>  
+                          </form>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Modal Inserir -->
+                    <div class="modal fade" id="newPost" tabindex="-1" role="dialog">
+                      <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="newPostLabel">Novo Post</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</spans>
+                            </button>
+                          </div>
+                          <div class="modal-body">
+                            <form method="POST" action="{{ url_for('posts.new_post') }}">
+                              {{ form.hidden_tag() }}
+                              <fieldset class="form-group">
+                                  <div class="form-group">
+                                      {{ form.title.label(class="form-control-label") }}
+                                      {% if form.title.errors %}
+                                          {{ form.title(class="form-control form-control-lg is-invalid") }}
+                                          <div class="invalid-feedback">
+                                              {% for error in form.title.errors %}
+                                                  <span>{{ error }}</span>
+                                              {% endfor %}
+                                          </div>
+                                      {% else %}
+                                          {{ form.title(class="form-control form-control-lg") }}
+                                      {% endif %}
+                                  </div>
+                                  <div class="form-group">
+                                      {{ form.content.label(class="form-control-label") }}
+                                      {% if form.content.errors %}
+                                          {{ form.content(class="form-control form-control-lg is-invalid") }}
+                                          <div class="invalid-feedback">
+                                              {% for error in form.content.errors %}
+                                                  <span>{{ error }}</span>
+                                              {% endfor %}
+                                          </div>
+                                      {% else %}
+                                        {% set f = form.content.process_data("") %}
+                                        {{ form.content(class="form-control form-control-lg") }}
+                                      {% endif %}
+                                  </div>
+                              </fieldset>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</button>
+                            <div class="form-group pt-3">
+                              {{ form.submit(class="btn btn-outline-info") }}
+                            </div>  
+                          </form>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="pills-2" role="tabpanel" aria-labelledby="pills-2-tab">
+            <div class="row">
+              <div class="col-md-12">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                  {% if messages %}
+                    {% for category, message in messages %}
+                      <div class="alert alert-{{ category }} alert-dismissable" role="alert">
+                        <button type="button" class="close" data-dismiss="alert">
+                          <span>x</span>
+                        </button>
+                        {{ message }}
+                      </div>
+                    {% endfor %}
+                  {% endif %}
+                {% endwith %}
+                <table id="table2" class="table display table-sm table-hover table-responsive-sm" style="width:100%">
+                  <thead class="thead-light">
+                    <tr>
+                      <th scope="col">ID</th>
+                      <th scope="col">Data & Hora</th>
+                      <th scope="col">Patrimônio</th>
+                      <th scope="col">Tipo</th>
+                      <th scope="col">Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for equipamento in equipamentos.items %}
+                    <tr>
+                      <td>{{ equipamento.id }}</td>
+                      <td>{{ equipamento.data_cadastro.strftime('%d-%m-%Y %H:%M:%S') }}</td>
+                      <td>{{ equipamento.patrimonio }}</td>
+                      <td>{{ equipamento.tipo_eqp }}</td>
+                      <td>
+                        <a class="btn-sm btn-outline-info" href="{{ url_for('equipamentos.equipamento', eqp_id=equipamento.id) }}" data-toggle="modal" data-target="#viewEquip{{ equipamento.id }}" alt="Visualizar"><i class="fas fa-search"></i></a>
+                        <a class="btn-sm btn-outline-secondary" href="{{ url_for('equipamentos.atualiza_equipamento', eqp_id=equipamento.id) }}" data-toggle="modal" data-target="#updateEquip{{ equipamento.id }}" alt="Atualizar"><i class="fas fa-edit"></i></a>
+                        <a class="btn-sm btn-outline-danger" href="{{ url_for('equipamentos.exclui_equipamento', eqp_id=equipamento.id) }}" data-toggle="modal" data-target="#deleteEquip{{ equipamento.id }}" alt="Excluir"><i class="fas fa-trash"></i></a>
+                      </td>
+                    </tr>
+                    <!-- Modal Visualizar -->
+                    <div class="modal fade" id="viewEquip{{equipamento.id}}" tabindex="-1" role="dialog">
+                      <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="viewPostLabel">Visualizar Equipamento</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</spans>
+                            </button>
+                          </div>
+                          <div class="modal-body">
+                            <article class="media content-section">
+                              <div class="media-body">
+                                <div class="article-metadata">
+                                  <a class="mr-2" href="#">{{ equipamento.tipo_eqp }}</a>
+                                  <small class="text-muted">{{ equipamento.data_cadastro.strftime('%Y-%m-%d') }}</small>
+                                </div>
+                                <h2 class="article-title">{{ equipamento.patrimonio }}</h2>
+                                <p class="article-content">{{ equipamento.descricao }}</p>
+                              </div>
+                            </article>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Fechar</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Modal Excluir-->
+                    <div class="modal fade" id="deleteEquip{{equipamento.id}}" tabindex="-1" role="dialog">
+                      <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="deletePostLabel">Excluir Equipamento</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</spans>
+                            </button>
+                          </div>
+                          <div class="modal-body">
+                            <p>Deseja mesmo excluir este equipamento?</p>
+                            <p><strong>Atenção: Esta operação não pode ser desfeita.</strong></p>
+                          </div>
+                          <div class="modal-footer">
+                            <a type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</a>
+                            <form action="{{ url_for('equipamentos.exclui_equipamento', eqp_id=equipamento.id) }}" method="POST">
+                              <input class="btn btn-outline-danger" type="submit" value="Excluir">
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Modal Atualizar -->
+                    <div class="modal fade" id="updateEquip{{equipamento.id}}" tabindex="-1" role="dialog">
+                      <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="updateEquipLabel">Atualizar Equipamento</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</spans>
+                            </button>
+                          </div>
+                          <div class="modal-body">
+                            <form method="POST" action="{{ url_for('equipamentos.exclui_equipamento', eqp_id=equipamento.id) }}">
+                              {{ form.hidden_tag() }}
+                              <fieldset class="form-group">
+                                  <div class="form-group">
+                                      {{ form.descricao.label(class="form-control-label") }}
+                                      {% if form.descricao.errors %}
+                                          {{ form.descricao(class="form-control form-control-lg is-invalid") }}
+                                          <div class="invalid-feedback">
+                                              {% for error in form.descricao.errors %}
+                                                  <span>{{ error }}</span>
+                                              {% endfor %}
+                                          </div>
+                                      {% else %}
+                                          {{ form.descricao(class="form-control form-control-lg", value=equipamento.descricao) }}
+                                      {% endif %}
+                                  </div>
+                                  <div class="form-group">
+                                      {{ form.tipo_eqp.label(class="form-control-label") }}
+                                      {% if form.tipo_eqp.errors %}
+                                          {{ form.tipo_eqp(class="form-control form-control-lg is-invalid") }}
+                                          <div class="invalid-feedback">
+                                              {% for error in form.tipo_eqp.errors %}
+                                                  <span>{{ error }}</span>
+                                              {% endfor %}
+                                          </div>
+                                      {% else %}
+                                        {{ form.tipo_eqp(class="form-control form-control-lg") }}
+                                      {% endif %}
+                                  </div>
+                                  <div class="form-group">
+                                    {{ form.status.label(class="form-control-label") }}
+                                    {% if form.status.errors %}
+                                        {{ form.status(class="form-control form-control-lg is-invalid") }}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.status.errors %}
+                                                <span>{{ error }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                      {{ form.status(class="form-control form-control-lg") }}
+                                    {% endif %}
+                                  </div>
+                              </fieldset>
+                          </div>
+                          <div class="modal-footer">
+                            <a type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</a>
+                            <div class="form-group pt-3">
+                              {{ form.submit(class="btn btn-outline-info") }}
+                            </div>  
+                          </form>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Modal Inserir -->
+                    <div class="modal fade" id="newEquip" tabindex="-1" role="dialog">
+                      <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="newEquipLabel">Novo Equipamento</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</spans>
+                            </button>
+                          </div>
+                          <div class="modal-body">
+                            <form method="POST" action="{{ url_for('equipamentos.novo_equipamento') }}">
+                              {{ form.hidden_tag() }}
+                              <fieldset class="form-group">
+                                  <div class="form-group">
+                                      {{ form.patrimonio.label(class="form-control-label") }}
+                                      {% if form.patrimonio.errors %}
+                                          {{ form.patrimonio(class="form-control form-control-lg is-invalid") }}
+                                          <div class="invalid-feedback">
+                                              {% for error in form.patrimonio.errors %}
+                                                  <span>{{ error }}</span>
+                                              {% endfor %}
+                                          </div>
+                                      {% else %}
+                                          {{ form.patrimonio(class="form-control form-control-lg") }}
+                                      {% endif %}
+                                  </div>
+                                  <div class="form-group">
+                                      {{ form.descricao.label(class="form-control-label") }}
+                                      {% if form.descricao.errors %}
+                                          {{ form.descricao(class="form-control form-control-lg is-invalid") }}
+                                          <div class="invalid-feedback">
+                                              {% for error in form.descricao.errors %}
+                                                  <span>{{ error }}</span>
+                                              {% endfor %}
+                                          </div>
+                                      {% else %}
+                                        {{ form.descricao(class="form-control form-control-lg") }}
+                                      {% endif %}
+                                  </div>
+                                  <div class="form-group">
+                                    {{ form.tipo_eqp.label(class="form-control-label") }}
+                                    {% if form.tipo_eqp.errors %}
+                                        {{ form.tipo_eqp(class="form-control form-control-lg is-invalid") }}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.tipo_eqp.errors %}
+                                                <span>{{ error }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                      {{ form.tipo_eqp(class="form-control form-control-lg") }}
+                                    {% endif %}
+                                  </div>
+                              </fieldset>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</button>
+                            <div class="form-group pt-3">
+                              {{ form.submit(class="btn btn-outline-info") }}
+                            </div>  
+                          </form>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="pills-3" role="tabpanel" aria-labelledby="pills-3-tab">
+            <div class="row">
+              <div class="col-md-12">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                  {% if messages %}
+                    {% for category, message in messages %}
+                      <div class="alert alert-{{ category }} alert-dismissable" role="alert">
+                        <button type="button" class="close" data-dismiss="alert">
+                          <span>x</span>
+                        </button>
+                        {{ message }}
+                      </div>
+                    {% endfor %}
+                  {% endif %}
+                {% endwith %}
+                <table id="table3" class="table display table-sm table-hover table-responsive-sm" style="width:100%">
+                  <thead class="thead-light">
+                    <tr>
+                      <th scope="col">ID</th>
+                      <th scope="col">Data & Hora</th>
+                      <th scope="col">Título</th>
+                      <th scope="col">Autor</th>
+                      <th scope="col">Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for post in posts.items %}
+                    <tr>
+                      <td>{{ post.id }}</td>
+                      <td>{{ post.date_posted.strftime('%d-%m-%Y %H:%M:%S') }}</td>
+                      <td>{{ post.title }}</td>
+                      <td>{{ post.author.username }}</td>
+                      <td>
+                        <a class="btn-sm btn-outline-info" href="{{ url_for('posts.post', post_id=post.id) }}" data-toggle="modal" data-target="#viewPost{{ post.id }}" alt="Visualizar"><i class="fas fa-search"></i></a>
+                        {% if current_user == post.author %}
+                        <a class="btn-sm btn-outline-secondary" href="{{ url_for('posts.update_post', post_id=post.id) }}" data-toggle="modal" data-target="#updatePost{{ post.id }}" alt="Atualizar"><i class="fas fa-edit"></i></a>
+                        <a class="btn-sm btn-outline-danger" href="{{ url_for('posts.delete_post', post_id=post.id) }}" data-toggle="modal" data-target="#deletePost{{ post.id }}" alt="Excluir"><i class="fas fa-trash"></i></a>
+                        {% endif %}
+                      </td>
+                    </tr>
+                    <!-- Modal Visualizar -->
+                    <div class="modal fade" id="viewPost{{post.id}}" tabindex="-1" role="dialog">
+                      <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="viewPostLabel">Visualizar Registro</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</spans>
+                            </button>
+                          </div>
+                          <div class="modal-body">
+                            <article class="media content-section">
+                              <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + post.author.image_file) }}">
+                              <div class="media-body">
+                                <div class="article-metadata">
+                                  <a class="mr-2" href="{{ url_for('users.user_posts', username=post.author.username) }}">{{ post.author.username }}</a>
+                                  <small class="text-muted">{{ post.date_posted.strftime('%Y-%m-%d') }}</small>
+                                </div>
+                                <h2 class="article-title">{{ post.title }}</h2>
+                                <p class="article-content">{{ post.content }}</p>
+                              </div>
+                            </article>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Fechar</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Modal Excluir-->
+                    <div class="modal fade" id="deletePost{{post.id}}" tabindex="-1" role="dialog">
+                      <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="deletePostLabel">Excluir Registro</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</spans>
+                            </button>
+                          </div>
+                          <div class="modal-body">
+                            <p>Deseja mesmo excluir este registro?</p>
+                            <p><strong>Atenção: Esta operação não pode ser desfeita.</strong></p>
+                          </div>
+                          <div class="modal-footer">
+                            <a type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</a>
+                            <form action="{{ url_for('posts.delete_post', post_id=post.id) }}" method="POST">
+                              <input class="btn btn-outline-danger" type="submit" value="Excluir">
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Modal Atualizar -->
+                    <div class="modal fade" id="updatePost{{post.id}}" tabindex="-1" role="dialog">
+                      <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="updatePostLabel">Atualizar Registro</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</spans>
+                            </button>
+                          </div>
+                          <div class="modal-body">
+                            <form method="POST" action="{{ url_for('posts.update_post', post_id=post.id) }}">
+                              {{ form.hidden_tag() }}
+                              <fieldset class="form-group">
+                                  <div class="form-group">
+                                      {{ form.title.label(class="form-control-label") }}
+                                      {% if form.title.errors %}
+                                          {{ form.title(class="form-control form-control-lg is-invalid") }}
+                                          <div class="invalid-feedback">
+                                              {% for error in form.title.errors %}
+                                                  <span>{{ error }}</span>
+                                              {% endfor %}
+                                          </div>
+                                      {% else %}
+                                          {{ form.title(class="form-control form-control-lg", value=post.title) }}
+                                      {% endif %}
+                                  </div>
+                                  <div class="form-group">
+                                      {{ form.content.label(class="form-control-label") }}
+                                      {% if form.content.errors %}
+                                          {{ form.content(class="form-control form-control-lg is-invalid") }}
+                                          <div class="invalid-feedback">
+                                              {% for error in form.content.errors %}
+                                                  <span>{{ error }}</span>
+                                              {% endfor %}
+                                          </div>
+                                      {% else %}
+                                        {% set f = form.content.process_data(post.content) %}
+                                        {{ form.content(class="form-control form-control-lg") }}
+                                      {% endif %}
+                                  </div>
+                              </fieldset>
+                          </div>
+                          <div class="modal-footer">
+                            <a type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</a>
+                            <div class="form-group pt-3">
+                              {{ form.submit(class="btn btn-outline-info") }}
+                            </div>  
+                          </form>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Modal Inserir -->
+                    <div class="modal fade" id="newPost" tabindex="-1" role="dialog">
+                      <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="newPostLabel">Novo Post</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</spans>
+                            </button>
+                          </div>
+                          <div class="modal-body">
+                            <form method="POST" action="{{ url_for('posts.new_post') }}">
+                              {{ form.hidden_tag() }}
+                              <fieldset class="form-group">
+                                  <div class="form-group">
+                                      {{ form.title.label(class="form-control-label") }}
+                                      {% if form.title.errors %}
+                                          {{ form.title(class="form-control form-control-lg is-invalid") }}
+                                          <div class="invalid-feedback">
+                                              {% for error in form.title.errors %}
+                                                  <span>{{ error }}</span>
+                                              {% endfor %}
+                                          </div>
+                                      {% else %}
+                                          {{ form.title(class="form-control form-control-lg") }}
+                                      {% endif %}
+                                  </div>
+                                  <div class="form-group">
+                                      {{ form.content.label(class="form-control-label") }}
+                                      {% if form.content.errors %}
+                                          {{ form.content(class="form-control form-control-lg is-invalid") }}
+                                          <div class="invalid-feedback">
+                                              {% for error in form.content.errors %}
+                                                  <span>{{ error }}</span>
+                                              {% endfor %}
+                                          </div>
+                                      {% else %}
+                                        {% set f = form.content.process_data("") %}
+                                        {{ form.content(class="form-control form-control-lg") }}
+                                      {% endif %}
+                                  </div>
+                              </fieldset>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</button>
+                            <div class="form-group pt-3">
+                              {{ form.submit(class="btn btn-outline-info") }}
+                            </div>  
+                          </form>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="pills-4" role="tabpanel" aria-labelledby="pills-4-tab">
+            Aba Vazia
+          </div>
+        </div>
+      </div>
+
+      
+{% endblock content %}

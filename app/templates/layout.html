@@ -5,9 +5,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <!-- FavIcon -->
-    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" />
-
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
@@ -17,6 +14,9 @@
 
     <!-- Font Awesome CSS -->
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css">
+
+    <!-- FavIcon -->
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" />
     
     <!-- Título da Página -->
     {% if title %}
@@ -53,25 +53,26 @@
       </nav>
     </header>
     <main role="main" class="container">
-        {% block content %}{% endblock %}
-        <div class="row justify-content-center">
-          <div class="col-md-8">
-            {% with messages = get_flashed_messages(with_categories=true) %}
-              {% if messages %}
-                {% for category, message in messages %}
-                <div class="alert alert-{{ category }} alert-dismissable" role="alert">
-                  <button type="button" class="close" data-dismiss="alert">
-                    <span>x</span>
-                  </button>
-                  {{ message }}
-                </div>
-                {% endfor %}
-              {% endif %}
-            {% endwith %}
-            {% block post %}{% endblock %}
-            {% block user %}{% endblock %}
-          </div>
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissable" role="alert">
+              <button type="button" class="close" data-dismiss="alert">
+                <span>x</span>
+              </button>
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+      {% block content %}{% endblock %}
+      <div class="row justify-content-center">
+        <div class="col-md-8">
+          {% block post %}{% endblock %}
+          {% block user %}{% endblock %}
+          {% block error %}{% endblock %}
         </div>
+      </div>
     </main>
 
     <!-- JavaScript do jQuery, Pooper.js e Bootstrap JS -->
@@ -85,6 +86,75 @@
     <script>
       $(document).ready(function() {
         $('#table').DataTable({
+          responsive: true,
+          "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+          "order": [[ 0, "desc" ]],
+          "language": {
+            "lengthMenu": "Exibir _MENU_ registros",
+            "loadingRecords": "Carregando...",
+            "processing": "Processando...",
+            "search": "Pesquisa:",
+            "paginate": {
+              "first": "Primeiro",
+              "last": "Último",
+              "next": "Próximo",
+              "previous": "Anterior"
+            },
+            "pagingType": "full_numbers",
+            "emptyTable": "Não existe nenhum registro para ser exibido",
+            "zeroRecords": "Nenhum registro encontrado na pesquisa",
+            "info": "Exibindo registros _START_ a _END_",
+            "infoEmpty": "Nenhum registro",
+            "infoFiltered": "(filtrado de um total de _MAX_ registros)"
+          }
+        });
+        $('#table2').DataTable({
+          responsive: true,
+          "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+          "order": [[ 0, "desc" ]],
+          "language": {
+            "lengthMenu": "Exibir _MENU_ registros",
+            "loadingRecords": "Carregando...",
+            "processing": "Processando...",
+            "search": "Pesquisa:",
+            "paginate": {
+              "first": "Primeiro",
+              "last": "Último",
+              "next": "Próximo",
+              "previous": "Anterior"
+            },
+            "pagingType": "full_numbers",
+            "emptyTable": "Não existe nenhum registro para ser exibido",
+            "zeroRecords": "Nenhum registro encontrado na pesquisa",
+            "info": "Exibindo registros _START_ a _END_",
+            "infoEmpty": "Nenhum registro",
+            "infoFiltered": "(filtrado de um total de _MAX_ registros)"
+          }
+        });
+        $('#table3').DataTable({
+          responsive: true,
+          "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+          "order": [[ 0, "desc" ]],
+          "language": {
+            "lengthMenu": "Exibir _MENU_ registros",
+            "loadingRecords": "Carregando...",
+            "processing": "Processando...",
+            "search": "Pesquisa:",
+            "paginate": {
+              "first": "Primeiro",
+              "last": "Último",
+              "next": "Próximo",
+              "previous": "Anterior"
+            },
+            "pagingType": "full_numbers",
+            "emptyTable": "Não existe nenhum registro para ser exibido",
+            "zeroRecords": "Nenhum registro encontrado na pesquisa",
+            "info": "Exibindo registros _START_ a _END_",
+            "infoEmpty": "Nenhum registro",
+            "infoFiltered": "(filtrado de um total de _MAX_ registros)"
+          }
+        });
+        $('#table4').DataTable({
           responsive: true,
           "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
           "order": [[ 0, "desc" ]],

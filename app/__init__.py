@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from flask_mail import Mail
+from flask_migrate import Migrate
 from app.config import Config
 
 
@@ -22,6 +23,7 @@ def create_app(config_class=Config):
     app.config.from_object(Config)
 
     db.init_app(app)
+    migrate = Migrate(app, db)
     bcrypt.init_app(app)
     login_manager.init_app(app)
     mail.init_app(app)
@@ -29,10 +31,16 @@ def create_app(config_class=Config):
     from app.users.routes import users
     from app.posts.routes import posts
     from app.main.routes import main
-    from app.errors.handlers import errors
+    from app.erros.handlers import erros
+    from app.equipamentos.routes import equipamentos
+    from app.salas.routes import salas
+    #from app.usuarios.routes import usuarios
     app.register_blueprint(users)
     app.register_blueprint(posts)
     app.register_blueprint(main)
-    app.register_blueprint(errors)
-
+    app.register_blueprint(erros)
+    app.register_blueprint(equipamentos)
+    app.register_blueprint(salas)
+    #app.register_blueprint(usuarios)
+    
     return app
