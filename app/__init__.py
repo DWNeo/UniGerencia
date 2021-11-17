@@ -20,29 +20,29 @@ login_manager.login_message = 'É necessário realizar login para acessar essa p
 login_manager.needs_refresh_message = 'É necessário realizar login novamente.'
 
 def create_app(config_class=Config):
-    # Inicializa o Flask
-    app = Flask(__name__)
-    app.config.from_object(Config)
+	# Inicializa o Flask
+	app = Flask(__name__)
+	app.config.from_object(Config)
 
-    db.init_app(app)
-    bcrypt.init_app(app)
-    login_manager.init_app(app)
-    mail.init_app(app)
+	db.init_app(app)
+	bcrypt.init_app(app)
+	login_manager.init_app(app)
+	mail.init_app(app)
 
-    # Importa as rotas
-    from app.principal.routes import principal
-    from app.usuarios.routes import usuarios
-    from app.posts.routes import posts
-    from app.erros.handlers import erros
-    from app.equipamentos.routes import equipamentos
-    from app.salas.routes import salas
+	# Importa as rotas
+	from app.principal.routes import principal
+	from app.usuarios.routes import usuarios
+	from app.posts.routes import posts
+	from app.erros.handlers import erros
+	from app.equipamentos.routes import equipamentos
+	from app.salas.routes import salas
 
-    # Registra os blueprints
-    app.register_blueprint(principal)
-    app.register_blueprint(usuarios)
-    app.register_blueprint(posts)
-    app.register_blueprint(erros)
-    app.register_blueprint(equipamentos)
-    app.register_blueprint(salas)
-    
-    return app
+	# Registra os blueprints
+	app.register_blueprint(principal)
+	app.register_blueprint(usuarios)
+	app.register_blueprint(posts)
+	app.register_blueprint(erros)
+	app.register_blueprint(equipamentos)
+	app.register_blueprint(salas)
+	
+	return app
