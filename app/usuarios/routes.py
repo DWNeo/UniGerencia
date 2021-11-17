@@ -2,8 +2,8 @@ from flask import render_template, url_for, flash, redirect, abort, request, Blu
 from flask_login import login_user, current_user, logout_user, login_required
 from app import db, bcrypt
 from app.models import Usuario, Post
-from app.usuarios.forms import (RegistrationForm, LoginForm, UpdateAccountForm,
-                                   RequestResetForm, ResetPasswordForm, AdminAccountForm)
+from app.usuarios.forms import (RegistrationForm, LoginForm, UpdateAccountForm, RequestResetForm,
+                                AdminRegistrationForm, ResetPasswordForm, AdminUpdateAccountForm)
 from app.usuarios.utils import save_picture, send_reset_email
 
 usuarios = Blueprint('usuarios', __name__)
@@ -89,6 +89,27 @@ def posts_usuario(username):
         .paginate(page=page, per_page=5)
     return render_template('usuarios/posts_usuario.html', posts=posts, user=usuario)
 
+@usuarios.route("/usuarios/novo", methods=['GET', 'POST'])
+@login_required
+def novo_usuario():
+    if current_user.admin == False:
+        abort(403)
+    form = AdminRegistrationForm()
+    if form.validate_on_submit():
+        image_file = 'default.jpg'
+        if form.picture.data:
+            picture_file = save_picture(form.picture.data)
+            image_file = picture_file
+        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+        usuario = Usuario(name=form.name.data, identification=form.identification.data,
+                       username=form.username.data, email=form.email.data, password=hashed_password,
+                       image_file=image_file, admin=form.admin.data)
+        db.session.add(usuario)
+        db.session.commit()
+        flash('A conta foi registrada com sucesso!.', 'success')
+        return redirect(url_for('principal.inicio'))
+    return render_template('usuarios/novo_usuario.html', title='Novo Usuário', form=form)
+
 @usuarios.route("/usuarios/<int:usuario_id>/atualizar", methods=['GET', 'POST'])
 @login_required
 def atualiza_usuario(usuario_id):
@@ -97,7 +118,7 @@ def atualiza_usuario(usuario_id):
     usuario = Usuario.query.get_or_404(usuario_id)
     if usuario.active == False:
         abort(404)
-    form = AdminAccountForm()
+    form = AdminUpdateAccountForm()
     if form.validate_on_submit():
         if form.picture.data:
             picture_file = save_picture(form.picture.data)
