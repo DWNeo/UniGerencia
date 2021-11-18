@@ -13,7 +13,7 @@ bcrypt = Bcrypt()
 mail = Mail()
 login_manager = LoginManager()
 
-# Personaliza o processo de login
+# Personaliza as mensagens de login
 login_manager.login_view = 'usuarios.login'
 login_manager.login_message_category = 'info'
 login_manager.needs_refresh_message_category = 'info'

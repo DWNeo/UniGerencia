@@ -20,14 +20,13 @@ def registrar():
         return redirect(url_for('principal.inicio'))
     form = RegistraForm()
     if form.validate_on_submit():
-        hashed_password = bcrypt.generate_password_hash(
-            form.password.data).decode('utf-8')
-        user = Usuario(name=form.name.data, 
-                       identification=form.identification.data,
-                       username=form.username.data, 
-                       email=form.email.data, 
-                       password=hashed_password)
-        db.session.add(user)
+        hash_senha = bcrypt.generate_password_hash(
+            form.senha.data).decode('utf-8')
+        usuario = Usuario(nome=form.nome.data, 
+                          identificacao=form.identificacao.data,
+                          email=form.email.data, 
+                          senha=hash_senha)
+        db.session.add(usuario)
         db.session.commit()
         flash('Sua conta foi registrada com sucesso!\
               Você já pode realizar o login.', 'success')
@@ -42,17 +41,16 @@ def login():
         return redirect(url_for('principal.inicio'))
     form = LoginForm()
     if form.validate_on_submit():
-        user = Usuario.query.filter_by(email=form.email.data).first()
-        if user and bcrypt.check_password_hash(user.password, 
-                                               form.password.data):
-            login_user(user, remember=form.remember.data)
-            if current_user.active == False:
+        usuario = Usuario.query.filter_by(email=form.email.data).first()
+        if usuario and bcrypt.check_password_hash(usuario.senha,                                   form.senha.data):
+            login_user(usuario, remember=form.lembrar.data)
+            if current_user.ativo == False:
                 flash('Este usuário está inativo e não\
                       pode ser utilizado.', 'danger')
                 logout_user()
-            next_page = request.args.get('next')
-            if (next_page):
-                return redirect(next_page) 
+            prox_pagina = request.args.get('next')
+            if (prox_pagina):
+                return redirect(prox_pagina) 
             else:
                 redirect(url_for('principal.inicio'))
         else:
@@ -72,27 +70,26 @@ def logout():
 def perfil():
     form = AtualizaPerfilForm()
     if form.validate_on_submit():
-        if form.picture.data:
-            picture_file = salva_imagem(form.picture.data)
-            current_user.image_file = picture_file
-        hashed_password = bcrypt.generate_password_hash(
-            form.password.data).decode('utf-8')
-        current_user.password = hashed_password
-        current_user.name = form.name.data
-        current_user.identification = form.identification.data
-        current_user.username = form.username.data
+        if form.imagem.data:
+            arquivo_imagem = salva_imagem(form.imagem.data)
+            current_user.imagem_perfil = arquivo_imagem
+        hash_senha = bcrypt.generate_password_hash(
+            form.senha.data).decode('utf-8')
+        current_user.senha = hash_senha
+        current_user.nome = form.nome.data
+        current_user.identificacao = form.identificacao.data
         current_user.email = form.email.data
         db.session.commit()
         flash('Sua conta foi atualizada com sucesso!', 'success')
-        return redirect(url_for('usuarios.perfil'))
+        return redirect(url_for('usuarios.perfil'))  
     elif request.method == 'GET':
-        form.name.data = current_user.name
-        form.identification.data = current_user.identification
-        form.username.data = current_user.username
+        form.nome.data = current_user.nome
+        form.identificacao.data = current_user.identificacao
         form.email.data = current_user.email
-    image_file = url_for('static', filename='img_perfil/' + current_user.image_file)
+    imagem_perfil = url_for('static', filename='img_perfil/' 
+                             + current_user.imagem_perfil)
     return render_template('usuarios/perfil.html', title='Perfil',
-                           image_file=image_file, form=form)
+                           imagem_perfil=imagem_perfil, form=form)
 
 
 @usuarios.route("/<int:usuario_id>/posts")
@@ -100,7 +97,7 @@ def perfil():
 def posts_usuario(usuario_id):
     pagina = request.args.get('pagina', 1, type=int)
     usuario = Usuario.query.filter_by(id=usuario_id).first_or_404()
-    if usuario.active == False:
+    if usuario.ativo == False:
         abort(404)
     posts = Post.query.filter_by(autor=usuario)\
         .order_by(Post.data_postado.desc())\
@@ -114,18 +111,17 @@ def posts_usuario(usuario_id):
 def novo_usuario():
     form = AdminRegistraForm()
     if form.validate_on_submit():
-        image_file = 'default.jpg'
-        if form.picture.data:
-            picture_file = salva_imagem(form.picture.data)
-            image_file = picture_file
-        hashed_password = bcrypt.generate_password_hash(
-            form.password.data).decode('utf-8')
-        usuario = Usuario(name=form.name.data, 
-                          identification=form.identification.data,
-                          username=form.username.data, 
+        arquivo_imagem = 'default.jpg'
+        if form.imagem.data:
+            arquivo_imagem = salva_imagem(form.imagem.data)
+            imagem_perfil = arquivo_imagem
+        hash_senha = bcrypt.generate_password_hash(
+            form.senha.data).decode('utf-8')
+        usuario = Usuario(nome=form.nome.data, 
+                          identificacao=form.identificacao.data,
                           email=form.email.data, 
-                          password=hashed_password,
-                          image_file=image_file, 
+                          senha=hash_senha,
+                          imagem_perfil=imagem_perfil, 
                           admin=form.admin.data)
         db.session.add(usuario)
         db.session.commit()
@@ -139,40 +135,42 @@ def novo_usuario():
 @admin_required
 def atualiza_usuario(usuario_id):
     usuario = Usuario.query.get_or_404(usuario_id)
-    if usuario.active == False:
+    if usuario.ativo == False:
         abort(404)
     form = AdminAtualizaPerfilForm()
     if form.validate_on_submit():
-        if form.picture.data:
-            picture_file = salva_imagem(form.picture.data)
-            usuario.image_file = picture_file
-        hashed_password = bcrypt.generate_password_hash(
-            form.password.data).decode('utf-8')
-        usuario.password = hashed_password
-        usuario.name = form.name.data
+        if form.imagem.data:
+            arquivo_imagem = salva_imagem(form.imagem.data)
+            usuario.imagem_perfil = arquivo_imagem
+        hash_senha = bcrypt.generate_password_hash(
+            form.senha.data).decode('utf-8')
+        usuario.senha = hash_senha
+        usuario.nome = form.nome.data
         usuario.admin = form.admin.data
         db.session.commit()
         flash('A conta do usuário foi atualizada com sucesso!', 'success')
         return redirect(url_for('principal.inicio'))
     elif request.method == 'GET':
-        form.name.data = usuario.name
+        form.nome.data = usuario.nome
         form.admin.data = usuario.admin
-    image_file = url_for('static', filename='img_perfil/' + usuario.image_file)
+    imagem_perfil = url_for('static', filename='img_perfil/' 
+                         + usuario.imagem_perfil)
     return render_template('usuarios/atualizar_usuario.html', 
-                           title='Atualizar Usuário', image_file=image_file, 
-                           form=form, legend='Atualizar Usuário')
+                           title='Atualizar Usuário', form=form,
+                           imagem_perfil=imagem_perfil, 
+                           legend='Atualizar Usuário')
 
 @usuarios.route("/<int:usuario_id>/excluir", methods=['POST'])
 @login_required
 @admin_required
 def exclui_usuario(usuario_id):
     usuario = Usuario.query.get_or_404(usuario_id)
-    if usuario.active == False:
+    if usuario.ativo == False:
         abort(404)
     if current_user.id == usuario.id:
         flash('Não é possível excluir a própria conta!', 'danger')
         return redirect(url_for('principal.inicio'))
-    usuario.active = False
+    usuario.ativo = False
     db.session.commit()
     flash('O usuário foi excluído com sucesso!', 'success')
     return redirect(url_for('principal.inicio'))
@@ -183,8 +181,8 @@ def redefinir_senha():
         return redirect(url_for('principal.inicio'))
     form = RedefineSenhaForm()
     if form.validate_on_submit():
-        user = Usuario.query.filter_by(email=form.email.data).first()
-        envia_email_redefinicao(user)
+        usuario = Usuario.query.filter_by(email=form.email.data).first()
+        envia_email_redefinicao(usuario)
         flash('Um email foi enviado com instruções de como\
               proceder com a redifinição da senha.', 'info')
         return redirect(url_for('usuarios.login'))
@@ -196,15 +194,15 @@ def redefinir_senha():
 def redefinir_token(token):
     if current_user.is_authenticated:
         return redirect(url_for('principal.inicio'))
-    user = Usuario.verifica_token_redefinicao(token)
-    if user is None:
+    usuario = Usuario.verifica_token_redefinicao(token)
+    if usuario is None:
         flash('Este token é inválido ou já expirou.', 'warning')
         return redirect(url_for('usuarios.redefinir_senha'))
     form = NovaSenhaForm()
     if form.validate_on_submit():
-        hashed_password = bcrypt.generate_password_hash(
-            form.password.data).decode('utf-8')
-        user.password = hashed_password
+        hash_senha = bcrypt.generate_password_hash(
+            form.senha.data).decode('utf-8')
+        usuario.senha = hash_senha
         db.session.commit()
         flash('Sua senha foi atualizada com sucesso!\
               Você já pode realizar login usando ela.', 'success')

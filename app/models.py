@@ -16,14 +16,13 @@ class Usuario(db.Model, UserMixin):
     __table_args__ = {'extend_existing': True}
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    identification = db.Column(db.String(20), unique=True, nullable=False)
-    username = db.Column(db.String(20), unique=True, nullable=False)
-    password = db.Column(db.String(60), nullable=False)
+    nome = db.Column(db.String(100), nullable=False)
+    identificacao = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
+    senha = db.Column(db.String(60), nullable=False)
     admin = db.Column(db.Boolean, nullable=False, default=False)
-    active = db.Column(db.Boolean, nullable=False, default=True)
-    image_file = db.Column(db.String(20), nullable=False, 
+    ativo = db.Column(db.Boolean, nullable=False, default=True)
+    imagem_perfil = db.Column(db.String(20), nullable=False, 
                            default='default.jpg')
     
     posts = db.relationship('Post', backref='autor', lazy=True)
@@ -42,9 +41,9 @@ class Usuario(db.Model, UserMixin):
         return Usuario.query.get(usuario_id)
 
     def __repr__(self):
-        return f"Usuario('{self.name}', '{self.identification}',\
-                         '{self.username}', '{self.email}',\
-                         '{self.image_file}')"
+        return f"Usuario('{self.nome}', '{self.identificacao}',\
+                         '{self.usuario}', '{self.email}',\
+                         '{self.imagem_perfil}')"
 
 class Post(db.Model):
     __tablename__ = 'posts'
