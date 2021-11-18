@@ -1,13 +1,15 @@
 from datetime import datetime
+
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app
 from app import db, login_manager
 from flask_login import UserMixin
 
-
+# Carrega o usuário que faz login da tabela apropriada
 @login_manager.user_loader
 def load_user(user_id):
-    return Usuario.query.get(int(user_id))
+    return Usuario.query.get(int(user_id)) 
+
 
 class Usuario(db.Model, UserMixin):
     __tablename__ = 'usuarios'
@@ -53,9 +55,10 @@ class Post(db.Model):
     data_postado = db.Column(db.DateTime, nullable=False, 
                              default=datetime.utcnow)
     conteudo = db.Column(db.Text, nullable=False)
+    ativo = db.Column(db.Boolean, nullable=False, default=True)
+
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), 
                            nullable=False)
-    ativo = db.Column(db.Boolean, nullable=False, default=True)
 
     def __repr__(self):
         return f"Post('{self.titulo}', '{self.data_postado}')"

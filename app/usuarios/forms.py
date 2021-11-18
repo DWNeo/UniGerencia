@@ -7,7 +7,7 @@ from flask_login import current_user
 from app.models import Usuario
 
 
-class RegistrationForm(FlaskForm):
+class RegistraForm(FlaskForm):
 
     name = StringField('Nome', validators=[
         DataRequired(message='Este campo é obrigatório.'), 
@@ -59,7 +59,7 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Login')
 
 
-class UpdateAccountForm(FlaskForm):
+class AtualizaPerfilForm(FlaskForm):
 
     name = StringField('Nome', validators=[
         DataRequired(message='Este campo é obrigatório.'), 
@@ -104,7 +104,8 @@ class UpdateAccountForm(FlaskForm):
                 raise ValidationError('Este email já está sendo utilizado.\
                     Por favor, escolha um diferente.')
 
-class AdminUpdateAccountForm(FlaskForm):
+
+class AdminAtualizaPerfilForm(FlaskForm):
 
     name = StringField('Nome', validators=[
         DataRequired(message='Este campo é obrigatório.'), 
@@ -119,7 +120,8 @@ class AdminUpdateAccountForm(FlaskForm):
     admin = BooleanField('Administrador')
     submit = SubmitField('Atualizar')
 
-class AdminRegistrationForm(FlaskForm):
+
+class AdminRegistraForm(FlaskForm):
 
     name = StringField('Nome', validators=[
         DataRequired(message='Este campo é obrigatório.'), 
@@ -162,7 +164,8 @@ class AdminRegistrationForm(FlaskForm):
             raise ValidationError('Este email já está sendo utilizado.\
                 Por favor, escolha um diferente.')
 
-class RequestResetForm(FlaskForm):
+
+class RedefineSenhaForm(FlaskForm):
 
     email = StringField('Email', validators=[
         DataRequired(message='Este campo é obrigatório.'), 
@@ -176,7 +179,7 @@ class RequestResetForm(FlaskForm):
                 Por favor, cadastre uma conta primeiro.')
 
 
-class ResetPasswordForm(FlaskForm):
+class NovaSenhaForm(FlaskForm):
 
     password = PasswordField('Nova Senha', validators=[
         DataRequired(message='Este campo é obrigatório.')])

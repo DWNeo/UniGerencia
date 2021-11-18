@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from flask_mail import Mail
+
 from app.config import Config
 
 
@@ -16,7 +17,9 @@ login_manager = LoginManager()
 login_manager.login_view = 'usuarios.login'
 login_manager.login_message_category = 'info'
 login_manager.needs_refresh_message_category = 'info'
-login_manager.login_message = 'É necessário realizar login para acessar essa página.'
+login_manager.login_message = 'É necessário realizar login para acessar\
+                               essa página. Acesse a página "Sobre" para\
+                               ver as contas de teste'
 login_manager.needs_refresh_message = 'É necessário realizar login novamente.'
 
 def create_app(config_class=Config):

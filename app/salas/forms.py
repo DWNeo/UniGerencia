@@ -25,6 +25,8 @@ class SalaForm(FlaskForm):
             raise ValidationError('Já existe uma sala com esse número.\
                 Por favor, insira um diferente.')
 
+
+
 class AtualizaSalaForm(FlaskForm):
     
     setor = StringField('Setor', validators=[
