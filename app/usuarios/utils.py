@@ -24,7 +24,7 @@ def admin_required(f):
 
 
 # Redimensiona e salva as imagens de perfil na pasta definida
-def save_picture(form_picture):
+def salva_imagem(form_picture):
     random_hex = secrets.token_hex(8)
     _, f_ext = os.path.splitext(form_picture.filename)
     picture_fn = random_hex + f_ext
@@ -39,8 +39,8 @@ def save_picture(form_picture):
 
 
 # Envia o email de redefinição de senha com o token gerado
-def send_reset_email(user):
-    token = user.get_reset_token()
+def envia_email_redefinicao(user):
+    token = user.obtem_token_redefinicao()
     msg = Message('UniGerencia: Pedido de Redefinição de Senha',
                   sender='noreply@demo.com',
                   recipients=[user.email])

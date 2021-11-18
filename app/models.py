@@ -28,18 +28,18 @@ class Usuario(db.Model, UserMixin):
     
     posts = db.relationship('Post', backref='autor', lazy=True)
 
-    def get_reset_token(self, expires_sec=1800):
+    def obtem_token_redefinicao(self, expires_sec=1800):
         s = Serializer(current_app.config['SECRET_KEY'], expires_sec)
-        return s.dumps({'user_id': self.id}).decode('utf-8')
+        return s.dumps({'usuario_id': self.id}).decode('utf-8')
 
     @staticmethod
-    def verify_reset_token(token):
+    def verifica_token_redefinicao(token):
         s = Serializer(current_app.config['SECRET_KEY'])
         try:
-            user_id = s.loads(token)['user_id']
+            usuario_id = s.loads(token)['usuario_id']
         except:
             return None
-        return Usuario.query.get(user_id)
+        return Usuario.query.get(usuario_id)
 
     def __repr__(self):
         return f"Usuario('{self.name}', '{self.identification}',\

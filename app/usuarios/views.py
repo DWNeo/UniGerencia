@@ -8,7 +8,8 @@ from app.usuarios.forms import (RegistraForm, LoginForm, AtualizaPerfilForm,
                                 RedefineSenhaForm, NovaSenhaForm,
                                 AdminRegistraForm, AdminAtualizaPerfilForm)
                                  
-from app.usuarios.utils import save_picture, send_reset_email, admin_required
+from app.usuarios.utils import (salva_imagem, envia_email_redefinicao, 
+                                admin_required)
 
 usuarios = Blueprint('usuarios', __name__)
 
@@ -72,7 +73,7 @@ def perfil():
     form = AtualizaPerfilForm()
     if form.validate_on_submit():
         if form.picture.data:
-            picture_file = save_picture(form.picture.data)
+            picture_file = salva_imagem(form.picture.data)
             current_user.image_file = picture_file
         hashed_password = bcrypt.generate_password_hash(
             form.password.data).decode('utf-8')
@@ -115,7 +116,7 @@ def novo_usuario():
     if form.validate_on_submit():
         image_file = 'default.jpg'
         if form.picture.data:
-            picture_file = save_picture(form.picture.data)
+            picture_file = salva_imagem(form.picture.data)
             image_file = picture_file
         hashed_password = bcrypt.generate_password_hash(
             form.password.data).decode('utf-8')
@@ -143,7 +144,7 @@ def atualiza_usuario(usuario_id):
     form = AdminAtualizaPerfilForm()
     if form.validate_on_submit():
         if form.picture.data:
-            picture_file = save_picture(form.picture.data)
+            picture_file = salva_imagem(form.picture.data)
             usuario.image_file = picture_file
         hashed_password = bcrypt.generate_password_hash(
             form.password.data).decode('utf-8')
@@ -183,7 +184,7 @@ def redefinir_senha():
     form = RedefineSenhaForm()
     if form.validate_on_submit():
         user = Usuario.query.filter_by(email=form.email.data).first()
-        send_reset_email(user)
+        envia_email_redefinicao(user)
         flash('Um email foi enviado com instruções de como\
               proceder com a redifinição da senha.', 'info')
         return redirect(url_for('usuarios.login'))
@@ -195,7 +196,7 @@ def redefinir_senha():
 def redefinir_token(token):
     if current_user.is_authenticated:
         return redirect(url_for('principal.inicio'))
-    user = Usuario.verify_reset_token(token)
+    user = Usuario.verifica_token_redefinicao(token)
     if user is None:
         flash('Este token é inválido ou já expirou.', 'warning')
         return redirect(url_for('usuarios.redefinir_senha'))
