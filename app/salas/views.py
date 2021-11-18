@@ -1,6 +1,7 @@
 from flask import (render_template, url_for, flash, abort,
                    redirect, request, Blueprint)
 from flask_login import login_required, current_user
+
 from app import db
 from app.models import Sala
 from app.salas.forms import SalaForm, AtualizaSalaForm
@@ -8,7 +9,7 @@ from app.salas.forms import SalaForm, AtualizaSalaForm
 salas = Blueprint('salas', __name__)
 
 
-@salas.route("/salas/nova", methods=['GET', 'POST'])
+@salas.route("/nova", methods=['GET', 'POST'])
 @login_required
 def nova_sala():
     if current_user.admin == False:
@@ -26,7 +27,7 @@ def nova_sala():
                            form=form, legend='Nova Sala')
 
 
-@salas.route("/salas/<int:sala_id>")
+@salas.route("/<int:sala_id>")
 @login_required
 def sala(sala_id):
     if current_user.admin == False:
@@ -34,10 +35,11 @@ def sala(sala_id):
     sala = Sala.query.get_or_404(sala_id)
     if sala.ativo == False:
         abort(404)
-    return render_template('salas/sala.html', title=sala.numero, post=sala)
+    return render_template('salas/sala.html', 
+                           title=sala.numero, post=sala)
 
 
-@salas.route("/salas/<int:sala_id>/atualizar", methods=['GET', 'POST'])
+@salas.route("/<int:sala_id>/atualizar", methods=['GET', 'POST'])
 @login_required
 def atualiza_sala(sala_id):
     if current_user.admin == False:
@@ -47,23 +49,22 @@ def atualiza_sala(sala_id):
         abort(404)
     form = AtualizaSalaForm()
     if form.validate_on_submit():
-        #sala.numero = form.numero.data
         sala.setor = form.setor.data
         sala.qtd_aluno = form.qtd_aluno.data
         sala.status = form.status.data
         db.session.commit()
         flash('A sala foi atualizada com sucesso!', 'success')
-        return redirect(url_for('principal.inicio', eqp_id=sala.id))
+        return redirect(url_for('principal.inicio'))
     elif request.method == 'GET':
-        #form.numero.data = sala.numero
         form.setor.data = sala.setor
         form.qtd_aluno.data = sala.qtd_aluno
         form.status.data = sala.status
-    return render_template('salas/atualizar_sala.html', title='Atualizar Sala',
-                           form=form, legend='Atualizar Sala')
+    return render_template('salas/atualizar_sala.html', 
+                           title='Atualizar Sala', form=form, 
+                           legend='Atualizar Sala')
 
 
-@salas.route("/salas/<int:sala_id>/excluir", methods=['POST'])
+@salas.route("/<int:sala_id>/excluir", methods=['POST'])
 @login_required
 def exclui_sala(sala_id):
     if current_user.admin == False:

@@ -12,7 +12,7 @@ bcrypt = Bcrypt()
 mail = Mail()
 login_manager = LoginManager()
 
-# Customiza o processo de login
+# Personaliza o processo de login
 login_manager.login_view = 'usuarios.login'
 login_manager.login_message_category = 'info'
 login_manager.needs_refresh_message_category = 'info'
@@ -29,20 +29,20 @@ def create_app(config_class=Config):
     login_manager.init_app(app)
     mail.init_app(app)
 
-    # Importa as rotas
-    from app.principal.routes import principal
-    from app.usuarios.routes import usuarios
-    from app.posts.routes import posts
+    # Importa as views
+    from app.principal.views import principal
     from app.erros.handlers import erros
-    from app.equipamentos.routes import equipamentos
-    from app.salas.routes import salas
+    from app.usuarios.views import usuarios
+    from app.posts.views import posts
+    from app.equipamentos.views import equipamentos
+    from app.salas.views import salas
 
     # Registra os blueprints
-    app.register_blueprint(principal)
-    app.register_blueprint(usuarios)
-    app.register_blueprint(posts)
-    app.register_blueprint(erros)
-    app.register_blueprint(equipamentos)
-    app.register_blueprint(salas)
+    app.register_blueprint(principal, url_prefix='/')
+    app.register_blueprint(erros, url_prefix='/erros')
+    app.register_blueprint(usuarios, url_prefix='/usuarios')
+    app.register_blueprint(posts, url_prefix='/posts')
+    app.register_blueprint(equipamentos, url_prefix='/equipamentos')
+    app.register_blueprint(salas, url_prefix='/salas')
     
     return app

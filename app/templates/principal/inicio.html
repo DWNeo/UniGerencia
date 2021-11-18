@@ -13,7 +13,7 @@
                 <i class="fas fa-plus"></i>&nbsp;Novo Registro
               </a>
               <div class="dropdown-menu">
-                <a class="dropdown-item" href="{{ url_for('posts.new_post') }}">Post</a>
+                <a class="dropdown-item" href="{{ url_for('posts.novo_post') }}">Post</a>
                 <a class="dropdown-item" href="{{ url_for('equipamentos.novo_equipamento') }}">Equipamento</a>
                 <a class="dropdown-item" href="{{ url_for('salas.nova_sala') }}">Sala</a>
                 <a class="dropdown-item" href="{{ url_for('usuarios.novo_usuario') }}">Usuário</a>
@@ -31,7 +31,7 @@
                 <i class="fas fa-plus"></i>&nbsp;Novo Registro
               </a>
               <div class="dropdown-menu">
-                <a class="dropdown-item" href="{{ url_for('posts.new_post') }}">Post</a>
+                <a class="dropdown-item" href="{{ url_for('posts.novo_post') }}">Post</a>
                 <a class="dropdown-item disabled" href="{{ url_for('equipamentos.novo_equipamento') }}">Equipamento</a>
                 <a class="dropdown-item disabled" href="{{ url_for('salas.nova_sala') }}">Sala</a>
                 <a class="dropdown-item disabled" href="{{ url_for('usuarios.novo_usuario') }}">Usuário</a>
@@ -59,14 +59,14 @@
                     {% if post.ativo == True %}
                     <tr>
                       <td>{{ post.id }}</td>
-                      <td>{{ post.date_posted.strftime('%d-%m-%Y %H:%M:%S') }}</td>
-                      <td>{{ post.title }}</td>
-                      <td>{{ post.author.name }}</td>
+                      <td>{{ post.data_postado.strftime('%d-%m-%Y %H:%M:%S') }}</td>
+                      <td>{{ post.titulo }}</td>
+                      <td>{{ post.autor.name }}</td>
                       <td>
                         <a class="btn-sm btn-outline-info" href="{{ url_for('posts.post', post_id=post.id) }}" data-toggle="modal" data-target="#viewPost{{ post.id }}" alt="Visualizar"><i class="fas fa-search"></i></a>
-                        {% if current_user == post.author or current_user.admin == True %}
-                        <a class="btn-sm btn-outline-secondary" href="{{ url_for('posts.update_post', post_id=post.id) }}" alt="Atualizar"><i class="fas fa-edit"></i></a>
-                        <a class="btn-sm btn-outline-danger" href="{{ url_for('posts.delete_post', post_id=post.id) }}" data-toggle="modal" data-target="#deletePost{{ post.id }}" alt="Excluir"><i class="fas fa-trash"></i></a>
+                        {% if current_user == post.autor or current_user.admin == True %}
+                        <a class="btn-sm btn-outline-secondary" href="{{ url_for('posts.atualiza_post', post_id=post.id) }}" alt="Atualizar"><i class="fas fa-edit"></i></a>
+                        <a class="btn-sm btn-outline-danger" href="{{ url_for('posts.exclui_post', post_id=post.id) }}" data-toggle="modal" data-target="#deletePost{{ post.id }}" alt="Excluir"><i class="fas fa-trash"></i></a>
                         {% endif %}
                       </td>
                     </tr>
@@ -82,14 +82,14 @@
                           </div>
                           <div class="modal-body">
                             <article class="media content-section">
-                              <img class="rounded-circle article-img" src="{{ url_for('static', filename='img_perfil/' + post.author.image_file) }}">
+                              <img class="rounded-circle article-img" src="{{ url_for('static', filename='img_perfil/' + post.autor.image_file) }}">
                               <div class="media-body">
                                 <div class="article-metadata">
-                                  <a class="mr-2" href="{{ url_for('usuarios.posts_usuario', username=post.author.name) }}">{{ post.author.name }}</a>
-                                  <small class="text-muted">{{ post.date_posted.strftime('%Y-%m-%d') }}</small>
+                                  <a class="mr-2" href="{{ url_for('usuarios.posts_usuario', usuario_id=post.autor.id) }}">{{ post.autor.name }}</a>
+                                  <small class="text-muted">{{ post.data_postado.strftime('%Y-%m-%d') }}</small>
                                 </div>
-                                <h2 class="article-title">{{ post.title }}</h2>
-                                <p class="article-content">{{ post.content }}</p>
+                                <h2 class="article-title">{{ post.titulo }}</h2>
+                                <p class="article-content">{{ post.conteudo }}</p>
                               </div>
                             </article>
                           </div>
@@ -115,7 +115,7 @@
                           </div>
                           <div class="modal-footer">
                             <a type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</a>
-                            <form action="{{ url_for('posts.delete_post', post_id=post.id) }}" method="POST">
+                            <form action="{{ url_for('posts.exclui_post', post_id=post.id) }}" method="POST">
                               <input class="btn btn-outline-danger" type="submit" value="Excluir">
                             </form>
                           </div>
@@ -132,7 +132,7 @@
           <div class="tab-pane fade" id="pills-2" role="tabpanel" aria-labelledby="pills-2-tab">
             <div class="row">
               <div class="col-md-12">
-                <table id="table2" class="table display table-sm table-hover table-responsive-sm" style="width:100%">
+                <table id="table" class="table display table-sm table-hover table-responsive-sm" style="width:100%">
                   <thead class="thead-light">
                     <tr>
                       <th scope="col">ID</th>
@@ -220,7 +220,7 @@
           <div class="tab-pane fade" id="pills-3" role="tabpanel" aria-labelledby="pills-3-tab">
             <div class="row">
               <div class="col-md-12">
-                <table id="table3" class="table display table-sm table-hover table-responsive-sm" style="width:100%">
+                <table id="table" class="table display table-sm table-hover table-responsive-sm" style="width:100%">
                   <thead class="thead-light">
                     <tr>
                       <th scope="col">ID</th>
@@ -310,7 +310,7 @@
           <div class="tab-pane fade" id="pills-4" role="tabpanel" aria-labelledby="pills-4-tab">
             <div class="row">
               <div class="col-md-12">
-                <table id="table4" class="table display table-sm table-hover table-responsive-sm" style="width:100%">
+                <table id="table" class="table display table-sm table-hover table-responsive-sm" style="width:100%">
                   <thead class="thead-light">
                     <tr>
                       <th scope="col">ID</th>

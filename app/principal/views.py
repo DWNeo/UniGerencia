@@ -14,13 +14,14 @@ def inicio():
               Acesse a página "Sobre" para ver as contas de teste.', 'info')
         return redirect(url_for('usuarios.login'))
     form = PostForm()
-    page = request.args.get('page', 1, type=int)
-    posts = Post.query.order_by(Post.date_posted.desc()).paginate(page=page, per_page=1000)
-    equipamentos = Equipamento.query.order_by(Equipamento.data_cadastro.desc()).paginate(page=page, per_page=1000)
-    salas = Sala.query.order_by(Sala.data_cadastro.desc()).paginate(page=page, per_page=1000)
-    usuarios = Usuario.query.order_by(Usuario.id.desc()).paginate(page=page, per_page=1000)
-
-    return render_template('principal/inicio.html', posts=posts, equipamentos=equipamentos, salas=salas, usuarios=usuarios, form=form)
+    pagina = request.args.get('pagina', 1, type=int)
+    posts = Post.query.order_by(Post.data_postado.desc()).paginate(page=pagina, per_page=1000)
+    equipamentos = Equipamento.query.order_by(Equipamento.data_cadastro.desc()).paginate(page=pagina, per_page=1000)
+    salas = Sala.query.order_by(Sala.data_cadastro.desc()).paginate(page=pagina, per_page=1000)
+    usuarios = Usuario.query.order_by(Usuario.id.desc()).paginate(page=pagina, per_page=1000)
+    return render_template('principal/inicio.html', posts=posts, 
+                           equipamentos=equipamentos, salas=salas, 
+                           usuarios=usuarios, form=form)
 
 
 @principal.route("/sobre")
