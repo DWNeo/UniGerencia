@@ -9,6 +9,12 @@ from app.posts.forms import PostForm
 posts = Blueprint('posts', __name__)
 
 
+@posts.route("/<int:post_id>")
+def post(post_id):
+    post = Post.query.get_or_404(post_id)
+    return render_template('posts/post.html', title=post.titulo, post=post)
+
+
 @posts.route("/novo", methods=['GET', 'POST'])
 @login_required
 def novo_post():
@@ -23,12 +29,6 @@ def novo_post():
         return redirect(url_for('principal.inicio'))
     return render_template('posts/novo_post.html', title='Novo Post',
                            form=form, legend='Novo Post')
-
-
-@posts.route("/<int:post_id>")
-def post(post_id):
-    post = Post.query.get_or_404(post_id)
-    return render_template('posts/post.html', title=post.titulo, post=post)
 
 
 @posts.route("/<int:post_id>/atualizar", methods=['GET', 'POST'])

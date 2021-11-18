@@ -1,19 +1,31 @@
 from flask import (render_template, url_for, flash, abort,
                    redirect, request, Blueprint)
-from flask_login import login_required, current_user
+from flask_login import login_required
 
 from app import db
 from app.models import Equipamento
 from app.equipamentos.forms import EquipamentoForm, AtualizaEquipamentoForm
+from app.usuarios.utils import admin_required
 
 equipamentos = Blueprint('equipamentos', __name__)
 
 
+@equipamentos.route("/<int:eqp_id>")
+@login_required
+@admin_required
+def equipamento(eqp_id):
+    equipamento = Equipamento.query.get_or_404(eqp_id)
+    if equipamento.ativo == False:
+        abort(404)
+    return render_template('equipamentos/equipamento.html', 
+                           title=equipamento.patrimonio, 
+                           post=equipamento)
+
+
 @equipamentos.route("/novo", methods=['GET', 'POST'])
 @login_required
+@admin_required
 def novo_equipamento():
-    if current_user.admin == False:
-        abort(403)
     form = EquipamentoForm()
     if form.validate_on_submit():
         equipamento = Equipamento(patrimonio=form.patrimonio.data, 
@@ -28,24 +40,10 @@ def novo_equipamento():
                            legend='Novo Equipamento', form=form)
 
 
-@equipamentos.route("/<int:eqp_id>")
-@login_required
-def equipamento(eqp_id):
-    if current_user.admin == False:
-        abort(403)
-    equipamento = Equipamento.query.get_or_404(eqp_id)
-    if equipamento.ativo == False:
-        abort(404)
-    return render_template('equipamentos/equipamento.html', 
-                           title=equipamento.patrimonio, 
-                           post=equipamento)
-
-
 @equipamentos.route("/<int:eqp_id>/atualizar", methods=['GET', 'POST'])
 @login_required
+@admin_required
 def atualiza_equipamento(eqp_id):
-    if current_user.admin == False:
-        abort(403)
     equipamento = Equipamento.query.get_or_404(eqp_id)
     if equipamento.ativo == False:
         abort(404)
@@ -69,9 +67,8 @@ def atualiza_equipamento(eqp_id):
 
 @equipamentos.route("/<int:eqp_id>/excluir", methods=['POST'])
 @login_required
+@admin_required
 def exclui_equipamento(eqp_id):
-    if current_user.admin == False:
-        abort(403)
     equipamento = Equipamento.query.get_or_404(eqp_id)
     if equipamento.ativo == False:
         abort(404)

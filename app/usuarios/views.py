@@ -4,10 +4,11 @@ from flask_login import login_user, current_user, logout_user, login_required
 
 from app import db, bcrypt
 from app.models import Usuario, Post
-from app.usuarios.forms import (RegistrationForm, LoginForm, UpdateAccountForm, 
-                                RequestResetForm, AdminRegistrationForm, 
-                                ResetPasswordForm, AdminUpdateAccountForm)
-from app.usuarios.utils import save_picture, send_reset_email
+from app.usuarios.forms import (RegistraForm, LoginForm, AtualizaPerfilForm, 
+                                RedefineSenhaForm, NovaSenhaForm,
+                                AdminRegistraForm, AdminAtualizaPerfilForm)
+                                 
+from app.usuarios.utils import save_picture, send_reset_email, admin_required
 
 usuarios = Blueprint('usuarios', __name__)
 
@@ -16,7 +17,7 @@ usuarios = Blueprint('usuarios', __name__)
 def registrar():
     if current_user.is_authenticated:
         return redirect(url_for('principal.inicio'))
-    form = RegistrationForm()
+    form = RegistraForm()
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(
             form.password.data).decode('utf-8')
@@ -68,7 +69,7 @@ def logout():
 @usuarios.route("/perfil", methods=['GET', 'POST'])
 @login_required
 def perfil():
-    form = UpdateAccountForm()
+    form = AtualizaPerfilForm()
     if form.validate_on_submit():
         if form.picture.data:
             picture_file = save_picture(form.picture.data)
@@ -108,10 +109,9 @@ def posts_usuario(usuario_id):
 
 @usuarios.route("/novo", methods=['GET', 'POST'])
 @login_required
+@admin_required
 def novo_usuario():
-    if current_user.admin == False:
-        abort(403)
-    form = AdminRegistrationForm()
+    form = AdminRegistraForm()
     if form.validate_on_submit():
         image_file = 'default.jpg'
         if form.picture.data:
@@ -135,13 +135,12 @@ def novo_usuario():
 
 @usuarios.route("/<int:usuario_id>/atualizar", methods=['GET', 'POST'])
 @login_required
+@admin_required
 def atualiza_usuario(usuario_id):
-    if current_user.admin == False:
-        abort(403)
     usuario = Usuario.query.get_or_404(usuario_id)
     if usuario.active == False:
         abort(404)
-    form = AdminUpdateAccountForm()
+    form = AdminAtualizaPerfilForm()
     if form.validate_on_submit():
         if form.picture.data:
             picture_file = save_picture(form.picture.data)
@@ -164,9 +163,8 @@ def atualiza_usuario(usuario_id):
 
 @usuarios.route("/<int:usuario_id>/excluir", methods=['POST'])
 @login_required
+@admin_required
 def exclui_usuario(usuario_id):
-    if current_user.admin == False:
-        abort(403)
     usuario = Usuario.query.get_or_404(usuario_id)
     if usuario.active == False:
         abort(404)
@@ -182,7 +180,7 @@ def exclui_usuario(usuario_id):
 def redefinir_senha():
     if current_user.is_authenticated:
         return redirect(url_for('principal.inicio'))
-    form = RequestResetForm()
+    form = RedefineSenhaForm()
     if form.validate_on_submit():
         user = Usuario.query.filter_by(email=form.email.data).first()
         send_reset_email(user)
@@ -201,7 +199,7 @@ def redefinir_token(token):
     if user is None:
         flash('Este token é inválido ou já expirou.', 'warning')
         return redirect(url_for('usuarios.redefinir_senha'))
-    form = ResetPasswordForm()
+    form = NovaSenhaForm()
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(
             form.password.data).decode('utf-8')
