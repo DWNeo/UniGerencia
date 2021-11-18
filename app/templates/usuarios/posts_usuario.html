@@ -1,13 +1,13 @@
 {% extends "layout.html" %}
 {% block content %}
   <div class="content-section">
-    <legend class="border-bottom mb-4">Posts de {{ usuario.name }} ({{ posts.total }})</legend>
+    <legend class="border-bottom mb-4">Posts de {{ usuario.nome }} ({{ posts.total }})</legend>
     {% for post in posts.items %}
         <article class="media content-section">
-          <img class="rounded-circle article-img" src="{{ url_for('static', filename='img_perfil/' + post.autor.image_file) }}">
+          <img class="rounded-circle article-img" src="{{ url_for('static', filename='img_perfil/' + post.autor.imagem_perfil) }}">
           <div class="media-body">
             <div class="article-metadata">
-              <a class="mr-2" href="{{ url_for('usuarios.posts_usuario', usuario_id=post.autor.id) }}">{{ post.autor.name }}</a>
+              <a class="mr-2" href="{{ url_for('usuarios.posts_usuario', usuario_id=post.autor.id) }}">{{ post.autor.nome }}</a>
               <small class="text-muted">{{ post.data_postado.strftime('%Y-%m-%d') }}</small>
             </div>
             <h2><a class="article-title" href="{{ url_for('posts.post', post_id=post.id) }}">{{ post.titulo }}</a></h2>

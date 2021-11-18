@@ -16,35 +16,34 @@ class Usuario(db.Model, UserMixin):
     __table_args__ = {'extend_existing': True}
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    identification = db.Column(db.String(20), unique=True, nullable=False)
-    username = db.Column(db.String(20), unique=True, nullable=False)
-    password = db.Column(db.String(60), nullable=False)
+    nome = db.Column(db.String(100), nullable=False)
+    identificacao = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
+    senha = db.Column(db.String(60), nullable=False)
     admin = db.Column(db.Boolean, nullable=False, default=False)
-    active = db.Column(db.Boolean, nullable=False, default=True)
-    image_file = db.Column(db.String(20), nullable=False, 
+    ativo = db.Column(db.Boolean, nullable=False, default=True)
+    imagem_perfil = db.Column(db.String(20), nullable=False, 
                            default='default.jpg')
     
     posts = db.relationship('Post', backref='autor', lazy=True)
 
-    def get_reset_token(self, expires_sec=1800):
+    def obtem_token_redefinicao(self, expires_sec=1800):
         s = Serializer(current_app.config['SECRET_KEY'], expires_sec)
-        return s.dumps({'user_id': self.id}).decode('utf-8')
+        return s.dumps({'usuario_id': self.id}).decode('utf-8')
 
     @staticmethod
-    def verify_reset_token(token):
+    def verifica_token_redefinicao(token):
         s = Serializer(current_app.config['SECRET_KEY'])
         try:
-            user_id = s.loads(token)['user_id']
+            usuario_id = s.loads(token)['usuario_id']
         except:
             return None
-        return Usuario.query.get(user_id)
+        return Usuario.query.get(usuario_id)
 
     def __repr__(self):
-        return f"Usuario('{self.name}', '{self.identification}',\
-                         '{self.username}', '{self.email}',\
-                         '{self.image_file}')"
+        return f"Usuario('{self.nome}', '{self.identificacao}',\
+                         '{self.usuario}', '{self.email}',\
+                         '{self.imagem_perfil}')"
 
 class Post(db.Model):
     __tablename__ = 'posts'

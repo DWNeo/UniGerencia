@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block post %}
   <article class="media content-section">
-    <img class="rounded-circle article-img" src="{{ url_for('static', filename='img_perfil/' + post.autor.image_file) }}">
+    <img class="rounded-circle article-img" src="{{ url_for('static', filename='img_perfil/' + post.autor.imagem_perfil) }}">
     <div class="media-body">
       <div class="article-metadata">
         <a class="mr-2" href="{{ url_for('usuarios.posts_usuario', usuario=post.autor.usuario) }}">{{ post.autor.usuario }}</a>

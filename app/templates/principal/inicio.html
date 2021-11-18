@@ -61,7 +61,7 @@
                       <td>{{ post.id }}</td>
                       <td>{{ post.data_postado.strftime('%d-%m-%Y %H:%M:%S') }}</td>
                       <td>{{ post.titulo }}</td>
-                      <td>{{ post.autor.name }}</td>
+                      <td>{{ post.autor.nome }}</td>
                       <td>
                         <a class="btn-sm btn-outline-info" href="{{ url_for('posts.post', post_id=post.id) }}" data-toggle="modal" data-target="#viewPost{{ post.id }}" alt="Visualizar"><i class="fas fa-search"></i></a>
                         {% if current_user == post.autor or current_user.admin == True %}
@@ -82,10 +82,10 @@
                           </div>
                           <div class="modal-body">
                             <article class="media content-section">
-                              <img class="rounded-circle article-img" src="{{ url_for('static', filename='img_perfil/' + post.autor.image_file) }}">
+                              <img class="rounded-circle article-img" src="{{ url_for('static', filename='img_perfil/' + post.autor.imagem_perfil) }}">
                               <div class="media-body">
                                 <div class="article-metadata">
-                                  <a class="mr-2" href="{{ url_for('usuarios.posts_usuario', usuario_id=post.autor.id) }}">{{ post.autor.name }}</a>
+                                  <a class="mr-2" href="{{ url_for('usuarios.posts_usuario', usuario_id=post.autor.id) }}">{{ post.autor.nome }}</a>
                                   <small class="text-muted">{{ post.data_postado.strftime('%Y-%m-%d') }}</small>
                                 </div>
                                 <h2 class="article-title">{{ post.titulo }}</h2>
@@ -316,7 +316,6 @@
                       <th scope="col">ID</th>
                       <th scope="col">Nome</th>
                       <th scope="col">Identificação</th>
-                      <th scope="col">Usuário</th>
                       <th scope="col">Email</th>
                       <th scope="col">Admin</th>
                       <th scope="col">Ações</th>
@@ -324,12 +323,11 @@
                   </thead>
                   <tbody>
                     {% for usuario in usuarios.items %}
-                    {% if usuario.active == True %}
+                    {% if usuario.ativo == True %}
                     <tr>
                       <td>{{ usuario.id }}</td>
-                      <td>{{ usuario.name }}</td>
-                      <td>{{ usuario.identification }}</td>
-                      <td>{{ usuario.username }}</td>
+                      <td>{{ usuario.nome }}</td>
+                      <td>{{ usuario.identificacao }}</td>
                       <td>{{ usuario.email }}</td>
                       {% if usuario.admin == True %}
                       <td><a class="btn-sm btn-outline-success" href="#"><i class="fas fa-check"></i></a></td>
@@ -355,14 +353,13 @@
                           </div>
                           <div class="modal-body">
                             <article class="media content-section">
-                              <img class="rounded-circle article-img" src="{{ url_for('static', filename='img_perfil/' + usuario.image_file) }}">
+                              <img class="rounded-circle article-img" src="{{ url_for('static', filename='img_perfil/' + usuario.imagem_perfil) }}">
                               <div class="media-body">
                                 <div class="article-metadata">
-                                  <a class="mr-2" href="#">Usuário: {{ usuario.username }}</a>
-                                  <a class="mr-2" href="#">Email: {{ usuario.email }}</a>
+                                  <a class="mr-2" href="#">{{ usuario.email }}</a>
                                 </div>
-                                <h2 class="article-title">{{ usuario.name }}</h2>
-                                <p class="article-content">{{ usuario.identification }}</p>
+                                <h2 class="article-title">{{ usuario.nome }}</h2>
+                                <p class="article-content">{{ usuario.identificacao }}</p>
                               </div>
                             </article>
                           </div>
