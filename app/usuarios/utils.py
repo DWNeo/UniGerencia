@@ -1,11 +1,29 @@
 import os
 import secrets
+from functools import wraps
 from PIL import Image
-from flask import url_for, current_app
+
+from flask import url_for, current_app, flash, redirect
 from flask_mail import Message
+from flask_login import current_user
+
 from app import mail
 
 
+# Define um decorator para verificar se o usuário atual é um administrador
+def admin_required(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if current_user.admin == True:
+            return f(*args, **kwargs)
+        else:
+            flash('Você não tem autorização para acessar esta página.',
+                  'danger')
+        return redirect(url_for('principal.inicio'))
+    return wrap 
+
+
+# Redimensiona e salva as imagens de perfil na pasta definida
 def save_picture(form_picture):
     random_hex = secrets.token_hex(8)
     _, f_ext = os.path.splitext(form_picture.filename)
@@ -20,6 +38,7 @@ def save_picture(form_picture):
     return picture_fn
 
 
+# Envia o email de redefinição de senha com o token gerado
 def send_reset_email(user):
     token = user.get_reset_token()
     msg = Message('UniGerencia: Pedido de Redefinição de Senha',

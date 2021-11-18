@@ -1,13 +1,15 @@
 from datetime import datetime
+
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app
 from app import db, login_manager
 from flask_login import UserMixin
 
-
+# Carrega o usuário que faz login da tabela apropriada
 @login_manager.user_loader
 def load_user(user_id):
-    return Usuario.query.get(int(user_id))
+    return Usuario.query.get(int(user_id)) 
+
 
 class Usuario(db.Model, UserMixin):
     __tablename__ = 'usuarios'
@@ -21,9 +23,10 @@ class Usuario(db.Model, UserMixin):
     email = db.Column(db.String(100), unique=True, nullable=False)
     admin = db.Column(db.Boolean, nullable=False, default=False)
     active = db.Column(db.Boolean, nullable=False, default=True)
-    image_file = db.Column(db.String(20), nullable=False, default='default.jpg')
+    image_file = db.Column(db.String(20), nullable=False, 
+                           default='default.jpg')
     
-    posts = db.relationship('Post', backref='author', lazy=True)
+    posts = db.relationship('Post', backref='autor', lazy=True)
 
     def get_reset_token(self, expires_sec=1800):
         s = Serializer(current_app.config['SECRET_KEY'], expires_sec)
@@ -39,21 +42,26 @@ class Usuario(db.Model, UserMixin):
         return Usuario.query.get(user_id)
 
     def __repr__(self):
-        return f"Usuario('{self.name}', '{self.identification}', {self.username}', '{self.email}', '{self.image_file}')"
+        return f"Usuario('{self.name}', '{self.identification}',\
+                         '{self.username}', '{self.email}',\
+                         '{self.image_file}')"
 
 class Post(db.Model):
     __tablename__ = 'posts'
     __table_args__ = {'extend_existing': True}
     
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(100), nullable=False)
-    date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    content = db.Column(db.Text, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
+    titulo = db.Column(db.String(100), nullable=False)
+    data_postado = db.Column(db.DateTime, nullable=False, 
+                             default=datetime.utcnow)
+    conteudo = db.Column(db.Text, nullable=False)
     ativo = db.Column(db.Boolean, nullable=False, default=True)
 
+    usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), 
+                           nullable=False)
+
     def __repr__(self):
-        return f"Post('{self.title}', '{self.date_posted}')"
+        return f"Post('{self.titulo}', '{self.data_postado}')"
 
 class Equipamento(db.Model):
     __tablename__ = 'equipamentos'
@@ -63,12 +71,15 @@ class Equipamento(db.Model):
     patrimonio = db.Column(db.String(20), unique=True, nullable=False)
     descricao = db.Column(db.String(50), nullable=False)
     tipo_eqp = db.Column(db.String(20), nullable=False)
-    data_cadastro = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    data_cadastro = db.Column(db.DateTime, nullable=False, 
+                              default=datetime.utcnow)
     status = db.Column(db.String(20), nullable=False, default='Disponível')
     ativo = db.Column(db.Boolean, nullable=False, default=True)
 
     def __repr__(self):
-        return f"Equipamento('{self.patrimonio}', '{self.descricao}', '{self.data_cadastro}', '{self.status}', '{self.tipo_eqp}')"
+        return f"Equipamento('{self.patrimonio}', '{self.descricao}',\
+                             '{self.data_cadastro}', '{self.status}',\
+                             '{self.tipo_eqp}')"
 
 class Sala(db.Model):
     __tablename__ = 'salas'
@@ -78,9 +89,13 @@ class Sala(db.Model):
     numero = db.Column(db.String(20), unique=True, nullable=False)
     setor = db.Column(db.String(20), nullable=False)
     qtd_aluno = db.Column(db.Integer, nullable=False)
-    data_cadastro = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    status = db.Column(db.String(20), nullable=False, default='Disponível')
+    data_cadastro = db.Column(db.DateTime, nullable=False, 
+                              default=datetime.utcnow)
+    status = db.Column(db.String(20), nullable=False, 
+                       default='Disponível')
     ativo = db.Column(db.Boolean, nullable=False, default=True)
 
     def __repr__(self):
-        return f"Sala('{self.numero}', '{self.setor}', '{self.qtd_aluno}', '{self.data_cadastro}', '{self.status}')"
+        return f"Sala('{self.numero}', '{self.setor}',\
+                      '{self.qtd_aluno}', '{self.data_cadastro}',\
+                      '{self.status}')"
