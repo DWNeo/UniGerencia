@@ -14,9 +14,8 @@ equipamentos = Blueprint('equipamentos', __name__)
 @login_required
 @admin_required
 def equipamento(eqp_id):
-    equipamento = Equipamento.query.get_or_404(eqp_id)
-    if equipamento.ativo == False:
-        abort(404)
+    equipamento = Equipamento.query.filter_by(
+        id=eqp_id).filter_by(ativo=True).first_or_404()
     return render_template('equipamentos/equipamento.html', 
                            title=equipamento.patrimonio, 
                            post=equipamento)
@@ -44,9 +43,8 @@ def novo_equipamento():
 @login_required
 @admin_required
 def atualiza_equipamento(eqp_id):
-    equipamento = Equipamento.query.get_or_404(eqp_id)
-    if equipamento.ativo == False:
-        abort(404)
+    equipamento = Equipamento.query.filter_by(
+        id=eqp_id).filter_by(ativo=True).first_or_404()
     form = AtualizaEquipamentoForm()
     if form.validate_on_submit():
         equipamento.descricao = form.descricao.data
@@ -69,9 +67,8 @@ def atualiza_equipamento(eqp_id):
 @login_required
 @admin_required
 def exclui_equipamento(eqp_id):
-    equipamento = Equipamento.query.get_or_404(eqp_id)
-    if equipamento.ativo == False:
-        abort(404)
+    equipamento = Equipamento.query.filter_by(
+        id=eqp_id).filter_by(ativo=True).first_or_404()
     equipamento.ativo = False
     db.session.commit()
     flash('O equipamento foi excluído com sucesso!', 'success')

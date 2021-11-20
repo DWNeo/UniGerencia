@@ -1,52 +1,52 @@
 {% extends "layout.html" %}
-{% block user %}
-    <div class="content-section">
-        <form method="POST" action="">
-            {{ form.hidden_tag() }}
-            <fieldset class="form-group">
-                <legend class="border-bottom mb-4">Login</legend>
-                <div class="form-group">
-                    {{ form.email.label(class="form-control-label") }}
-                    {% if form.email.errors %}
-                        {{ form.email(class="form-control form-control-lg is-invalid") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.email.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ form.email(class="form-control form-control-lg") }}
-                    {% endif %}
-                </div>
-                <div class="form-group">
-                    {{ form.senha.label(class="form-control-label") }}
-                    {% if form.senha.errors %}
-                        {{ form.senha(class="form-control form-control-lg is-invalid") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.senha.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ form.senha(class="form-control form-control-lg") }}
-                    {% endif %}
-                </div>
-                <div class="form-check">
-                    {{ form.lembrar(class="form-check-input") }}
-                    {{ form.lembrar.label(class="form-check-label") }}
-                </div>
-            </fieldset>
+{% block conteudo %}
+<div class="content-section">
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">Login</legend>
             <div class="form-group">
-                {{ form.submit(class="btn btn-outline-info") }}
-                <small class="text-muted ml-2">
-                    <a href="{{ url_for('usuarios.redefinir_senha') }}">Esqueceu sua senha?</a>
-                </small>
+                {{ form.email.label(class="form-control-label") }}
+                {% if form.email.errors %}
+                    {{ form.email(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.email.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.email(class="form-control form-control-lg") }}
+                {% endif %}
             </div>
-        </form>
-    </div>
-    <div class="border-top pt-2 pb-4">
-        <small class="text-muted text-align-center">
-            Ainda não tem uma conta? <a class="ml-2" href="{{ url_for('usuarios.registrar') }}">Registre-se</a>
-        </small>
-    </div>
-{% endblock user %}
+            <div class="form-group">
+                {{ form.senha.label(class="form-control-label") }}
+                {% if form.senha.errors %}
+                    {{ form.senha(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.senha.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.senha(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            <div class="form-check">
+                {{ form.lembrar(class="form-check-input") }}
+                {{ form.lembrar.label(class="form-check-label") }}
+            </div>
+        </fieldset>
+        <div class="form-group">
+            {{ form.submit(class="btn btn-outline-info") }}
+            <small class="text-muted ml-2">
+                <a href="{{ url_for('usuarios.redefinir_senha') }}">Esqueceu sua senha?</a>
+            </small>
+        </div>
+    </form>
+</div>
+<div class="border-top pt-2 pb-4">
+    <small class="text-muted text-align-center">
+        Ainda não tem uma conta? <a class="ml-2" href="{{ url_for('usuarios.registrar') }}">Registre-se</a>
+    </small>
+</div>
+{% endblock conteudo %}

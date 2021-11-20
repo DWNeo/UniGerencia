@@ -4,36 +4,37 @@
     <form method="POST" action="">
         {{ form.hidden_tag() }}
         <fieldset class="form-group">
-            <legend class="border-bottom mb-4">Redefinir Senha</legend>
+            <legend class="border-bottom mb-4">{{ legend }}</legend>
             <div class="form-group">
-                {{ form.senha.label(class="form-control-label") }}
-                {% if form.senha.errors %}
-                    {{ form.senha(class="form-control form-control-lg is-invalid") }}
+                {{ form.turno.label(class="form-control-label") }}
+                {% if form.turno.errors %}
+                    {{ form.turno(class="form-control form-control-lg is-invalid") }}
                     <div class="invalid-feedback">
-                        {% for error in form.senha.errors %}
+                        {% for error in form.turno.errors %}
                             <span>{{ error }}</span>
                         {% endfor %}
                     </div>
                 {% else %}
-                    {{ form.senha(class="form-control form-control-lg") }}
+                    {{ form.turno(class="form-control form-control-lg") }}
                 {% endif %}
             </div>
             <div class="form-group">
-                {{ form.confirmar_senha.label(class="form-control-label") }}
-                {% if form.confirmar_senha.errors %}
-                    {{ form.confirmar_senha(class="form-control form-control-lg is-invalid") }}
+                {{ form.sala.label(class="form-control-label") }}
+                {% if form.sala.errors %}
+                    {{ form.sala(class="form-control form-control-lg is-invalid") }}
                     <div class="invalid-feedback">
-                        {% for error in form.confirmar_senha.errors %}
+                        {% for error in form.sala.errors %}
                             <span>{{ error }}</span>
                         {% endfor %}
                     </div>
                 {% else %}
-                    {{ form.confirmar_senha(class="form-control form-control-lg") }}
+                    {{ form.sala(class="form-control form-control-lg") }}
                 {% endif %}
             </div>
         </fieldset>
         <div class="form-group">
             {{ form.submit(class="btn btn-outline-info") }}
+            <a class="btn btn-outline-secondary" href="{{ url_for('principal.inicio') }}"><i class="fas fa-arrow-left"></i> Voltar</a>
         </div>
     </form>
 </div>

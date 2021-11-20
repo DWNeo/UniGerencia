@@ -1,0 +1,22 @@
+<!-- Modal para Exclusão de Salas -->
+<div class="modal fade" id="excluirSala{{ sala.id }}" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="excluirSalaLabel">Excluir Sala</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</spans>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Deseja mesmo excluir esta sala?</p>
+                <p><strong>Atenção: Esta operação não pode ser desfeita.</strong></p>
+            </div>
+            <div class="modal-footer">
+                <form action="{{ url_for('salas.exclui_sala', sala_id=sala.id) }}" method="POST">
+                    <input class="btn btn-outline-danger" type="submit" value="Excluir">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,32 @@
+<!-- Tabela para rederização de Posts -->
+<table id="table-posts" class="table display table-sm table-hover table-responsive-sm" style="width:100%">
+    <thead class="thead-light">
+    <tr>
+        <th scope="col">ID</th>
+        <th scope="col">Data de Postagem</th>
+        <th scope="col">Título</th>
+        <th scope="col">Autor</th>
+        <th scope="col">Ações</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for post in posts %}
+    <tr>
+        <td>{{ post.id }}</td>
+        <td>{{ post.data_postado.strftime('%d-%m-%Y %H:%M:%S') }}</td>
+        <td>{{ post.titulo }}</td>
+        <td>{{ post.autor.nome }}</td>
+        <td>
+            <a class="btn-sm btn-outline-info" href="#☺" data-toggle="modal" data-target="#visualizarPost{{ post.id }}" alt="Visualizar"><i class="fas fa-search"></i></a>
+            {% if current_user == post.autor or current_user.admin == True %}
+            <a class="btn-sm btn-outline-secondary" href="{{ url_for('posts.atualiza_post', post_id=post.id) }}"><i class="fas fa-edit"></i></a>
+            <a class="btn-sm btn-outline-danger" href="#" data-toggle="modal" data-target="#excluirPost{{ post.id }}"><i class="fas fa-trash"></i></a>
+            {% endif %}
+        </td>
+    </tr>
+    <!-- Modal -->
+    {% include 'principal/modal/visualizar_post.html' %}
+    {% include 'principal/modal/excluir_post.html' %}
+    {% endfor %}
+    </tbody>
+</table>

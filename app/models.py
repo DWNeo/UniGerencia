@@ -3,7 +3,7 @@ from datetime import datetime
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app
 from app import db, login_manager
-from flask_login import UserMixin
+from flask_login import UserMixin, current_user
 
 # Carrega o usuário que faz login da tabela apropriada
 @login_manager.user_loader
@@ -26,6 +26,7 @@ class Usuario(db.Model, UserMixin):
                            default='default.jpg')
     
     posts = db.relationship('Post', backref='autor', lazy=True)
+    solicitacoes = db.relationship('Solicitacao', backref='autor', lazy=True)
 
     def obtem_token_redefinicao(self, expires_sec=1800):
         s = Serializer(current_app.config['SECRET_KEY'], expires_sec)
@@ -62,6 +63,36 @@ class Post(db.Model):
     def __repr__(self):
         return f"Post('{self.titulo}', '{self.data_postado}')"
 
+
+class Solicitacao(db.Model):
+    __tablename__ = 'solicitacoes'
+    __table_args__ = {'extend_existing': True}
+    
+    id = db.Column(db.Integer, primary_key=True)
+    tipo = db.Column(db.String(20), nullable=False)
+    tipo_equipamento = db.Column(db.String(20), nullable=True)
+    turno = db.Column(db.String(20), nullable=False)
+    status = db.Column(db.String(20), nullable=False, default='Solicitado')
+    data_abertura = db.Column(db.DateTime, nullable=False, 
+                              default=datetime.utcnow)
+    data_emprestimo = db.Column(db.DateTime, nullable=True)
+    data_entrega = db.Column(db.DateTime, nullable=True)
+    data_cancelamento = db.Column(db.DateTime, nullable=True)
+    data_finalizacao = db.Column(db.DateTime, nullable=True)
+    ativo = db.Column(db.Boolean, nullable=False, default=True)
+
+    usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), 
+                           nullable=False)
+    equipamento_id = db.Column(db.Integer, db.ForeignKey('equipamentos.id'), 
+                           nullable=True)
+    sala_id = db.Column(db.Integer, db.ForeignKey('salas.id'), 
+                           nullable=True)
+
+    def __repr__(self):
+        return f"Solicitacao('{self.tipo}', '{self.turno}', '{self.status}',\
+                             '{self.data_abertura}')"
+
+
 class Equipamento(db.Model):
     __tablename__ = 'equipamentos'
     __table_args__ = {'extend_existing': True}
@@ -74,11 +105,14 @@ class Equipamento(db.Model):
                               default=datetime.utcnow)
     status = db.Column(db.String(20), nullable=False, default='Disponível')
     ativo = db.Column(db.Boolean, nullable=False, default=True)
-
+    
+    solicitacoes = db.relationship('Solicitacao', backref='equipamento', lazy=True)
+   
     def __repr__(self):
         return f"Equipamento('{self.patrimonio}', '{self.descricao}',\
                              '{self.data_cadastro}', '{self.status}',\
                              '{self.tipo_eqp}')"
+
 
 class Sala(db.Model):
     __tablename__ = 'salas'
@@ -93,7 +127,9 @@ class Sala(db.Model):
     status = db.Column(db.String(20), nullable=False, 
                        default='Disponível')
     ativo = db.Column(db.Boolean, nullable=False, default=True)
-
+    
+    solicitacoes = db.relationship('Solicitacao', backref='sala', lazy=True)
+    
     def __repr__(self):
         return f"Sala('{self.numero}', '{self.setor}',\
                       '{self.qtd_aluno}', '{self.data_cadastro}',\

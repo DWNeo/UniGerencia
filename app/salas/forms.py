@@ -36,7 +36,6 @@ class AtualizaSalaForm(FlaskForm):
         DataRequired(message='Este campo é obrigatório.'), 
         Length(max=10, message='Este campo só pode ter até 10 caracteres.')])
     status = SelectField('Status', choices=[
-        ('Disponível', 'Disponível'), ('Em Uso', 'Em Uso'), 
-        ('Debilitada', 'Debilitada'), ('Em Reforma', 'Em Reforma'), 
-        ('Indisponível', 'Indisponível')])
+        ('Disponível', 'Disponível'), ('Debilitada', 'Debilitada'),
+        ('Em Reforma', 'Em Reforma')])
     submit = SubmitField('Atualizar')

@@ -1,0 +1,26 @@
+<!-- Modal para Visualização de Equipamentos -->
+<div class="modal fade" id="visualizarEquipamento{{ equipamento.id }}" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="visualizarEquipamentoLabel">Visualizar Equipamento</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</spans>
+                </button>
+            </div>
+            <div class="modal-body">
+                <article class="media content-section">
+                    <div class="media-body">
+                        <div class="article-metadata">
+                            <a class="mr-2" href="#">Status: {{ equipamento.status }}</a>
+                            <a class="mr-2" href="#">Tipo: {{ equipamento.tipo_eqp }}</a>
+                            <small class="text-muted">{{ equipamento.data_cadastro.strftime('%Y-%m-%d') }}</small>
+                        </div>
+                        <h2 class="article-title">{{ equipamento.patrimonio }}</h2>
+                        <p class="article-content">{{ equipamento.descricao }}</p>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </div>
+</div>

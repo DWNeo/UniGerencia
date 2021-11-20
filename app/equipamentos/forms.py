@@ -35,7 +35,6 @@ class AtualizaEquipamentoForm(FlaskForm):
     tipo_eqp = SelectField('Tipo', choices=[
         ('Notebook', 'Notebook'), ('Tablet', 'Tablet'), ('Outro', 'Outro')])
     status = SelectField('Status', choices=[
-        ('Disponível', 'Disponível'), ('Em Uso', 'Em Uso'), 
-        ('Debilitado', 'Debilitado'), ('Em Manutenção', 'Em Manutenção'), 
-        ('Indisponível', 'Indisponível')])
+        ('Disponível', 'Disponível'), ('Debilitado', 'Debilitado'),
+        ('Em Manutenção', 'Em Manutenção')])
     submit = SubmitField('Atualizar')

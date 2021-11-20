@@ -1,406 +1,79 @@
 {% extends "layout.html" %}
-{% block content %}
-      <div class="content-section">
-        <nav class="pb-3">
+{% block inicio %}
+<div class="content-section">
+  <!-- Navegação Principal -->
+  <nav class="pb-3">
+    <div class="nav nav-pills nav-justified flex-column flex-sm-row" id="pills-tab" role="tablist">
+      <a class="nav-item nav-link active" id="pills-1-tab" data-toggle="pill" href="#pills-1" role="tab"><i class="fas fa-bookmark"></i>&nbsp;Solicitações</a>
+      <a class="nav-item nav-link" id="pills-2-tab" data-toggle="pill" href="#pills-2" role="tab"><i class="fas fa-comment-dots"></i>&nbsp;Posts</a> 
+      <!-- Menus Extras para Usuários Admin -->
+      {% if current_user.admin == True %}
+        <a class="nav-item nav-link" id="pills-3-tab" data-toggle="pill" href="#pills-3" role="tab"><i class="fas fa-laptop"></i>&nbsp;Equipamentos</a>
+        <a class="nav-item nav-link" id="pills-4-tab" data-toggle="pill" href="#pills-4" role="tab"><i class="fas fa-chalkboard-teacher"></i>&nbsp;Salas</a>
+        <a class="nav-item nav-link" id="pills-5-tab" data-toggle="pill" href="#pills-5" role="tab"><i class="fas fa-users"></i>&nbsp;Usuários</a>
+      {% endif %}
+      <div class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle bg-success text-light" href="#" id="navbarDropdown" role="button" data-toggle="dropdown">
+          <i class="fas fa-plus"></i>&nbsp;Novo
+        </a>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" href="#" data-toggle="modal" data-target="#tipoSolicitacao">Solicitação</a>
+          <a class="dropdown-item" href="{{ url_for('posts.novo_post') }}">Post</a>
+          <!-- Funções Extras para Usuários Admin -->
           {% if current_user.admin == True %}
-          <div class="nav nav-pills nav-justified flex-column flex-sm-row" id="pills-tab" role="tablist">
-            <a class="nav-item nav-link active" id="pills-1-tab" data-toggle="pill" href="#pills-1" role="tab"><i class="fas fa-bookmark"></i>&nbsp;Posts</a>
-            <a class="nav-item nav-link" id="pills-2-tab" data-toggle="pill" href="#pills-2" role="tab" aria-controls="pills-2" aria-selected="true"><i class="fas fa-laptop"></i>&nbsp;Equipamentos</a>
-            <a class="nav-item nav-link" id="pills-3-tab" data-toggle="pill" href="#pills-3" role="tab" aria-controls="pills-3" aria-selected="false"><i class="fas fa-chalkboard-teacher"></i>&nbsp;Salas</a>
-            <a class="nav-item nav-link" id="pills-4-tab" data-toggle="pill" href="#pills-4" role="tab" aria-controls="pills-4" aria-selected="false"><i class="fas fa-users"></i>&nbsp;Usuários</a>
-            <div class="nav-item dropdown pl-20">
-              <a class="nav-link dropdown-toggle bg-success text-light" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <i class="fas fa-plus"></i>&nbsp;Novo Registro
-              </a>
-              <div class="dropdown-menu">
-                <a class="dropdown-item" href="{{ url_for('posts.novo_post') }}">Post</a>
-                <a class="dropdown-item" href="{{ url_for('equipamentos.novo_equipamento') }}">Equipamento</a>
-                <a class="dropdown-item" href="{{ url_for('salas.nova_sala') }}">Sala</a>
-                <a class="dropdown-item" href="{{ url_for('usuarios.novo_usuario') }}">Usuário</a>
-              </div>
-            </div>
-          </div>
-          {% else %}
-          <div class="nav nav-pills nav-justified flex-column flex-sm-row" id="pills-tab" role="tablist">
-            <a class="nav-item nav-link active" id="pills-1-tab" data-toggle="pill" href="#pills-1" role="tab"><i class="fas fa-bookmark"></i>&nbsp;Posts</a>
-            <a class="nav-item nav-link disabled" id="pills-2-tab" data-toggle="pill" href="#pills-2" role="tab" aria-controls="pills-2" aria-selected="true"><i class="fas fa-laptop"></i>&nbsp;Equipamentos</a>
-            <a class="nav-item nav-link disabled" id="pills-3-tab" data-toggle="pill" href="#pills-3" role="tab" aria-controls="pills-3" aria-selected="false"><i class="fas fa-chalkboard-teacher"></i>&nbsp;Salas</a>
-            <a class="nav-item nav-link disabled" id="pills-4-tab" data-toggle="pill" href="#pills-4" role="tab" aria-controls="pills-4" aria-selected="false"><i class="fas fa-users"></i>&nbsp;Usuários</a>
-            <div class="nav-item dropdown pl-20">
-              <a class="nav-link dropdown-toggle bg-success text-light" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <i class="fas fa-plus"></i>&nbsp;Novo Registro
-              </a>
-              <div class="dropdown-menu">
-                <a class="dropdown-item" href="{{ url_for('posts.novo_post') }}">Post</a>
-                <a class="dropdown-item disabled" href="{{ url_for('equipamentos.novo_equipamento') }}">Equipamento</a>
-                <a class="dropdown-item disabled" href="{{ url_for('salas.nova_sala') }}">Sala</a>
-                <a class="dropdown-item disabled" href="{{ url_for('usuarios.novo_usuario') }}">Usuário</a>
-              </div>
-            </div>
-          </div>
+          <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="{{ url_for('equipamentos.novo_equipamento') }}">Equipamento</a>
+            <a class="dropdown-item" href="{{ url_for('salas.nova_sala') }}">Sala</a>
+            <a class="dropdown-item" href="{{ url_for('usuarios.novo_usuario') }}">Usuário</a>
           {% endif %}
-        </nav>
-        <div class="tab-content flex-md-row" id="nav-tabContent">
-          <div class="tab-pane fade show active" id="pills-1" role="tabpanel" aria-labelledby="pills-1-tab">
-            <div class="row">
-              <div class="col-md-12">
-                <table id="table" class="table display table-sm table-hover table-responsive-sm" style="width:100%">
-                  <thead class="thead-light">
-                    <tr>
-                      <th scope="col">ID</th>
-                      <th scope="col">Data de Postagem</th>
-                      <th scope="col">Título</th>
-                      <th scope="col">Autor</th>
-                      <th scope="col">Ações</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for post in posts.items %}
-                    {% if post.ativo == True %}
-                    <tr>
-                      <td>{{ post.id }}</td>
-                      <td>{{ post.data_postado.strftime('%d-%m-%Y %H:%M:%S') }}</td>
-                      <td>{{ post.titulo }}</td>
-                      <td>{{ post.autor.nome }}</td>
-                      <td>
-                        <a class="btn-sm btn-outline-info" href="{{ url_for('posts.post', post_id=post.id) }}" data-toggle="modal" data-target="#viewPost{{ post.id }}" alt="Visualizar"><i class="fas fa-search"></i></a>
-                        {% if current_user == post.autor or current_user.admin == True %}
-                        <a class="btn-sm btn-outline-secondary" href="{{ url_for('posts.atualiza_post', post_id=post.id) }}" alt="Atualizar"><i class="fas fa-edit"></i></a>
-                        <a class="btn-sm btn-outline-danger" href="{{ url_for('posts.exclui_post', post_id=post.id) }}" data-toggle="modal" data-target="#deletePost{{ post.id }}" alt="Excluir"><i class="fas fa-trash"></i></a>
-                        {% endif %}
-                      </td>
-                    </tr>
-                    <!-- Modal Visualizar -->
-                    <div class="modal fade" id="viewPost{{post.id}}" tabindex="-1" role="dialog">
-                      <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-                        <div class="modal-content">
-                          <div class="modal-header">
-                            <h5 class="modal-title" id="viewPostLabel">Visualizar Post</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                              <span aria-hidden="true">&times;</spans>
-                            </button>
-                          </div>
-                          <div class="modal-body">
-                            <article class="media content-section">
-                              <img class="rounded-circle article-img" src="{{ url_for('static', filename='img_perfil/' + post.autor.imagem_perfil) }}">
-                              <div class="media-body">
-                                <div class="article-metadata">
-                                  <a class="mr-2" href="{{ url_for('usuarios.posts_usuario', usuario_id=post.autor.id) }}">{{ post.autor.nome }}</a>
-                                  <small class="text-muted">{{ post.data_postado.strftime('%Y-%m-%d') }}</small>
-                                </div>
-                                <h2 class="article-title">{{ post.titulo }}</h2>
-                                <p class="article-content">{{ post.conteudo }}</p>
-                              </div>
-                            </article>
-                          </div>
-                          <div class="modal-footer">
-                            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Fechar</button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <!-- Modal Excluir-->
-                    <div class="modal fade" id="deletePost{{post.id}}" tabindex="-1" role="dialog">
-                      <div class="modal-dialog modal-dialog-centered" role="document">
-                        <div class="modal-content">
-                          <div class="modal-header">
-                            <h5 class="modal-title" id="deletePostLabel">Excluir Post</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                              <span aria-hidden="true">&times;</spans>
-                            </button>
-                          </div>
-                          <div class="modal-body">
-                            <p>Deseja mesmo excluir este post?</p>
-                            <p><strong>Atenção: Esta operação não pode ser desfeita.</strong></p>
-                          </div>
-                          <div class="modal-footer">
-                            <a type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</a>
-                            <form action="{{ url_for('posts.exclui_post', post_id=post.id) }}" method="POST">
-                              <input class="btn btn-outline-danger" type="submit" value="Excluir">
-                            </form>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    {% endif %}
-                    {% endfor %}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-          <div class="tab-pane fade" id="pills-2" role="tabpanel" aria-labelledby="pills-2-tab">
-            <div class="row">
-              <div class="col-md-12">
-                <table id="table" class="table display table-sm table-hover table-responsive-sm" style="width:100%">
-                  <thead class="thead-light">
-                    <tr>
-                      <th scope="col">ID</th>
-                      <th scope="col">Data de Cadastro</th>
-                      <th scope="col">Patrimônio</th>
-                      <th scope="col">Tipo</th>
-                      <th scope="col">Status</th>
-                      <th scope="col">Ações</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for equipamento in equipamentos.items %}
-                    {% if equipamento.ativo == True %}
-                    <tr>
-                      <td>{{ equipamento.id }}</td>
-                      <td>{{ equipamento.data_cadastro.strftime('%d-%m-%Y %H:%M:%S') }}</td>
-                      <td>{{ equipamento.patrimonio }}</td>
-                      <td>{{ equipamento.tipo_eqp }}</td>
-                      <td>{{ equipamento.status }}</td>
-                      <td>
-                        <a class="btn-sm btn-outline-info" href="{{ url_for('equipamentos.equipamento', eqp_id=equipamento.id) }}" data-toggle="modal" data-target="#viewEquip{{ equipamento.id }}" alt="Visualizar"><i class="fas fa-search"></i></a>
-                        <a class="btn-sm btn-outline-secondary" href="{{ url_for('equipamentos.atualiza_equipamento', eqp_id=equipamento.id) }}" alt="Atualizar"><i class="fas fa-edit"></i></a>
-                        <a class="btn-sm btn-outline-danger" href="{{ url_for('equipamentos.exclui_equipamento', eqp_id=equipamento.id) }}" data-toggle="modal" data-target="#deleteEquip{{ equipamento.id }}" alt="Excluir"><i class="fas fa-trash"></i></a>
-                      </td>
-                    </tr>
-                    <!-- Modal Visualizar -->
-                    <div class="modal fade" id="viewEquip{{equipamento.id}}" tabindex="-1" role="dialog">
-                      <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-                        <div class="modal-content">
-                          <div class="modal-header">
-                            <h5 class="modal-title" id="viewPostLabel">Visualizar Equipamento</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                              <span aria-hidden="true">&times;</spans>
-                            </button>
-                          </div>
-                          <div class="modal-body">
-                            <article class="media content-section">
-                              <div class="media-body">
-                                <div class="article-metadata">
-                                  <a class="mr-2" href="#">Status: {{ equipamento.status }}</a>
-                                  <a class="mr-2" href="#">Tipo: {{ equipamento.tipo_eqp }}</a>
-                                  <small class="text-muted">{{ equipamento.data_cadastro.strftime('%Y-%m-%d') }}</small>
-                                </div>
-                                <h2 class="article-title">{{ equipamento.patrimonio }}</h2>
-                                <p class="article-content">{{ equipamento.descricao }}</p>
-                              </div>
-                            </article>
-                          </div>
-                          <div class="modal-footer">
-                            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Fechar</button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <!-- Modal Excluir-->
-                    <div class="modal fade" id="deleteEquip{{equipamento.id}}" tabindex="-1" role="dialog">
-                      <div class="modal-dialog modal-dialog-centered" role="document">
-                        <div class="modal-content">
-                          <div class="modal-header">
-                            <h5 class="modal-title" id="deletePostLabel">Excluir Equipamento</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                              <span aria-hidden="true">&times;</spans>
-                            </button>
-                          </div>
-                          <div class="modal-body">
-                            <p>Deseja mesmo excluir este equipamento?</p>
-                            <p><strong>Atenção: Esta operação não pode ser desfeita.</strong></p>
-                          </div>
-                          <div class="modal-footer">
-                            <a type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</a>
-                            <form action="{{ url_for('equipamentos.exclui_equipamento', eqp_id=equipamento.id) }}" method="POST">
-                              <input class="btn btn-outline-danger" type="submit" value="Excluir">
-                            </form>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    {% endif %}
-                    {% endfor %}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-          <div class="tab-pane fade" id="pills-3" role="tabpanel" aria-labelledby="pills-3-tab">
-            <div class="row">
-              <div class="col-md-12">
-                <table id="table" class="table display table-sm table-hover table-responsive-sm" style="width:100%">
-                  <thead class="thead-light">
-                    <tr>
-                      <th scope="col">ID</th>
-                      <th scope="col">Data de Cadastro</th>
-                      <th scope="col">Número</th>
-                      <th scope="col">Setor</th>
-                      <th scope="col">Qtd. de Alunos</th>
-                      <th scope="col">Status</th>
-                      <th scope="col">Ações</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for sala in salas.items %}
-                    {% if sala.ativo == True %}
-                    <tr>
-                      <td>{{ sala.id }}</td>
-                      <td>{{ sala.data_cadastro.strftime('%d-%m-%Y %H:%M:%S') }}</td>
-                      <td>{{ sala.numero }}</td>
-                      <td>{{ sala.setor }}</td>
-                      <td>{{ sala.qtd_aluno }}</td>
-                      <td>{{ sala.status }}</td>
-                      <td>
-                        <a class="btn-sm btn-outline-info" href="{{ url_for('salas.sala', sala_id=sala.id) }}" data-toggle="modal" data-target="#viewRoom{{ sala.id }}" alt="Visualizar"><i class="fas fa-search"></i></a>
-                        <a class="btn-sm btn-outline-secondary" href="{{ url_for('salas.atualiza_sala', sala_id=sala.id) }}" alt="Atualizar"><i class="fas fa-edit"></i></a>
-                        <a class="btn-sm btn-outline-danger" href="{{ url_for('salas.exclui_sala', sala_id=sala.id) }}" data-toggle="modal" data-target="#deleteRoom{{ sala.id }}" alt="Excluir"><i class="fas fa-trash"></i></a>
-                      </td>
-                    </tr>
-                    <!-- Modal Visualizar -->
-                    <div class="modal fade" id="viewRoom{{sala.id}}" tabindex="-1" role="dialog">
-                      <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-                        <div class="modal-content">
-                          <div class="modal-header">
-                            <h5 class="modal-title" id="viewRoomLabel">Visualizar Sala</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                              <span aria-hidden="true">&times;</spans>
-                            </button>
-                          </div>
-                          <div class="modal-body">
-                            <article class="media content-section">
-                              <div class="media-body">
-                                <div class="article-metadata">
-                                  <a class="mr-2" href="#">Status: {{ sala.status }}</a>
-                                  <a class="mr-2" href="#">Qtd. de Alunos: {{ sala.qtd_aluno }}</a>
-                                  <small class="text-muted">{{ sala.data_cadastro.strftime('%Y-%m-%d') }}</small>
-                                </div>
-                                <h2 class="article-title">Sala {{ sala.numero }}</h2>
-                                <p class="article-content">Setor: {{ sala.setor }}</p>
-                              </div>
-                            </article>
-                          </div>
-                          <div class="modal-footer">
-                            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Fechar</button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <!-- Modal Excluir-->
-                    <div class="modal fade" id="deleteRoom{{sala.id}}" tabindex="-1" role="dialog">
-                      <div class="modal-dialog modal-dialog-centered" role="document">
-                        <div class="modal-content">
-                          <div class="modal-header">
-                            <h5 class="modal-title" id="deleteRoomLabel">Excluir Sala</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                              <span aria-hidden="true">&times;</spans>
-                            </button>
-                          </div>
-                          <div class="modal-body">
-                            <p>Deseja mesmo excluir esta sala?</p>
-                            <p><strong>Atenção: Esta operação não pode ser desfeita.</strong></p>
-                          </div>
-                          <div class="modal-footer">
-                            <a type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</a>
-                            <form action="{{ url_for('salas.exclui_sala', sala_id=sala.id) }}" method="POST">
-                              <input class="btn btn-outline-danger" type="submit" value="Excluir">
-                            </form>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    {% endif %}
-                    {% endfor %}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-          <div class="tab-pane fade" id="pills-4" role="tabpanel" aria-labelledby="pills-4-tab">
-            <div class="row">
-              <div class="col-md-12">
-                <table id="table" class="table display table-sm table-hover table-responsive-sm" style="width:100%">
-                  <thead class="thead-light">
-                    <tr>
-                      <th scope="col">ID</th>
-                      <th scope="col">Nome</th>
-                      <th scope="col">Identificação</th>
-                      <th scope="col">Email</th>
-                      <th scope="col">Admin</th>
-                      <th scope="col">Ações</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for usuario in usuarios.items %}
-                    {% if usuario.ativo == True %}
-                    <tr>
-                      <td>{{ usuario.id }}</td>
-                      <td>{{ usuario.nome }}</td>
-                      <td>{{ usuario.identificacao }}</td>
-                      <td>{{ usuario.email }}</td>
-                      {% if usuario.admin == True %}
-                      <td><a class="btn-sm btn-outline-success" href="#"><i class="fas fa-check"></i></a></td>
-                      {% endif %}
-                      {% if usuario.admin == False %}
-                      <td><a class="btn-sm btn-outline-danger" href="#"><i class="fas fa-ban"></i></a></td>
-                      {% endif %}
-                      <td>
-                        <a class="btn-sm btn-outline-info" href="#" data-toggle="modal" data-target="#viewUser{{ usuario.id }}" alt="Visualizar"><i class="fas fa-search"></i></a>
-                        <a class="btn-sm btn-outline-secondary" href="{{ url_for('usuarios.atualiza_usuario', usuario_id=usuario.id) }}" alt="Atualizar"><i class="fas fa-edit"></i></a>
-                        <a class="btn-sm btn-outline-danger" href="{{ url_for('usuarios.exclui_usuario', usuario_id=usuario.id) }}" data-toggle="modal" data-target="#deleteUser{{ usuario.id }}" alt="Desativar"><i class="fas fa-trash"></i></a>
-                      </td>
-                    </tr>
-                    <!-- Modal Visualizar -->
-                    <div class="modal fade" id="viewUser{{usuario.id}}" tabindex="-1" role="dialog">
-                      <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-                        <div class="modal-content">
-                          <div class="modal-header">
-                            <h5 class="modal-title" id="viewUserLabel">Visualizar Usuário</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                              <span aria-hidden="true">&times;</spans>
-                            </button>
-                          </div>
-                          <div class="modal-body">
-                            <article class="media content-section">
-                              <img class="rounded-circle article-img" src="{{ url_for('static', filename='img_perfil/' + usuario.imagem_perfil) }}">
-                              <div class="media-body">
-                                <div class="article-metadata">
-                                  <a class="mr-2" href="#">{{ usuario.email }}</a>
-                                </div>
-                                <h2 class="article-title">{{ usuario.nome }}</h2>
-                                <p class="article-content">{{ usuario.identificacao }}</p>
-                              </div>
-                            </article>
-                          </div>
-                          <div class="modal-footer">
-                            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Fechar</button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <!-- Modal Excluir-->
-                    <div class="modal fade" id="deleteUser{{usuario.id}}" tabindex="-1" role="dialog">
-                      <div class="modal-dialog modal-dialog-centered" role="document">
-                        <div class="modal-content">
-                          <div class="modal-header">
-                            <h5 class="modal-title" id="deleteUserLabel">Excluir Usuário</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                              <span aria-hidden="true">&times;</spans>
-                            </button>
-                          </div>
-                          <div class="modal-body">
-                            <p>Deseja mesmo excluir este usuário?</p>
-                            <p><strong>Atenção: Esta operação não pode ser desfeita.</strong></p>
-                          </div>
-                          <div class="modal-footer">
-                            <a type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</a>
-                            <form action="{{ url_for('usuarios.exclui_usuario', usuario_id=usuario.id) }}" method="POST">
-                              <input class="btn btn-outline-danger" type="submit" value="Excluir">
-                            </form>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    {% endif %}
-                    {% endfor %}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
-
-      
-{% endblock content %}
+    </div>
+  </nav>
+  <!-- Conteúdo de Cada Aba da Navegação -->
+  <div class="tab-content flex-md-row" id="nav-tabContent">
+    <div class="tab-pane fade show active" id="pills-1" role="tabpanel">
+      <div class="row">
+        <div class="col-md-12">
+          <!-- Tabela de Solicitações-->
+          {% include 'principal/tabela/solicitacoes.html' %}
+        </div>
+      </div>
+    </div>
+    <div class="tab-pane fade" id="pills-2" role="tabpanel">
+      <div class="row">
+        <div class="col-md-12">
+          <!-- Tabela de Posts-->
+          {% include 'principal/tabela/posts.html' %}
+        </div>
+      </div>
+    </div>
+    <div class="tab-pane fade" id="pills-3" role="tabpanel">
+      <div class="row">
+        <div class="col-md-12">
+          <!-- Tabela de Equipamentos-->
+          {% include 'principal/tabela/equipamentos.html' %}
+        </div>
+      </div>
+    </div>
+    <div class="tab-pane fade" id="pills-4" role="tabpanel">
+      <div class="row">
+        <div class="col-md-12">
+          <!-- Tabela de Salas-->
+          {% include 'principal/tabela/salas.html' %}
+        </div>
+      </div>
+    </div>
+    <div class="tab-pane fade" id="pills-5" role="tabpanel">
+      <div class="row">
+        <div class="col-md-12">
+          <!-- Tabela de Usuários-->
+          {% include 'principal/tabela/usuarios.html' %}
+        </div>
+      </div>
+    </div> 
+  </div>
+  <!-- Modal -->
+  {% include 'principal/modal/tipo_solicitacao.html' %}
+</div>  
+{% endblock inicio %}

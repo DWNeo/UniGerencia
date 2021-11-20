@@ -41,13 +41,10 @@ def login():
         return redirect(url_for('principal.inicio'))
     form = LoginForm()
     if form.validate_on_submit():
-        usuario = Usuario.query.filter_by(email=form.email.data).first()
-        if usuario and bcrypt.check_password_hash(usuario.senha,                                   form.senha.data):
+        usuario = Usuario.query.filter_by(
+            email=form.email.data).filter_by(ativo=True).first()
+        if usuario and bcrypt.check_password_hash(usuario.senha, form.senha.data):
             login_user(usuario, remember=form.lembrar.data)
-            if current_user.ativo == False:
-                flash('Este usuário está inativo e não\
-                      pode ser utilizado.', 'danger')
-                logout_user()
             prox_pagina = request.args.get('next')
             if (prox_pagina):
                 return redirect(prox_pagina) 
@@ -96,9 +93,8 @@ def perfil():
 @login_required
 def posts_usuario(usuario_id):
     pagina = request.args.get('pagina', 1, type=int)
-    usuario = Usuario.query.filter_by(id=usuario_id).first_or_404()
-    if usuario.ativo == False:
-        abort(404)
+    usuario = Usuario.query.filter_by(
+        id=usuario_id).filter_by(ativo=True).first_or_404()
     posts = Post.query.filter_by(autor=usuario)\
         .order_by(Post.data_postado.desc())\
         .paginate(page=pagina, per_page=5)
@@ -134,9 +130,8 @@ def novo_usuario():
 @login_required
 @admin_required
 def atualiza_usuario(usuario_id):
-    usuario = Usuario.query.get_or_404(usuario_id)
-    if usuario.ativo == False:
-        abort(404)
+    usuario = Usuario.query.filter_by(
+            id=usuario_id).filter_by(ativo=True).first_or_404()
     form = AdminAtualizaPerfilForm()
     if form.validate_on_submit():
         if form.imagem.data:
@@ -164,9 +159,8 @@ def atualiza_usuario(usuario_id):
 @login_required
 @admin_required
 def exclui_usuario(usuario_id):
-    usuario = Usuario.query.get_or_404(usuario_id)
-    if usuario.ativo == False:
-        abort(404)
+    usuario = Usuario.query.filter_by(
+            id=usuario_id).filter_by(ativo=True).first_or_404()
     if current_user.id == usuario.id:
         flash('Não é possível excluir a própria conta!', 'danger')
         return redirect(url_for('principal.inicio'))

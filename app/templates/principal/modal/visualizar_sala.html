@@ -1,0 +1,26 @@
+<!-- Modal para Visualização de Salas -->
+<div class="modal fade" id="visualizarSala{{ sala.id }}" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="visualizarSalaLabel">Visualizar Sala</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</spans>
+                </button>
+            </div>
+            <div class="modal-body">
+                <article class="media content-section">
+                    <div class="media-body">
+                        <div class="article-metadata">
+                            <a class="mr-2" href="#">Status: {{ sala.status }}</a>
+                            <a class="mr-2" href="#">Qtd. de Alunos: {{ sala.qtd_aluno }}</a>
+                            <small class="text-muted">{{ sala.data_cadastro.strftime('%Y-%m-%d') }}</small>
+                        </div>
+                        <h2 class="article-title">Sala {{ sala.numero }}</h2>
+                        <p class="article-content">Setor: {{ sala.setor }}</p>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </div>
+</div>

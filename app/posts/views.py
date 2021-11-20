@@ -11,7 +11,8 @@ posts = Blueprint('posts', __name__)
 
 @posts.route("/<int:post_id>")
 def post(post_id):
-    post = Post.query.get_or_404(post_id)
+    post = Post.query.filter_by(
+        id=post_id).filter_by(ativo=True).first_or_404()
     return render_template('posts/post.html', title=post.titulo, post=post)
 
 
@@ -34,7 +35,8 @@ def novo_post():
 @posts.route("/<int:post_id>/atualizar", methods=['GET', 'POST'])
 @login_required
 def atualiza_post(post_id):
-    post = Post.query.get_or_404(post_id)
+    post = Post.query.filter_by(
+        id=post_id).filter_by(ativo=True).first_or_404()
     if post.autor != current_user and current_user.admin == False:
         abort(403)
     form = PostForm()
@@ -54,7 +56,8 @@ def atualiza_post(post_id):
 @posts.route("/<int:post_id>/excluir", methods=['POST'])
 @login_required
 def exclui_post(post_id):
-    post = Post.query.get_or_404(post_id)
+    post = Post.query.filter_by(
+        id=post_id).filter_by(ativo=True).first_or_404()
     if post.autor != current_user and current_user.admin == False:
         abort(403)
     post.ativo = False
