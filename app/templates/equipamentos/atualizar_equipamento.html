@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% block post %}
+{% block conteudo %}
 <div class="content-section">
     <form method="POST" action="">
         {{ form.hidden_tag() }}
@@ -47,7 +47,8 @@
         </fieldset>
         <div class="form-group">
             {{ form.submit(class="btn btn-outline-info") }}
+            <a class="btn btn-outline-secondary" href="{{ url_for('principal.inicio') }}"><i class="fas fa-arrow-left"></i> Voltar</a>
         </div>
     </form>
 </div>
-{% endblock post %}
+{% endblock conteudo %}

@@ -1,28 +1,23 @@
 from flask import render_template, url_for, request, flash, redirect, Blueprint
 from flask_login import login_required
-from app.models import Post, Equipamento, Sala, Usuario
-from app.posts.forms import PostForm
+
+from app.models import Post, Equipamento, Sala, Usuario, Solicitacao
 
 principal = Blueprint('principal', __name__)
 
 
 @principal.route("/")
-@principal.route("/inicio")
 @login_required
 def inicio():  
-    form = PostForm()
-    pagina = request.args.get('pagina', 1, type=int)
-    posts = Post.query.order_by(Post.data_postado.desc())\
-                .paginate(page=pagina, per_page=1000)
-    equips = Equipamento.query.order_by(Equipamento.data_cadastro.desc())\
-                              .paginate(page=pagina, per_page=1000)
-    salas = Sala.query.order_by(Sala.data_cadastro.desc())\
-                .paginate(page=pagina, per_page=1000)
-    usuarios = Usuario.query.order_by(Usuario.id.desc())\
-                      .paginate(page=pagina, per_page=1000)
+    # Recupera os registros ativos de cada tabela do banco de dados
+    solicitacoes = Solicitacao.query.filter_by(ativo=True).all()
+    posts = Post.query.filter_by(ativo=True).all()
+    equipamentos = Equipamento.query.filter_by(ativo=True).all()
+    salas = Sala.query.filter_by(ativo=True).all()
+    usuarios = Usuario.query.filter_by(ativo=True).all()
     return render_template('principal/inicio.html', posts=posts, 
-                           equipamentos=equips, salas=salas, 
-                           usuarios=usuarios, form=form)
+                           equipamentos=equipamentos, salas=salas, 
+                           usuarios=usuarios, solicitacoes=solicitacoes)
 
 
 @principal.route("/sobre")

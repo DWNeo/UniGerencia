@@ -1,0 +1,30 @@
+<!-- Modal para Visualização de Solicitações -->
+<div class="modal fade" id="visualizarSolicitacao{{ solicitacao.id }}" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="visualizarSolicitacaoLabel">Visualizar Solicitação</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</spans>
+                </button>
+            </div>
+            <div class="modal-body">
+                <article class="media content-section">
+                    <div class="media-body">
+                        <div class="article-metadata">
+                            <a class="mr-2" href="#">Status: {{ solicitacao.status }}</a>
+                            <a class="mr-2" href="#">Tipo: {{ solicitacao.tipo }}</a>
+                            <small class="text-muted">{{ solicitacao.data_abertura.strftime('%d-%m-%Y %H:%M:%S') }}</small>
+                        </div>
+                        {% if solicitacao.sala.numero %}
+                        <h3 class="article-title">Sala: {{ solicitacao.sala.numero }}</h2>
+                        {% endif %}
+                        {% if solicitacao.tipo_equipamento %}
+                        <h3 class="article-content">Tipo de Equipamento: {{ solicitacao.tipo_equipamento }}</h2>
+                        {% endif %}
+                    </div>
+                </article>
+            </div>
+        </div>
+    </div>
+</div>

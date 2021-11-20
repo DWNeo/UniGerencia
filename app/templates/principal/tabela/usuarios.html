@@ -1,0 +1,37 @@
+<!-- Tabela para rederização de Usuários -->
+<table id="table-usuarios" class="table display table-sm table-hover table-responsive-sm" style="width:100%">
+    <thead class="thead-light">
+    <tr>
+        <th scope="col">ID</th>
+        <th scope="col">Nome</th>
+        <th scope="col">Identificação</th>
+        <th scope="col">Email</th>
+        <th scope="col">Admin</th>
+        <th scope="col">Ações</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for usuario in usuarios %}
+    <tr>
+        <td>{{ usuario.id }}</td>
+        <td>{{ usuario.nome }}</td>
+        <td>{{ usuario.identificacao }}</td>
+        <td>{{ usuario.email }}</td>
+        {% if usuario.admin == True %}
+            <td><a class="btn-sm btn-outline-success" href="#"><i class="fas fa-check"></i></a></td>
+        {% endif %}
+        {% if usuario.admin == False %}
+            <td><a class="btn-sm btn-outline-danger" href="#"><i class="fas fa-ban"></i></a></td>
+        {% endif %}
+        <td>
+            <a class="btn-sm btn-outline-info" href="#" data-toggle="modal" data-target="#visualizarUsuario{{ usuario.id }}"><i class="fas fa-search"></i></a>
+            <a class="btn-sm btn-outline-secondary" href="{{ url_for('usuarios.atualiza_usuario', usuario_id=usuario.id) }}" alt="Atualizar"><i class="fas fa-edit"></i></a>
+            <a class="btn-sm btn-outline-danger" href="#" data-toggle="modal" data-target="#excluirUsuario{{ usuario.id }}"><i class="fas fa-trash"></i></a>
+        </td>
+    </tr>
+    <!-- Modal -->
+    {% include 'principal/modal/visualizar_usuario.html' %}
+    {% include 'principal/modal/excluir_usuario.html' %}
+    {% endfor %}
+    </tbody>
+</table>

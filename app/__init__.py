@@ -39,6 +39,7 @@ def create_app(config_class=Config):
     from app.posts.views import posts
     from app.equipamentos.views import equipamentos
     from app.salas.views import salas
+    from app.solicitacoes.views import solicitacoes
 
     # Registra os blueprints
     app.register_blueprint(principal, url_prefix='/')
@@ -47,5 +48,6 @@ def create_app(config_class=Config):
     app.register_blueprint(posts, url_prefix='/posts')
     app.register_blueprint(equipamentos, url_prefix='/equipamentos')
     app.register_blueprint(salas, url_prefix='/salas')
+    app.register_blueprint(solicitacoes, url_prefix='/solicitacoes')
     
     return app

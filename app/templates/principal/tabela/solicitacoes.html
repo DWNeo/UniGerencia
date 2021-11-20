@@ -1,0 +1,41 @@
+<!-- Tabela para rederização de Solicitações -->
+<table id="table-solicitacoes" class="table display table-sm table-hover table-responsive-sm" style="width:100%">
+    <thead class="thead-light">
+    <tr>
+        <th scope="col">ID</th>
+        <th scope="col">Data de Abertura</th>
+        <th scope="col">Tipo</th>
+        <th scope="col">Turno</th>
+        <th scope="col">Autor</th>
+        <th scope="col">Status</th>
+        <th scope="col">Ações</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for solicitacao in solicitacoes %}
+    <tr>
+        <td>{{ solicitacao.id }}</td>
+        <td>{{ solicitacao.data_abertura.strftime('%d-%m-%Y %H:%M:%S') }}</td>
+        <td>{{ solicitacao.tipo }}</td>
+        <td>{{ solicitacao.turno }}</td>
+        <td>{{ solicitacao.autor.nome }}</td>
+        <td>{{ solicitacao.status }}</td>
+        <td>
+            <a class="btn-sm btn-outline-info" href="#" data-toggle="modal" data-target="#visualizarSolicitacao{{ solicitacao.id }}"><i class="fas fa-search"></i></a> 
+            {% if current_user.admin == True and solicitacao.tipo == 'Sala' %}
+                <a class="btn-sm btn-outline-success" href="{{ url_for('solicitacoes.confirma_solicitacao_sala', solicitacao_id=solicitacao.id) }}"><i class="fas fa-check-square"></i></a>
+            {% else %}
+                <a class="btn-sm btn-outline-success" href="#"><i class="fas fa-check-square"></i></a>
+            {% endif %}
+            {% if current_user == solicitacao.autor or current_user.admin == True %}
+                <a class="btn-sm btn-outline-warning" href="#"><i class="fas fa-window-close"></i></a>
+                <a class="btn-sm btn-outline-danger" href="#" data-toggle="modal" data-target="#excluirSolicitacao{{ solicitacao.id }}"><i class="fas fa-trash"></i></a>
+            {% endif %}
+        </td>
+    </tr>
+    <!-- Modal -->
+    {% include 'principal/modal/visualizar_solicitacao.html' %}
+    {% include 'principal/modal/excluir_solicitacao.html' %}
+    {% endfor %}
+    </tbody>
+</table>

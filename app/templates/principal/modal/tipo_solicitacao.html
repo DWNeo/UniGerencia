@@ -1,0 +1,18 @@
+<!-- Modal para Selecionar o Tipo de Solicitação -->
+<div class="modal fade" id="tipoSolicitacao" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="tipoSolicitacaoLabel">Tipo de Solicitação</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</spans>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                <p class="">Deseja realizar uma solicitação de qual tipo?</p>
+                <a type="button" class="btn btn-outline-success" href="{{ url_for('solicitacoes.nova_solicitacao_equipamento') }}">Equipamento</a>
+                <a type="button" class="btn btn-outline-success" href="{{ url_for('solicitacoes.nova_solicitacao_sala') }}">Sala</a>
+            </div>
+        </div>
+    </div>
+</div>

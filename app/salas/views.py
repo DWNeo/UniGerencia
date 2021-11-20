@@ -14,9 +14,8 @@ salas = Blueprint('salas', __name__)
 @login_required
 @admin_required
 def sala(sala_id):
-    sala = Sala.query.get_or_404(sala_id)
-    if sala.ativo == False:
-        abort(404)
+    sala = Sala.query.filter_by(
+        id=sala_id).filter_by(ativo=True).first_or_404()
     return render_template('salas/sala.html', 
                            title=sala.numero, post=sala)
 
@@ -41,9 +40,8 @@ def nova_sala():
 @login_required
 @admin_required
 def atualiza_sala(sala_id):
-    sala = Sala.query.get_or_404(sala_id)
-    if sala.ativo == False:
-        abort(404)
+    sala = Sala.query.filter_by(
+        id=sala_id).filter_by(ativo=True).first_or_404()
     form = AtualizaSalaForm()
     if form.validate_on_submit():
         sala.setor = form.setor.data
@@ -65,9 +63,8 @@ def atualiza_sala(sala_id):
 @login_required
 @admin_required
 def exclui_sala(sala_id):
-    sala = Sala.query.get_or_404(sala_id)
-    if sala.ativo == False:
-        abort(404)
+    sala = Sala.query.filter_by(
+        id=sala_id).filter_by(ativo=True).first_or_404()
     sala.ativo = False
     db.session.commit()
     flash('A Sala foi excluída com sucesso!', 'success')
