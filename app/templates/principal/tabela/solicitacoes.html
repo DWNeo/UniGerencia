@@ -24,7 +24,7 @@
             <a class="btn-sm btn-outline-info" href="#" data-toggle="modal" data-target="#visualizarSolicitacao{{ solicitacao.id }}"><i class="fas fa-search"></i></a> 
             {% if current_user.admin == True and solicitacao.tipo == 'Sala' %}
                 <a class="btn-sm btn-outline-success" href="{{ url_for('solicitacoes.confirma_solicitacao_sala', solicitacao_id=solicitacao.id) }}"><i class="fas fa-check-square"></i></a>
-            {% else %}
+            {% elif current_user.admin == True and solicitacao.tipo == 'Equipamento' %}
                 <a class="btn-sm btn-outline-success" href="#"><i class="fas fa-check-square"></i></a>
             {% endif %}
             {% if current_user == solicitacao.autor or current_user.admin == True %}
