@@ -42,9 +42,7 @@ class Usuario(db.Model, UserMixin):
         return Usuario.query.get(usuario_id)
 
     def __repr__(self):
-        return f"Usuario('{self.nome}', '{self.identificacao}',\
-                         '{self.usuario}', '{self.email}',\
-                         '{self.imagem_perfil}')"
+        return f"{self.nome} ({self.identificacao})"
 
 class Post(db.Model):
     __tablename__ = 'posts'
@@ -53,7 +51,7 @@ class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     titulo = db.Column(db.String(100), nullable=False)
     data_postado = db.Column(db.DateTime, nullable=False, 
-                             default=datetime.utcnow)
+                             default=datetime.now())
     conteudo = db.Column(db.Text, nullable=False)
     ativo = db.Column(db.Boolean, nullable=False, default=True)
 
@@ -61,7 +59,7 @@ class Post(db.Model):
                            nullable=False)
 
     def __repr__(self):
-        return f"Post('{self.titulo}', '{self.data_postado}')"
+        return f"Post: {self.titulo} ({self.data_postado})"
 
 
 class Solicitacao(db.Model):
@@ -70,27 +68,27 @@ class Solicitacao(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     tipo = db.Column(db.String(20), nullable=False)
-    tipo_equipamento = db.Column(db.String(20), nullable=True)
     turno = db.Column(db.String(20), nullable=False)
     status = db.Column(db.String(20), nullable=False, default='Solicitado')
     data_abertura = db.Column(db.DateTime, nullable=False, 
-                              default=datetime.utcnow)
-    data_emprestimo = db.Column(db.DateTime, nullable=True)
+                              default=datetime.now())
     data_entrega = db.Column(db.DateTime, nullable=True)
+    data_devolucao = db.Column(db.DateTime, nullable=True)
     data_cancelamento = db.Column(db.DateTime, nullable=True)
     data_finalizacao = db.Column(db.DateTime, nullable=True)
     ativo = db.Column(db.Boolean, nullable=False, default=True)
 
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), 
                            nullable=False)
+    tipo_eqp_id = db.Column(db.Integer, db.ForeignKey('tipos_equipamento.id'), 
+                           nullable=True)
     equipamento_id = db.Column(db.Integer, db.ForeignKey('equipamentos.id'), 
                            nullable=True)
     sala_id = db.Column(db.Integer, db.ForeignKey('salas.id'), 
                            nullable=True)
 
     def __repr__(self):
-        return f"Solicitacao('{self.tipo}', '{self.turno}', '{self.status}',\
-                             '{self.data_abertura}')"
+        return f"Solicitacao #{self.id} - {self.tipo} - {self.turno}"
 
 
 class Equipamento(db.Model):
@@ -100,18 +98,34 @@ class Equipamento(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     patrimonio = db.Column(db.String(20), unique=True, nullable=False)
     descricao = db.Column(db.String(50), nullable=False)
-    tipo_eqp = db.Column(db.String(20), nullable=False)
     data_cadastro = db.Column(db.DateTime, nullable=False, 
-                              default=datetime.utcnow)
+                              default=datetime.now())
     status = db.Column(db.String(20), nullable=False, default='Disponível')
     ativo = db.Column(db.Boolean, nullable=False, default=True)
-    
+
+    tipo_eqp_id = db.Column(db.Integer, db.ForeignKey('tipos_equipamento.id'), 
+                            nullable=False)
+
     solicitacoes = db.relationship('Solicitacao', backref='equipamento', lazy=True)
    
     def __repr__(self):
-        return f"Equipamento('{self.patrimonio}', '{self.descricao}',\
-                             '{self.data_cadastro}', '{self.status}',\
-                             '{self.tipo_eqp}')"
+        return f"{self.patrimonio} - {self.descricao}"
+
+
+class TipoEquipamento(db.Model):
+    __tablename__ = 'tipos_equipamento'
+    __table_args__ = {'extend_existing': True}
+
+    id = db.Column(db.Integer, primary_key=True)
+    nome = db.Column(db.String(20), unique=True, nullable=False)
+    qtd_disponivel = db.Column(db.Integer, nullable=False, default=0)
+    ativo = db.Column(db.Boolean, nullable=False, default=True)
+
+    equipamentos = db.relationship('Equipamento', backref='tipo_eqp', lazy=True)
+    solicitacoes = db.relationship('Solicitacao', backref='tipo_eqp', lazy=True)
+
+    def __repr__(self):
+        return f"{self.nome} - Qtd. Disponível: {self.qtd_disponivel}"
 
 
 class Sala(db.Model):
@@ -123,7 +137,7 @@ class Sala(db.Model):
     setor = db.Column(db.String(20), nullable=False)
     qtd_aluno = db.Column(db.Integer, nullable=False)
     data_cadastro = db.Column(db.DateTime, nullable=False, 
-                              default=datetime.utcnow)
+                              default=datetime.now())
     status = db.Column(db.String(20), nullable=False, 
                        default='Disponível')
     ativo = db.Column(db.Boolean, nullable=False, default=True)
@@ -131,6 +145,5 @@ class Sala(db.Model):
     solicitacoes = db.relationship('Solicitacao', backref='sala', lazy=True)
     
     def __repr__(self):
-        return f"Sala('{self.numero}', '{self.setor}',\
-                      '{self.qtd_aluno}', '{self.data_cadastro}',\
-                      '{self.status}')"
+        return f"{self.numero} - {self.setor} - Alunos: {self.qtd_aluno} -\
+                 {self.status}"

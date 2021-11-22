@@ -21,20 +21,35 @@
         <td>{{ solicitacao.autor.nome }}</td>
         <td>{{ solicitacao.status }}</td>
         <td>
+            {% if current_user == solicitacao.autor or current_user.admin == True %}
             <a class="btn-sm btn-outline-info" href="#" data-toggle="modal" data-target="#visualizarSolicitacao{{ solicitacao.id }}"><i class="fas fa-search"></i></a> 
-            {% if current_user.admin == True and solicitacao.tipo == 'Sala' %}
-                <a class="btn-sm btn-outline-success" href="{{ url_for('solicitacoes.confirma_solicitacao_sala', solicitacao_id=solicitacao.id) }}"><i class="fas fa-check-square"></i></a>
-            {% else %}
-                <a class="btn-sm btn-outline-success" href="#"><i class="fas fa-check-square"></i></a>
+            {% endif %}
+            {% if current_user.admin == True %}
+                {% if solicitacao.status == 'Em Aberto' %}
+                    <a class="btn-sm btn-outline-success" href="{{ url_for('solicitacoes.confirma_solicitacao', solicitacao_id=solicitacao.id) }}"><i class="fas fa-check-square"></i></a>
+                {% endif %}
+                {% if solicitacao.status == 'Confirmada' %}
+                    <a class="btn-sm btn-outline-primary" href="#" data-toggle="modal" data-target="#entregarSolicitacao{{ solicitacao.id }}"><i class="fas fa-upload"></i></a>
+                {% endif %}
+                {% if solicitacao.status == 'Em Uso' %}
+                    <a class="btn-sm btn-outline-primary" href="#" data-toggle="modal" data-target="#receberSolicitacao{{ solicitacao.id }}"><i class="fas fa-download"></i></a>
+                {% endif %}
             {% endif %}
             {% if current_user == solicitacao.autor or current_user.admin == True %}
-                <a class="btn-sm btn-outline-warning" href="#"><i class="fas fa-window-close"></i></a>
+                {% if solicitacao.status == 'Em Aberto' or solicitacao.status == 'Confirmada' %}
+                    <a class="btn-sm btn-outline-warning" href="#" data-toggle="modal" data-target="#cancelarSolicitacao{{ solicitacao.id }}"><i class="fas fa-window-close"></i></a>
+                {% endif %}
+            {% endif %}
+            {% if current_user.admin == True %}
                 <a class="btn-sm btn-outline-danger" href="#" data-toggle="modal" data-target="#excluirSolicitacao{{ solicitacao.id }}"><i class="fas fa-trash"></i></a>
             {% endif %}
         </td>
     </tr>
     <!-- Modal -->
     {% include 'principal/modal/visualizar_solicitacao.html' %}
+    {% include 'principal/modal/entregar_solicitacao.html' %}
+    {% include 'principal/modal/receber_solicitacao.html' %}
+    {% include 'principal/modal/cancelar_solicitacao.html' %}
     {% include 'principal/modal/excluir_solicitacao.html' %}
     {% endfor %}
     </tbody>
