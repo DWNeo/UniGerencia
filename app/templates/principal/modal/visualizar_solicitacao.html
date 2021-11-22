@@ -19,8 +19,9 @@
                         {% if solicitacao.sala.numero %}
                         <h3 class="article-title">Sala: {{ solicitacao.sala.numero }}</h2>
                         {% endif %}
-                        {% if solicitacao.tipo_equipamento %}
-                        <h3 class="article-content">Tipo de Equipamento: {{ solicitacao.tipo_equipamento }}</h2>
+                        {% if solicitacao.tipo_eqp.nome %}
+                        <h3 class="article-content">Tipo de Equipamento: {{ solicitacao.tipo_eqp.nome }}</h3>
+                        <h3 class="article-content">Equipamento: {{ solicitacao.equipamento }}</h3>
                         {% endif %}
                     </div>
                 </article>

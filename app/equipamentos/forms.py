@@ -13,10 +13,7 @@ class EquipamentoForm(FlaskForm):
     descricao = StringField('Descrição', validators=[
         DataRequired(message='Este campo é obrigatório.'), 
         Length(max=50, message='Este campo só pode ter até 50 caracteres.')])
-    tipo_eqp = SelectField('Tipo', validators=[
-        DataRequired(message='Este campo é obrigatório.')],
-        choices=[('Notebook', 'Notebook'), ('Tablet', 'Tablet'),
-            ('Outro', 'Outro')])
+    tipo_eqp = SelectField('Tipo', coerce=int)
     submit = SubmitField('Cadastrar')
 
     def validate_patrimonio(self, patrimonio):
@@ -32,8 +29,6 @@ class AtualizaEquipamentoForm(FlaskForm):
     descricao = StringField('Descrição', validators=[
         DataRequired(message='Este campo é obrigatório.'), 
         Length(max=50, message='Este campo só pode ter até 50 caracteres.')])
-    tipo_eqp = SelectField('Tipo', choices=[
-        ('Notebook', 'Notebook'), ('Tablet', 'Tablet'), ('Outro', 'Outro')])
     status = SelectField('Status', choices=[
         ('Disponível', 'Disponível'), ('Debilitado', 'Debilitado'),
         ('Em Manutenção', 'Em Manutenção')])

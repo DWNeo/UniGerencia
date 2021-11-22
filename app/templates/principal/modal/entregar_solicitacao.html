@@ -1,0 +1,19 @@
+<!-- Modal para Exclusão de Solicitação -->
+<div class="modal fade" id="entregarSolicitacao{{ solicitacao.id }}" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="entregarSolicitacaoLabel">Confirmar Entrega</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</spans>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Deseja confirmar a entrega?</p>
+            </div>
+            <div class="modal-footer">
+                <a type="button" class="btn btn-outline-success" href="{{ url_for('solicitacoes.entrega_solicitacao', solicitacao_id=solicitacao.id) }}">Confirmar</a>
+            </div>
+        </div>
+    </div>
+</div>

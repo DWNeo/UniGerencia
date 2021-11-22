@@ -16,7 +16,7 @@
         <td>{{ equipamento.id }}</td>
         <td>{{ equipamento.data_cadastro.strftime('%d-%m-%Y %H:%M:%S') }}</td>
         <td>{{ equipamento.patrimonio }}</td>
-        <td>{{ equipamento.tipo_eqp }}</td>
+        <td>{{ equipamento.tipo_eqp.nome }}</td>
         <td>{{ equipamento.status }}</td>
         <td>
             <a class="btn-sm btn-outline-info" href="#" data-toggle="modal" data-target="#visualizarEquipamento{{ equipamento.id }}"><i class="fas fa-search"></i></a>
