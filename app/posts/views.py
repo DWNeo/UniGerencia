@@ -29,7 +29,7 @@ def novo_post():
         flash('Sua mensagem foi postada com sucesso!', 'success')
         return redirect(url_for('principal.inicio'))
     return render_template('posts/novo_post.html', title='Nova Mensagem',
-                           form=form, legend='Novo Post')
+                           form=form, legend='Nova Mensagem')
 
 
 @posts.route("/<int:post_id>/atualizar", methods=['GET', 'POST'])
@@ -50,7 +50,7 @@ def atualiza_post(post_id):
         form.titulo.data = post.titulo
         form.conteudo.data = post.conteudo
     return render_template('posts/novo_post.html', title='Atualizar Mensagem',
-                           form=form, legend='Atualizar Post')
+                           form=form, legend='Atualizar Mensagem')
 
 
 @posts.route("/<int:post_id>/excluir", methods=['POST'])

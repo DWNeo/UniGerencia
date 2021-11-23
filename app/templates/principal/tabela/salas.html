@@ -13,7 +13,17 @@
     </thead>
     <tbody>
     {% for sala in salas %}
+    {% if sala.status == 'Solicitada' %}
+    <tr class="table-success text-success">
+    {% elif sala.status == 'Em Atraso' %}
+    <tr class="table-danger text-danger">
+    {% elif sala.status == 'Em Uso' %}
+    <tr class="table-info text-info">
+    {% elif sala.status == 'Debilitada' or sala.status == 'Em Reforma' %}
+    <tr class="text-secondary">
+    {% else %}
     <tr>
+    {% endif %}
         <td>{{ sala.id }}</td>
         <td>{{ sala.data_cadastro.strftime('%d-%m-%Y %H:%M:%S') }}</td>
         <td>{{ sala.numero }}</td>

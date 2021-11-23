@@ -13,62 +13,54 @@
     </thead>
     <tbody>
     {% for solicitacao in solicitacoes %}
-    {% if solicitacao.status == 'Em Atraso' %}
-    <tr class="table-danger">
-    {% elif solicitacao.status == 'Confirmada' %}
-    <tr class="table-success">
-    {% else %}
-    <tr>
-    {% endif %}
-        <td>{{ solicitacao.id }}</td>
-        <td>{{ solicitacao.data_abertura.strftime('%d-%m-%Y %H:%M:%S') }}</td>
-        <td>{{ solicitacao.tipo }}</td>
-        <td>{{ solicitacao.turno }}</td>
-        <td>{{ solicitacao.autor.nome }}</td>
-        {% if solicitacao.status == 'Confirmada' %}
-        <td><a class="text-success">{{ solicitacao.status }}</a></td>
+    {% if current_user == solicitacao.autor or current_user.admin == True %}
+        {% if solicitacao.status == 'Em Atraso' %}
+        <tr class="table-danger text-danger">
+        {% elif solicitacao.status == 'Confirmada' %}
+        <tr class="table-success text-success">
         {% elif solicitacao.status == 'Em Uso' %}
-        <td><a class="text-primary">{{ solicitacao.status }}</a></td>
-        {% elif solicitacao.status == 'Em Atraso' %}
-        <td><a class="text-danger">{{ solicitacao.status }}</a></td>
-        {% elif solicitacao.status == 'Cancelada' %}
-        <td><a class="text-secondary">{{ solicitacao.status }}</a></td>
-        {% elif solicitacao.status == 'Finalizada' %}
-        <td><a class="text-secondary">{{ solicitacao.status }}</a></td>
+        <tr class="table-info text-info">
+        {% elif solicitacao.status == 'Cancelada' or solicitacao.status == 'Finalizada' %}
+        <tr class="text-secondary">
         {% else %}
-        <td><a class="">{{ solicitacao.status }}</a></td>
+        <tr>
         {% endif %}
-        <td>
-            {% if current_user == solicitacao.autor or current_user.admin == True %}
-            <a class="btn-sm btn-outline-info" href="#" data-toggle="modal" data-target="#visualizarSolicitacao{{ solicitacao.id }}"><i class="fas fa-search"></i></a> 
-            {% endif %}
-            {% if current_user.admin == True %}
-                {% if solicitacao.status == 'Em Aberto' %}
-                    <a class="btn-sm btn-outline-success" href="{{ url_for('solicitacoes.confirma_solicitacao', solicitacao_id=solicitacao.id) }}"><i class="fas fa-check-square"></i></a>
+            <td>{{ solicitacao.id }}</td>
+            <td>{{ solicitacao.data_abertura.strftime('%d-%m-%Y %H:%M:%S') }}</td>
+            <td>{{ solicitacao.tipo }}</td>
+            <td>{{ solicitacao.turno }}</td>
+            <td>{{ solicitacao.autor.nome }}</td>
+            <td>{{ solicitacao.status }}</td>
+            <td>
+                <a class="btn-sm btn-outline-info" href="#" data-toggle="modal" data-target="#visualizarSolicitacao{{ solicitacao.id }}"><i class="fas fa-search"></i></a> 
+                {% if current_user.admin == True %}
+                    {% if solicitacao.status == 'Em Aberto' %}
+                        <a class="btn-sm btn-outline-success" href="{{ url_for('solicitacoes.confirma_solicitacao', solicitacao_id=solicitacao.id) }}"><i class="fas fa-check-square"></i></a>
+                    {% endif %}
+                    {% if solicitacao.status == 'Confirmada' %}
+                        <a class="btn-sm btn-outline-primary" href="#" data-toggle="modal" data-target="#entregarSolicitacao{{ solicitacao.id }}"><i class="fas fa-upload"></i></a>
+                    {% endif %}
+                    {% if solicitacao.status == 'Em Uso' or solicitacao.status == 'Em Atraso' %}
+                        <a class="btn-sm btn-outline-primary" href="#" data-toggle="modal" data-target="#receberSolicitacao{{ solicitacao.id }}"><i class="fas fa-download"></i></a>
+                    {% endif %}
                 {% endif %}
-                {% if solicitacao.status == 'Confirmada' %}
-                    <a class="btn-sm btn-outline-primary" href="#" data-toggle="modal" data-target="#entregarSolicitacao{{ solicitacao.id }}"><i class="fas fa-upload"></i></a>
+                {% if current_user == solicitacao.autor or current_user.admin == True %}
+                    {% if solicitacao.status == 'Em Aberto' or solicitacao.status == 'Confirmada' %}
+                        <a class="btn-sm btn-outline-warning" href="#" data-toggle="modal" data-target="#cancelarSolicitacao{{ solicitacao.id }}"><i class="fas fa-window-close"></i></a>
+                    {% endif %}
                 {% endif %}
-                {% if solicitacao.status == 'Em Uso' or solicitacao.status == 'Em Atraso' %}
-                    <a class="btn-sm btn-outline-primary" href="#" data-toggle="modal" data-target="#receberSolicitacao{{ solicitacao.id }}"><i class="fas fa-download"></i></a>
+                {% if current_user.admin == True %}
+                    <a class="btn-sm btn-outline-danger" href="#" data-toggle="modal" data-target="#excluirSolicitacao{{ solicitacao.id }}"><i class="fas fa-trash"></i></a>
                 {% endif %}
-            {% endif %}
-            {% if current_user == solicitacao.autor or current_user.admin == True %}
-                {% if solicitacao.status == 'Em Aberto' or solicitacao.status == 'Confirmada' %}
-                    <a class="btn-sm btn-outline-warning" href="#" data-toggle="modal" data-target="#cancelarSolicitacao{{ solicitacao.id }}"><i class="fas fa-window-close"></i></a>
-                {% endif %}
-            {% endif %}
-            {% if current_user.admin == True %}
-                <a class="btn-sm btn-outline-danger" href="#" data-toggle="modal" data-target="#excluirSolicitacao{{ solicitacao.id }}"><i class="fas fa-trash"></i></a>
-            {% endif %}
-        </td>
-    </tr>
-    <!-- Modal -->
-    {% include 'principal/modal/visualizar_solicitacao.html' %}
-    {% include 'principal/modal/entregar_solicitacao.html' %}
-    {% include 'principal/modal/receber_solicitacao.html' %}
-    {% include 'principal/modal/cancelar_solicitacao.html' %}
-    {% include 'principal/modal/excluir_solicitacao.html' %}
+            </td>
+        </tr>
+        <!-- Modal -->
+        {% include 'principal/modal/visualizar_solicitacao.html' %}
+        {% include 'principal/modal/entregar_solicitacao.html' %}
+        {% include 'principal/modal/receber_solicitacao.html' %}
+        {% include 'principal/modal/cancelar_solicitacao.html' %}
+        {% include 'principal/modal/excluir_solicitacao.html' %}'
+    {% endif %}
     {% endfor %}
     </tbody>
 </table>

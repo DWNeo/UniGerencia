@@ -25,10 +25,15 @@ def inicio():
         if solicitacao.status == 'Em Uso':
             if datetime.now() > solicitacao.data_devolucao:
                 solicitacao.status = 'Em Atraso'
+                if solicitacao.equipamento:
+                    print('TESTE 1')
+                    solicitacao.equipamento.status = 'Em Atraso'
+                if solicitacao.sala:
+                    print('TESTE 2')
+                    solicitacao.sala.status = 'Em Atraso'
                 db.session.commit()
                 if current_user.admin == True:
-                    flash('Existe uma nova solicitação em atraso.\
-                           Por favor, verifique.', 'warning')
+                    flash('Existe uma nova solicitação em atraso.', 'warning')
 
     return render_template('principal/inicio.html', posts=posts, 
                            equipamentos=equipamentos, salas=salas, 
