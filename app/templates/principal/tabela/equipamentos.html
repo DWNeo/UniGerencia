@@ -12,7 +12,17 @@
     </thead>
     <tbody>
     {% for equipamento in equipamentos %}
+    {% if equipamento.status == 'Solicitado' %}
+    <tr class="table-success text-success">
+    {% elif equipamento.status == 'Em Atraso' %}
+    <tr class="table-danger text-danger">
+    {% elif equipamento.status == 'Em Uso' %}
+    <tr class="table-info text-info">
+    {% elif equipamento.status == 'Debilitado' or equipamento.status == 'Em Manutenção' %}
+    <tr class="text-secondary">
+    {% else %}
     <tr>
+    {% endif %}
         <td>{{ equipamento.id }}</td>
         <td>{{ equipamento.data_cadastro.strftime('%d-%m-%Y %H:%M:%S') }}</td>
         <td>{{ equipamento.patrimonio }}</td>

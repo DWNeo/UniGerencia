@@ -12,7 +12,11 @@
     </thead>
     <tbody>
     {% for usuario in usuarios %}
+    {% if usuario.admin == True %}
+    <tr class="table-success text-success">
+    {% else %}
     <tr>
+    {% endif %}
         <td>{{ usuario.id }}</td>
         <td>{{ usuario.nome }}</td>
         <td>{{ usuario.identificacao }}</td>
