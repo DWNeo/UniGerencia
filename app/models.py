@@ -2,8 +2,9 @@ from datetime import datetime
 
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app
-from app import db, login_manager
 from flask_login import UserMixin, current_user
+
+from app import db, login_manager, fuso_horario
 
 # Carrega o usuário que faz login da tabela apropriada
 @login_manager.user_loader
@@ -51,7 +52,7 @@ class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     titulo = db.Column(db.String(100), nullable=False)
     data_postado = db.Column(db.DateTime, nullable=False, 
-                             default=datetime.now())
+                             default=datetime.now().astimezone(fuso_horario))
     conteudo = db.Column(db.Text, nullable=False)
     ativo = db.Column(db.Boolean, nullable=False, default=True)
 
@@ -71,7 +72,7 @@ class Solicitacao(db.Model):
     turno = db.Column(db.String(20), nullable=False)
     status = db.Column(db.String(20), nullable=False, default='Solicitado')
     data_abertura = db.Column(db.DateTime, nullable=False, 
-                              default=datetime.now())
+                              default=datetime.now().astimezone(fuso_horario))
     data_entrega = db.Column(db.DateTime, nullable=True)
     data_devolucao = db.Column(db.DateTime, nullable=True)
     data_cancelamento = db.Column(db.DateTime, nullable=True)
@@ -99,7 +100,7 @@ class Equipamento(db.Model):
     patrimonio = db.Column(db.String(20), unique=True, nullable=False)
     descricao = db.Column(db.String(50), nullable=False)
     data_cadastro = db.Column(db.DateTime, nullable=False, 
-                              default=datetime.now())
+                              default=datetime.now().astimezone(fuso_horario))
     status = db.Column(db.String(20), nullable=False, default='Disponível')
     ativo = db.Column(db.Boolean, nullable=False, default=True)
 
@@ -137,7 +138,7 @@ class Sala(db.Model):
     setor = db.Column(db.String(20), nullable=False)
     qtd_aluno = db.Column(db.Integer, nullable=False)
     data_cadastro = db.Column(db.DateTime, nullable=False, 
-                              default=datetime.now())
+                              default=datetime.now().astimezone(fuso_horario))
     status = db.Column(db.String(20), nullable=False, 
                        default='Disponível')
     ativo = db.Column(db.Boolean, nullable=False, default=True)
@@ -145,5 +146,4 @@ class Sala(db.Model):
     solicitacoes = db.relationship('Solicitacao', backref='sala', lazy=True)
     
     def __repr__(self):
-        return f"{self.numero} - {self.setor} - Alunos: {self.qtd_aluno} -\
-                 {self.status}"
+        return f"{self.numero} - {self.setor} - Alunos: {self.qtd_aluno} - {self.status}"
