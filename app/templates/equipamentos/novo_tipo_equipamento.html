@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+{% block conteudo %}
+<div class="content-section">
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">{{ legend }}</legend>
+            <div class="form-group">
+                {{ form.nome.label(class="form-control-label") }}
+                {% if form.nome.errors %}
+                    {{ form.nome(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.nome.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.nome(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+        </fieldset>
+        <p><strong>Atenção:</strong> Escolha o nome com cuidado, 
+           pois o mesmo não poderá ser alterado depois!</p>
+        <div class="form-group">
+            {{ form.submit(class="btn btn-outline-info") }}
+            <a class="btn btn-outline-secondary" href="{{ url_for('principal.inicio') }}"><i class="fas fa-arrow-left"></i> Voltar</a>
+        </div>
+    </form>
+</div>
+{% endblock conteudo %}

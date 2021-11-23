@@ -160,6 +160,15 @@ def entrega_solicitacao(solicitacao_id):
     if solicitacao.status != 'Confirmada':
         flash('Esta solicitação não foi confirmada!', 'warning')
         return redirect(url_for('principal.inicio'))
+    data_atual = datetime.now().strftime('%Y-%m-%d')
+    if solicitacao.turno == 'Matutino':
+        string_data = (data_atual + ' 12:30:00')
+        solicitacao.data_devolucao = datetime.strptime(
+            string_data, '%Y-%m-%d %H:%M:%S')
+    if solicitacao.turno == 'Noturno' or solicitacao.turno == 'Integral':
+        string_data = (data_atual + ' 22:30:00')
+        solicitacao.data_devolucao = datetime.strptime(
+            string_data, '%Y-%m-%d %H:%M:%S')
     solicitacao.status = 'Em Uso'
     if solicitacao.equipamento:
         solicitacao.equipamento.status = 'Em Uso'

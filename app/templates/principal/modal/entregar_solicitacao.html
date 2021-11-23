@@ -10,6 +10,11 @@
             </div>
             <div class="modal-body">
                 <p>Deseja confirmar a entrega?</p>
+                {% if solicitacao.turno == 'Matutino' %}
+                <p>A data de devolução prevista será fixada em 12:30 deste mesmo dia.</p>
+                {% else %}
+                <p>A data de devolução prevista será fixada em 22:30 deste mesmo dia.</p>
+                {% endif %}
             </div>
             <div class="modal-footer">
                 <a type="button" class="btn btn-outline-success" href="{{ url_for('solicitacoes.entrega_solicitacao', solicitacao_id=solicitacao.id) }}">Confirmar</a>

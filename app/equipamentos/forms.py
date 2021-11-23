@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, SelectField
 from wtforms.validators import DataRequired, Length, ValidationError
 
-from app.models import Equipamento
+from app.models import Equipamento, TipoEquipamento
 
 
 class EquipamentoForm(FlaskForm):
@@ -33,3 +33,17 @@ class AtualizaEquipamentoForm(FlaskForm):
         ('Disponível', 'Disponível'), ('Debilitado', 'Debilitado'),
         ('Em Manutenção', 'Em Manutenção')])
     submit = SubmitField('Atualizar')
+
+class TipoEquipamentoForm(FlaskForm):
+
+    nome = StringField('Nome', validators=[
+        DataRequired(message='Este campo é obrigatório.'), 
+        Length(max=20, message='Este campo só pode ter até 20 caracteres.')])
+    submit = SubmitField('Cadastrar')
+
+    def validate_nome(self, nome):
+        nome = TipoEquipamento.query.filter_by(
+            nome=nome.data).first()
+        if nome:
+            raise ValidationError('Já existe um tipo de equipamento com esse\
+                nome. Por favor, insira um diferente.')
