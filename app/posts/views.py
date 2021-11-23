@@ -28,7 +28,7 @@ def novo_post():
         db.session.commit()
         flash('Sua mensagem foi postada com sucesso!', 'success')
         return redirect(url_for('principal.inicio'))
-    return render_template('posts/novo_post.html', title='Novo Post',
+    return render_template('posts/novo_post.html', title='Nova Mensagem',
                            form=form, legend='Novo Post')
 
 
@@ -44,12 +44,12 @@ def atualiza_post(post_id):
         post.titulo = form.titulo.data
         post.conteudo = form.conteudo.data
         db.session.commit()
-        flash('Seu post foi atualizado com sucesso!', 'success')
+        flash('Sua mensagem foi atualizada com sucesso!', 'success')
         return redirect(url_for('principal.inicio'))
     elif request.method == 'GET':
         form.titulo.data = post.titulo
         form.conteudo.data = post.conteudo
-    return render_template('posts/novo_post.html', title='Atualizar Post',
+    return render_template('posts/novo_post.html', title='Atualizar Mensagem',
                            form=form, legend='Atualizar Post')
 
 
@@ -62,5 +62,5 @@ def exclui_post(post_id):
         abort(403)
     post.ativo = False
     db.session.commit()
-    flash('Seu post foi excluído com sucesso!', 'success')
+    flash('Sua mensagem foi excluída com sucesso!', 'success')
     return redirect(url_for('principal.inicio'))
