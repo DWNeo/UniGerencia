@@ -5,7 +5,7 @@
   <nav class="pb-3">
     <div class="nav nav-pills nav-justified flex-column flex-sm-row" id="pills-tab" role="tablist">
       <a class="nav-item nav-link active" id="pills-1-tab" data-toggle="pill" href="#pills-1" role="tab"><i class="fas fa-bookmark"></i>&nbsp;Solicitações</a>
-      <a class="nav-item nav-link" id="pills-2-tab" data-toggle="pill" href="#pills-2" role="tab"><i class="fas fa-comment-dots"></i>&nbsp;Posts</a> 
+      <a class="nav-item nav-link" id="pills-2-tab" data-toggle="pill" href="#pills-2" role="tab"><i class="fas fa-comment-dots"></i>&nbsp;Mensagens</a> 
       <!-- Menus Extras para Usuários Admin -->
       {% if current_user.admin == True %}
         <a class="nav-item nav-link" id="pills-3-tab" data-toggle="pill" href="#pills-3" role="tab"><i class="fas fa-laptop"></i>&nbsp;Equipamentos</a>
@@ -18,13 +18,15 @@
         </a>
         <div class="dropdown-menu">
           <a class="dropdown-item" href="#" data-toggle="modal" data-target="#tipoSolicitacao">Solicitação</a>
-          <a class="dropdown-item" href="{{ url_for('posts.novo_post') }}">Post</a>
+          <a class="dropdown-item" href="{{ url_for('posts.novo_post') }}">Mensagem</a>
           <!-- Funções Extras para Usuários Admin -->
           {% if current_user.admin == True %}
           <div class="dropdown-divider"></div>
             <a class="dropdown-item" href="{{ url_for('equipamentos.novo_equipamento') }}">Equipamento</a>
             <a class="dropdown-item" href="{{ url_for('salas.nova_sala') }}">Sala</a>
             <a class="dropdown-item" href="{{ url_for('usuarios.novo_usuario') }}">Usuário</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="{{ url_for('equipamentos.novo_tipo_equipamento') }}">Tipo de Equipamento</a>
           {% endif %}
         </div>
       </div>

@@ -4,7 +4,8 @@ from flask_login import login_required
 
 from app import db
 from app.models import Equipamento, TipoEquipamento
-from app.equipamentos.forms import EquipamentoForm, AtualizaEquipamentoForm
+from app.equipamentos.forms import (EquipamentoForm, AtualizaEquipamentoForm,
+                                    TipoEquipamentoForm)
 from app.usuarios.utils import admin_required
 
 equipamentos = Blueprint('equipamentos', __name__)
@@ -48,6 +49,22 @@ def novo_equipamento():
     return render_template('equipamentos/novo_equipamento.html', 
                            title='Novo Equipamento',
                            legend='Novo Equipamento', form=form)
+
+
+@equipamentos.route("/novo_tipo", methods=['GET', 'POST'])
+@login_required
+@admin_required
+def novo_tipo_equipamento():
+    form = TipoEquipamentoForm()
+    if form.validate_on_submit():
+        tipo_eqp = TipoEquipamento(nome=form.nome.data)
+        db.session.add(tipo_eqp)
+        db.session.commit()
+        flash('O tipo de equipamento foi cadastrado com sucesso!', 'success') 
+        return redirect(url_for('principal.inicio'))
+    return render_template('equipamentos/novo_tipo_equipamento.html', 
+                           title='Novo Tipo de Equipamento',
+                           legend='Novo Tipo de Equipamento', form=form)
 
 
 @equipamentos.route("/<int:eqp_id>/atualizar", methods=['GET', 'POST'])
