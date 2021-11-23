@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from flask_mail import Mail
+from pytz import timezone
 
 from app.config import Config
 
@@ -21,6 +22,9 @@ login_manager.login_message = 'É necessário realizar login para acessar\
                                essa página. Acesse a página "Sobre" para\
                                ver as contas de teste'
 login_manager.needs_refresh_message = 'É necessário realizar login novamente.'
+
+# Define o fuso horário a ser utilizado no datetime
+fuso_horario = timezone('America/Sao_Paulo')
 
 
 def create_app(config_class=Config):
