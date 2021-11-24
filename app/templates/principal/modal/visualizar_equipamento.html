@@ -14,10 +14,10 @@
                         <div class="article-metadata">
                             <a class="mr-2" href="#"><strong>Status:</strong> {{ equipamento.status }}</a>
                             <a class="mr-2" href="#"><strong>Tipo:</strong> {{ equipamento.tipo_eqp.nome }}</a>
-                            <small class="text-muted"><strong>{{ equipamento.data_cadastro.strftime('%Y-%m-%d') }}</strong></small>
+                            <small class="text-muted"><strong>{{ equipamento.data_cadastro.strftime('%d/%m/%Y %H:%M:%S') }}</strong></small>
                         </div>
-                        <h4 class="article-title">{{ equipamento.patrimonio }}</h4>
-                        <p class="article-content">{{ equipamento.descricao }}</p>
+                        <h4 class="article-title"><strong>Patrimônio:</strong> {{ equipamento.patrimonio }}</h4>
+                        <p class="article-content"><strong>Descrição:</strong> {{ equipamento.descricao }}</p>
                     </div>
                 </article>
             </div>

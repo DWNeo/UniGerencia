@@ -14,10 +14,10 @@
                         <div class="article-metadata">
                             <a class="mr-2" href="#"><strong>Status:</strong> {{ sala.status }}</a>
                             <a class="mr-2" href="#"><strong>Qtd. de Alunos:</strong> {{ sala.qtd_aluno }}</a>
-                            <small class="text-muted"><strong>{{ sala.data_cadastro.strftime('%Y-%m-%d') }}</strong></small>
+                            <small class="text-muted"><strong>{{ sala.data_cadastro.strftime('%d/%m/%Y %H:%M:%S') }}</strong></small>
                         </div>
-                        <h4 class="article-title">Sala {{ sala.numero }}</h4>
-                        <p class="article-content">Setor: {{ sala.setor }}</p>
+                        <h4 class="article-title"><strong>Sala:</strong> {{ sala.numero }}</h4>
+                        <p class="article-content"><strong> Setor:</strong> {{ sala.setor }}</p>
                     </div>
                 </article>
             </div>

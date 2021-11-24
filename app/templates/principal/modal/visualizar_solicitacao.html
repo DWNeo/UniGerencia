@@ -14,7 +14,7 @@
                         <div class="article-metadata">
                             <a class="mr-2" href="#"><strong>Status:</strong> {{ solicitacao.status }}</a>
                             <a class="mr-2" href="#"><strong>Tipo:</strong> {{ solicitacao.tipo }}</a>
-                            <small class="text-muted"><strong>{{ solicitacao.data_abertura.strftime('%d-%m-%Y %H:%M:%S') }}</strong></small>
+                            <small class="text-muted"><strong>{{ solicitacao.data_abertura.strftime('%d/%m/%Y %H:%M:%S') }}</strong></small>
                         </div>
                         {% if solicitacao.sala.numero %}
                         <h5 class="article-title"><strong>Sala:</strong> {{ solicitacao.sala.numero }}</h5>
@@ -25,17 +25,21 @@
                         {% if solicitacao.equipamento %}
                         <h5 class="article-content"><strong>Equipamento:</strong> {{ solicitacao.equipamento }}</h5>
                         {% endif %}
+                        {% if solicitacao.data_preferencial %}
+                        </br>
+                        <h6 class="article-content"><strong>Data Preferencial:</strong> {{ solicitacao.data_preferencial.strftime('%d/%m/%Y') }}</h6>
+                        {% endif %}
                         {% if solicitacao.data_entrega %}
-                        <h5 class="article-content"><strong>Data de Entrega:</strong> {{ solicitacao.data_entrega.strftime('%d-%m-%Y %H:%M:%S') }}</h5>
+                        <h6 class="article-content"><strong>Data de Entrega:</strong> {{ solicitacao.data_entrega.strftime('%d/%m/%Y %H:%M:%S') }}</h6>
                         {% endif %}
                         {% if solicitacao.data_devolucao %}
-                        <h5 class="article-content"><strong>Data de Devolução:</strong> {{ solicitacao.data_devolucao.strftime('%d-%m-%Y %H:%M:%S') }}</h5>
+                        <h6 class="article-content"><strong>Data de Devolução:</strong> {{ solicitacao.data_devolucao.strftime('%d/%m/%Y %H:%M:%S') }}</h6>
                         {% endif %}
                         {% if solicitacao.data_cancelamento %}
-                        <h5 class="article-content"><strong>Data de Cancelamento:</strong> {{ solicitacao.data_cancelamento.strftime('%d-%m-%Y %H:%M:%S') }}</h5>
+                        <h6 class="article-content"><strong>Data de Cancelamento:</strong> {{ solicitacao.data_cancelamento.strftime('%d/%m/%Y %H:%M:%S') }}</h6>
                         {% endif %}
                         {% if solicitacao.data_finalizacao %}
-                        <h5 class="article-content"><strong>Data de Finalização:</strong> {{ solicitacao.data_finalizacao.strftime('%d-%m-%Y %H:%M:%S') }}</h5>
+                        <h6 class="article-content"><strong>Data de Finalização:</strong> {{ solicitacao.data_finalizacao.strftime('%d/%m/%Y %H:%M:%S') }}</h6>
                         {% endif %}
                     </div>
                 </article>
