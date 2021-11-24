@@ -26,16 +26,16 @@
                         <h5 class="article-content"><strong>Equipamento:</strong> {{ solicitacao.equipamento }}</h5>
                         {% endif %}
                         {% if solicitacao.data_entrega %}
-                        <h5 class="article-content"><strong>Data de Entrega:</strong> {{ solicitacao.data_entrega }}</h5>
+                        <h5 class="article-content"><strong>Data de Entrega:</strong> {{ solicitacao.data_entrega.strftime('%d-%m-%Y %H:%M:%S') }}</h5>
                         {% endif %}
                         {% if solicitacao.data_devolucao %}
-                        <h5 class="article-content"><strong>Data de Devolução:</strong> {{ solicitacao.data_devolucao }}</h5>
+                        <h5 class="article-content"><strong>Data de Devolução:</strong> {{ solicitacao.data_devolucao.strftime('%d-%m-%Y %H:%M:%S') }}</h5>
                         {% endif %}
                         {% if solicitacao.data_cancelamento %}
-                        <h5 class="article-content"><strong>Data de Cancelamento:</strong> {{ solicitacao.data_cancelamento }}</h5>
+                        <h5 class="article-content"><strong>Data de Cancelamento:</strong> {{ solicitacao.data_cancelamento.strftime('%d-%m-%Y %H:%M:%S') }}</h5>
                         {% endif %}
                         {% if solicitacao.data_finalizacao %}
-                        <h5 class="article-content"><strong>Data de Finalização:</strong> {{ solicitacao.data_finalizacao }}</h5>
+                        <h5 class="article-content"><strong>Data de Finalização:</strong> {{ solicitacao.data_finalizacao.strftime('%d-%m-%Y %H:%M:%S') }}</h5>
                         {% endif %}
                     </div>
                 </article>
