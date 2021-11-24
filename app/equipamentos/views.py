@@ -73,7 +73,7 @@ def novo_tipo_equipamento():
 def atualiza_equipamento(eqp_id):
     equipamento = Equipamento.query.filter_by(
         id=eqp_id).filter_by(ativo=True).first_or_404()
-    if equipamento.status == 'Solicitado' or equipamento.status == 'Em Uso':
+    if equipamento.status == 'Solicitado' or equipamento.status == 'Em Uso' or equipamento.status == 'Em Atraso':
         flash('Não é possível atualizar um equipamento solicitado ou em uso.', 'warning')  
         return redirect(url_for('principal.inicio'))
     form = AtualizaEquipamentoForm()
