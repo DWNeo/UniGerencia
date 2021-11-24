@@ -34,7 +34,7 @@ def novo_equipamento():
         form.tipo_eqp.choices = lista_tipos
     else:
         flash('Não há tipos de equipamento cadastrados.', 'warning')
-        return redirect(url_for('principal.inicio'))
+        return redirect(url_for('principal.inicio', tab=3))
     if form.validate_on_submit():
         tipo_eqp = TipoEquipamento.query.filter_by(
             id=form.tipo_eqp.data).filter_by(ativo=True).first()
@@ -45,7 +45,7 @@ def novo_equipamento():
         db.session.add(equipamento)
         db.session.commit()
         flash('O equipamento foi cadastrado com sucesso!', 'success') 
-        return redirect(url_for('principal.inicio'))
+        return redirect(url_for('principal.inicio', tab=3))
     return render_template('equipamentos/novo_equipamento.html', 
                            title='Novo Equipamento',
                            legend='Novo Equipamento', form=form)
@@ -61,7 +61,7 @@ def novo_tipo_equipamento():
         db.session.add(tipo_eqp)
         db.session.commit()
         flash('O tipo de equipamento foi cadastrado com sucesso!', 'success') 
-        return redirect(url_for('principal.inicio'))
+        return redirect(url_for('principal.inicio', tab=3))
     return render_template('equipamentos/novo_tipo_equipamento.html', 
                            title='Novo Tipo de Equipamento',
                            legend='Novo Tipo de Equipamento', form=form)
@@ -75,7 +75,7 @@ def atualiza_equipamento(eqp_id):
         id=eqp_id).filter_by(ativo=True).first_or_404()
     if equipamento.status == 'Solicitado' or equipamento.status == 'Em Uso' or equipamento.status == 'Em Atraso':
         flash('Não é possível atualizar um equipamento solicitado ou em uso.', 'warning')  
-        return redirect(url_for('principal.inicio'))
+        return redirect(url_for('principal.inicio', tab=3))
     form = AtualizaEquipamentoForm()
     if form.validate_on_submit():
         if equipamento.status != 'Disponível':
@@ -88,7 +88,7 @@ def atualiza_equipamento(eqp_id):
         equipamento.status = form.status.data
         db.session.commit()
         flash('O equipamento foi atualizado com sucesso!', 'success')  
-        return redirect(url_for('principal.inicio'))
+        return redirect(url_for('principal.inicio', tab=3))
     elif request.method == 'GET':
         form.descricao.data = equipamento.descricao
         form.status.data = equipamento.status
@@ -111,4 +111,4 @@ def exclui_equipamento(eqp_id):
         tipo_eqp.qtd_disponivel -= 1
     db.session.commit()
     flash('O equipamento foi excluído com sucesso!', 'success')
-    return redirect(url_for('principal.inicio'))
+    return redirect(url_for('principal.inicio', tab=3))

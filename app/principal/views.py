@@ -12,6 +12,7 @@ principal = Blueprint('principal', __name__)
 @principal.route("/")
 @login_required
 def inicio(): 
+    tab = request.args.get('tab', 1, type=int)
     # Recupera os registros ativos de cada tabela do banco de dados
     solicitacoes = Solicitacao.query.filter_by(ativo=True).all()
     posts = Post.query.filter_by(ativo=True).all()
@@ -33,8 +34,8 @@ def inicio():
                 if current_user.admin == True:
                     flash('Existe uma nova solicitação em atraso.', 'warning')
 
-    return render_template('principal/inicio.html', posts=posts, 
-                           equipamentos=equipamentos, salas=salas, 
+    return render_template('principal/inicio.html', tab=tab,
+                           posts=posts, equipamentos=equipamentos, salas=salas, 
                            usuarios=usuarios, solicitacoes=solicitacoes)
 
 
