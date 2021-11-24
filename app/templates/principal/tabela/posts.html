@@ -14,7 +14,7 @@
     {% if current_user == post.autor or current_user.admin == True %}
         <tr>
             <td>{{ post.id }}</td>
-            <td>{{ post.data_postado.strftime('%d-%m-%Y %H:%M:%S') }}</td>
+            <td>{{ post.data_postado.strftime('%d/%m/%Y %H:%M:%S') }}</td>
             <td>{{ post.titulo }}</td>
             <td>{{ post.autor.nome }}</td>
             <td>
