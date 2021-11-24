@@ -1,7 +1,7 @@
 <!-- Tabela para rederização de Solicitações -->
 <table id="table-solicitacoes" class="table display table-sm table-hover table-responsive-sm" style="width:100%">
-    <thead class="thead-light">
-    <tr>
+    <thead>
+    <tr class="bg-primary text-light">
         <th scope="col">#</th>
         <th scope="col">Data de Abertura</th>
         <th scope="col">Tipo</th>
@@ -14,7 +14,9 @@
     <tbody>
     {% for solicitacao in solicitacoes %}
     {% if current_user == solicitacao.autor or current_user.admin == True %}
-        {% if solicitacao.status == 'Em Atraso' %}
+        {% if solicitacao.status == 'Em Aberto' %}
+        <tr class="table-secondary">
+        {% elif solicitacao.status == 'Em Atraso' %}
         <tr class="table-danger text-danger">
         {% elif solicitacao.status == 'Em Espera' %}
         <tr class="table-warning text-warning">
