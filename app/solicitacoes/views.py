@@ -4,7 +4,7 @@ from flask import (render_template, url_for, flash,
                    redirect, abort, request, Blueprint)
 from flask_login import current_user, login_required
 
-from app import db
+from app import db, fuso_horario
 from app.models import Solicitacao, Equipamento, Sala, TipoEquipamento
 from app.solicitacoes.forms import (SolicitacaoEquipamentoForm, 
                                     SolicitacaoSalaForm,
@@ -160,7 +160,7 @@ def entrega_solicitacao(solicitacao_id):
     if solicitacao.status != 'Confirmada':
         flash('Esta solicitação não foi confirmada!', 'warning')
         return redirect(url_for('principal.inicio'))
-    data_atual = datetime.now().strftime('%Y-%m-%d')
+    data_atual = datetime.now().astimezone(fuso_horario).strftime('%Y-%m-%d')
     if solicitacao.turno == 'Matutino':
         string_data = (data_atual + ' 12:30:00')
         solicitacao.data_devolucao = datetime.strptime(
@@ -174,7 +174,7 @@ def entrega_solicitacao(solicitacao_id):
         solicitacao.equipamento.status = 'Em Uso'
     if solicitacao.sala:
         solicitacao.sala.status = 'Em Uso'
-    solicitacao.data_entrega = datetime.now()
+    solicitacao.data_entrega = datetime.now().astimezone(fuso_horario)
     db.session.commit()
     flash('A entrega foi confirmada com sucesso!', 'success')
     return redirect(url_for('principal.inicio'))
@@ -195,7 +195,7 @@ def recebe_solicitacao(solicitacao_id):
         solicitacao.tipo_eqp.qtd_disponivel += 1
     if solicitacao.sala:
         solicitacao.sala.status = 'Disponível'
-    solicitacao.data_finalizacao = datetime.now()
+    solicitacao.data_finalizacao = datetime.now().astimezone(fuso_horario)
     db.session.commit()
     flash('O recebimento foi confirmado com sucesso!', 'success')
     return redirect(url_for('principal.inicio'))
@@ -221,7 +221,7 @@ def cancela_solicitacao(solicitacao_id):
             if solicitacao.sala.status != 'Disponível':
                 solicitacao.sala.status = 'Disponível'
     solicitacao.status = 'Cancelada'
-    solicitacao.data_cancelamento = datetime.now()
+    solicitacao.data_cancelamento = datetime.now().astimezone(fuso_horario)
     db.session.commit()
     flash('A solicitação foi cancelada com sucesso!', 'success')
     return redirect(url_for('principal.inicio'))
