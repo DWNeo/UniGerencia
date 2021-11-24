@@ -193,12 +193,22 @@ def recebe_solicitacao(solicitacao_id):
     if solicitacao.status != 'Em Uso' and solicitacao.status != 'Em Atraso':
         flash('Esta solicitação não está em uso!', 'warning')
         return redirect(url_for('principal.inicio'))
-    solicitacao.status = 'Finalizada'
     if solicitacao.equipamento:
+        solicitacao_espera = Solicitacao.query.filter_by(
+            status='Em Espera').filter_by(
+            tipo_eqp_id=solicitacao.tipo_eqp.id).filter_by(
+            ativo=True).order_by(Solicitacao.id.asc()).first()
         solicitacao.equipamento.status = 'Disponível'
         solicitacao.tipo_eqp.qtd_disponivel += 1
     if solicitacao.sala:
+        solicitacao_espera = Solicitacao.query.filter_by(
+            status='Em Espera').filter_by(
+            sala_id=solicitacao.sala.id).filter_by(
+            ativo=True).order_by(Solicitacao.id.asc()).first()
         solicitacao.sala.status = 'Disponível'
+    if solicitacao_espera:
+        solicitacao_espera.status = 'Em Aberto'
+    solicitacao.status = 'Finalizada'
     solicitacao.data_finalizacao = datetime.now().astimezone(fuso_horario)
     db.session.commit()
     flash('O recebimento foi confirmado com sucesso!', 'success')
