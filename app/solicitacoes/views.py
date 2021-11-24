@@ -25,9 +25,7 @@ def nova_solicitacao_equipamento():
     lista_tipos=[(tipo.id, tipo) for tipo in tipos_equipamento]
     if lista_tipos:
         form.tipo_equipamento.choices = lista_tipos
-    print(lista_tipos)
     if form.validate_on_submit():
-        print('TESTE')
         equipamento = Equipamento.query.filter_by(
             tipo_eqp_id=form.tipo_equipamento.data).filter_by(
             status='Disponível').filter_by(ativo=True).first()
