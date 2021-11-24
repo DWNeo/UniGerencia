@@ -40,6 +40,7 @@ def nova_solicitacao_equipamento():
                                   tipo_eqp_id=form.tipo_equipamento.data,
                                   turno=form.turno.data,
                                   usuario_id=current_user.id,
+                                  data_preferencial=form.data_preferencial.data,
                                   status=status)
             
         db.session.add(solicitacao)
@@ -63,6 +64,7 @@ def nova_solicitacao_sala():
         flash('Não há salas cadastradas para solicitar.', 'warning')
         return redirect(url_for('principal.inicio'))
     if form.validate_on_submit():
+        print(form.data_preferencial.data)
         sala = Sala.query.filter_by(
             id=form.sala.data).filter_by(ativo=True).first_or_404()
         if sala.status != 'Disponível':
@@ -76,6 +78,7 @@ def nova_solicitacao_sala():
                                   turno=form.turno.data,
                                   usuario_id=current_user.id,
                                   sala_id=sala.id,
+                                  data_preferencial=form.data_preferencial.data,
                                   status=status)
         db.session.add(solicitacao)
         db.session.commit()
@@ -108,9 +111,10 @@ def confirma_solicitacao(solicitacao_id):
         elif request.method == 'GET':
             form.autor.data = solicitacao.autor.nome
             form.identificacao.data = solicitacao.autor.identificacao
-            form.data_abertura.data = solicitacao.data_abertura.strftime('%d-%m-%Y %H:%M:%S')
+            form.data_abertura.data = solicitacao.data_abertura.strftime('%d/%m/%Y %H:%M:%S')
             form.turno.data = solicitacao.turno
             form.sala_solicitada.data = solicitacao.sala
+            form.data_preferencial.data = solicitacao.data_preferencial
         return render_template('solicitacoes/confirmar_solicitacao_sala.html', 
                                title='Confirmar Solicitação de Sala', form=form,
                                legend='Confirmar Solicitação de Sala',
@@ -142,10 +146,11 @@ def confirma_solicitacao(solicitacao_id):
         elif request.method == 'GET':
             form.autor.data = solicitacao.autor.nome
             form.identificacao.data = solicitacao.autor.identificacao
-            form.data_abertura.data = solicitacao.data_abertura.strftime('%d-%m-%Y %H:%M:%S')
+            form.data_abertura.data = solicitacao.data_abertura.strftime('%d/%m/%Y %H:%M:%S')
             form.turno.data = solicitacao.turno
             form.tipo_equipamento.data = solicitacao.tipo_eqp.nome
             form.qtd_disponivel.data = solicitacao.tipo_eqp.qtd_disponivel
+            form.data_preferencial.data = solicitacao.data_preferencial
         return render_template('solicitacoes/confirmar_solicitacao_equipamento.html', 
                                title='Confirmar Solicitação de Equipamento', 
                                form=form, solicitacao=solicitacao,

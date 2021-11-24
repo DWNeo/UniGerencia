@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block conteudo %}
 <div class="content-section">
-    <legend class="border-bottom mb-4">Posts de {{ usuario.nome }} ({{ posts.total }})</legend>
+    <legend class="border-bottom mb-4">Mensagens de {{ usuario.nome }} ({{ posts.total }})</legend>
     {% for post in posts.items %}
         <article class="media content-section">
             <img class="rounded-circle article-img" src="{{ url_for('static', filename='img_perfil/' + post.autor.imagem_perfil) }}">

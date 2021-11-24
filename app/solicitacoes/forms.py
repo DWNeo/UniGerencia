@@ -1,7 +1,11 @@
-from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, SelectField, BooleanField
-from wtforms.validators import DataRequired, Length, InputRequired
+from datetime import datetime, date
 
+from flask_wtf import FlaskForm
+from wtforms import StringField, SubmitField, SelectField
+from wtforms.validators import DataRequired, InputRequired, ValidationError
+from wtforms.fields.html5 import DateField
+
+from app import fuso_horario
 
 class SolicitacaoEquipamentoForm(FlaskForm):
 
@@ -11,7 +15,14 @@ class SolicitacaoEquipamentoForm(FlaskForm):
                  ('Noturno', 'Noturno')])
     tipo_equipamento = SelectField('Tipo de Equipamento', choices=[(-1, "")],
         validators=[InputRequired()], coerce=int)
+    data_preferencial = DateField('Data Preferencial (Opcional)',
+        default=datetime.now().astimezone(fuso_horario))
     submit = SubmitField('Solicitar')
+
+    def validate_data_preferencial(self, data_preferencial):
+        if data_preferencial.data < datetime.now().astimezone(fuso_horario).date():
+            raise ValidationError('A data preferencial não pode ser antes\
+                da data de hoje.')
 
 
 class SolicitacaoSalaForm(FlaskForm):
@@ -22,7 +33,14 @@ class SolicitacaoSalaForm(FlaskForm):
                  ('Noturno', 'Noturno')])
     sala = SelectField('Sala', coerce=int, choices=[(-1, "")],
         validators=[InputRequired()])
+    data_preferencial = DateField('Data Preferencial (Opcional)',
+        default=datetime.now().astimezone(fuso_horario))
     submit = SubmitField('Solicitar')
+
+    def validate_data_preferencial(self, data_preferencial):
+        if data_preferencial.data < datetime.now().astimezone(fuso_horario).date():
+            raise ValidationError('A data preferencial não pode ser antes\
+                da data de hoje.')
 
 
 class ConfirmaSolicitacaoEquipamentoForm(FlaskForm):
@@ -37,6 +55,8 @@ class ConfirmaSolicitacaoEquipamentoForm(FlaskForm):
         render_kw={'disabled':''})
     equipamento = SelectField('Equipamento', 
         validators=[InputRequired()], choices=[(-1, "")], coerce=int)
+    data_preferencial = DateField('Data Preferencial', 
+        render_kw={'disabled':''})
     submit = SubmitField('Confirmar')
 
 
@@ -47,4 +67,6 @@ class ConfirmaSolicitacaoSalaForm(FlaskForm):
     data_abertura = StringField('Data de Abertura', render_kw={'disabled':''})
     turno = StringField('Turno', render_kw={'disabled':''})
     sala_solicitada = StringField('Sala Solicitada', render_kw={'disabled':''})
+    data_preferencial = DateField('Data Preferencial', 
+        render_kw={'disabled':''})
     submit = SubmitField('Confirmar')

@@ -8,66 +8,79 @@
             <div class="form-group">
                 {{ form.autor.label(class="form-control-label") }}
                 {% if form.autor.errors %}
-                    {{ form.autor(class="form-control form-control-lg is-invalid") }}
+                    {{ form.autor(class="form-control is-invalid") }}
                     <div class="invalid-feedback">
                         {% for error in form.autor.errors %}
                             <span>{{ error }}</span>
                         {% endfor %}
                     </div>
                 {% else %}
-                    {{ form.autor(class="form-control form-control-lg") }}
+                    {{ form.autor(class="form-control") }}
                 {% endif %}
             </div>
             <div class="form-group">
                 {{ form.identificacao.label(class="form-control-label") }}
                 {% if form.identificacao.errors %}
-                    {{ form.identificacao(class="form-control form-control-lg is-invalid") }}
+                    {{ form.identificacao(class="form-control is-invalid") }}
                     <div class="invalid-feedback">
                         {% for error in form.identificacao.errors %}
                             <span>{{ error }}</span>
                         {% endfor %}
                     </div>
                 {% else %}
-                    {{ form.identificacao(class="form-control form-control-lg") }}
+                    {{ form.identificacao(class="form-control") }}
                 {% endif %}
             </div>
             <div class="form-group">
                 {{ form.data_abertura.label(class="form-control-label") }}
                 {% if form.data_abertura.errors %}
-                    {{ form.data_abertura(class="form-control form-control-lg is-invalid") }}
+                    {{ form.data_abertura(class="form-control is-invalid") }}
                     <div class="invalid-feedback">
                         {% for error in form.data_abertura.errors %}
                             <span>{{ error }}</span>
                         {% endfor %}
                     </div>
                 {% else %}
-                    {{ form.data_abertura(class="form-control form-control-lg") }}
+                    {{ form.data_abertura(class="form-control") }}
                 {% endif %}
             </div>
             <div class="form-group">
                 {{ form.turno.label(class="form-control-label") }}
                 {% if form.turno.errors %}
-                    {{ form.turno(class="form-control form-control-lg is-invalid") }}
+                    {{ form.turno(class="form-control is-invalid") }}
                     <div class="invalid-feedback">
                         {% for error in form.turno.errors %}
                             <span>{{ error }}</span>
                         {% endfor %}
                     </div>
                 {% else %}
-                    {{ form.turno(class="form-control form-control-lg") }}
+                    {{ form.turno(class="form-control") }}
                 {% endif %}
             </div>
             <div class="form-group">
                 {{ form.sala_solicitada.label(class="form-control-label") }}
                 {% if form.sala_solicitada.errors %}
-                    {{ form.sala_solicitada(class="form-control form-control-lg is-invalid") }}
+                    {{ form.sala_solicitada(class="form-control is-invalid") }}
                     <div class="invalid-feedback">
                         {% for error in form.sala_solicitada.errors %}
                             <span>{{ error }}</span>
                         {% endfor %}
                     </div>
                 {% else %}
-                    {{ form.sala_solicitada(class="form-control form-control-lg") }}
+                    {{ form.sala_solicitada(class="form-control") }}
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.data_preferencial.label(class="form-control-label") }}
+                {% if form.data_preferencial.errors %}
+                    {{ form.data_preferencial(class="form-control is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.data_preferencial.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.data_preferencial(class="form-control") }}
                 {% endif %}
             </div>
         </fieldset>

@@ -73,6 +73,7 @@ class Solicitacao(db.Model):
     status = db.Column(db.String(20), nullable=False, default='Solicitado')
     data_abertura = db.Column(db.DateTime, nullable=False, 
                               default=datetime.now().astimezone(fuso_horario))
+    data_preferencial = db.Column(db.DateTime, nullable=True)
     data_entrega = db.Column(db.DateTime, nullable=True)
     data_devolucao = db.Column(db.DateTime, nullable=True)
     data_cancelamento = db.Column(db.DateTime, nullable=True)

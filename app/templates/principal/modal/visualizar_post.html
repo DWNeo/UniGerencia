@@ -13,10 +13,10 @@
                     <img class="rounded-circle article-img" src="{{ url_for('static', filename='img_perfil/' + post.autor.imagem_perfil) }}">
                     <div class="media-body">
                         <div class="article-metadata">
-                            <a class="mr-2" href="{{ url_for('usuarios.posts_usuario', usuario_id=post.autor.id) }}">{{ post.autor.nome }}</a>
-                            <small class="text-muted">{{ post.data_postado.strftime('%Y-%m-%d') }}</small>
+                            <a class="mr-2" href="{{ url_for('usuarios.posts_usuario', usuario_id=post.autor.id) }}"><strong>Autor:</strong> {{ post.autor.nome }}</a>
+                            <small class="text-muted"><strong>{{ post.data_postado.strftime('%d/%m/%Y %H:%M:%S') }}</strong></small>
                         </div>
-                        <h4 class="article-title">{{ post.titulo }}</h4>
+                        <h4 class="article-title"><strong>{{ post.titulo }}</strong></h4>
                         <p class="article-content">{{ post.conteudo }}</p>
                     </div>
                 </article>

@@ -8,27 +8,40 @@
             <div class="form-group">
                 {{ form.turno.label(class="form-control-label") }}
                 {% if form.turno.errors %}
-                    {{ form.turno(class="form-control form-control-lg is-invalid") }}
+                    {{ form.turno(class="form-control is-invalid") }}
                     <div class="invalid-feedback">
                         {% for error in form.turno.errors %}
                             <span>{{ error }}</span>
                         {% endfor %}
                     </div>
                 {% else %}
-                    {{ form.turno(class="form-control form-control-lg") }}
+                    {{ form.turno(class="form-control") }}
                 {% endif %}
             </div>
             <div class="form-group">
                 {{ form.tipo_equipamento.label(class="form-control-label") }}
                 {% if form.tipo_equipamento.errors %}
-                    {{ form.tipo_equipamento(class="form-control form-control-lg is-invalid") }}
+                    {{ form.tipo_equipamento(class="form-control is-invalid") }}
                     <div class="invalid-feedback">
                         {% for error in form.tipo_equipamento.errors %}
                             <span>{{ error }}</span>
                         {% endfor %}
                     </div>
                 {% else %}
-                    {{ form.tipo_equipamento(class="form-control form-control-lg") }}
+                    {{ form.tipo_equipamento(class="form-control") }}
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.data_preferencial.label(class="form-control-label") }}
+                {% if form.data_preferencial.errors %}
+                    {{ form.data_preferencial(class="form-control is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.data_preferencial.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.data_preferencial(class="form-control") }}
                 {% endif %}
             </div>
         </fieldset>
