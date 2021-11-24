@@ -30,17 +30,20 @@ def nova_solicitacao_equipamento():
             tipo_eqp_id=form.tipo_equipamento.data).filter_by(
             status='Disponível').filter_by(ativo=True).first()
         if equipamento == None:
-            flash('Não há equipamentos do tipo escolhido\
-                  disponíveis para solicitar.', 'warning')
+            flash('Você foi colocado na lista de espera devido a falta\
+                  de equipamentos disponíveis', 'warning')
+            status = 'Em Espera'
         else:
-            solicitacao = Solicitacao(tipo='Equipamento',
-                                      tipo_eqp_id=form.tipo_equipamento.data,
-                                      turno=form.turno.data,
-                                      usuario_id=current_user.id,
-                                      status='Em Aberto')
             flash('A solicitação foi realizada com sucesso!.', 'success')
-            db.session.add(solicitacao)
-            db.session.commit()
+            status = 'Em Aberto'
+        solicitacao = Solicitacao(tipo='Equipamento',
+                                  tipo_eqp_id=form.tipo_equipamento.data,
+                                  turno=form.turno.data,
+                                  usuario_id=current_user.id,
+                                  status=status)
+            
+        db.session.add(solicitacao)
+        db.session.commit()
         return redirect(url_for('principal.inicio'))
     return render_template('solicitacoes/nova_solicitacao_equipamento.html', 
                            title='Nova Solicitação de Equipamento', form=form,
@@ -63,16 +66,19 @@ def nova_solicitacao_sala():
         sala = Sala.query.filter_by(
             id=form.sala.data).filter_by(ativo=True).first_or_404()
         if sala.status != 'Disponível':
-            flash('A sala escolhida não está disponível.', 'warning')
-            return redirect(url_for('principal.inicio'))
+            flash('Você foi colocado na lista de espera pois a sala\
+                  escolhida não está disponível.', 'warning')
+            status = 'Em Espera'
+        else:
+            flash('A solicitação foi realizada com sucesso!.', 'success')
+            status = 'Em Aberto'
         solicitacao = Solicitacao(tipo='Sala', 
                                   turno=form.turno.data,
                                   usuario_id=current_user.id,
                                   sala_id=sala.id,
-                                  status='Em Aberto')
+                                  status=status)
         db.session.add(solicitacao)
         db.session.commit()
-        flash('A solicitação foi realizada com sucesso!.', 'success')
         return redirect(url_for('principal.inicio'))
     return render_template('solicitacoes/nova_solicitacao_sala.html', 
                            title='Nova Solicitação de Sala', 
@@ -92,7 +98,7 @@ def confirma_solicitacao(solicitacao_id):
             sala = Sala.query.filter_by(id=solicitacao.sala.id).filter_by(
                 status='Disponível').filter_by(ativo=True).first()
             if sala == None:
-                flash('A sala solicitada não está mais disponível.', 'warning')
+                flash('A sala solicitada não stá disponível.', 'warning')
                 return redirect(url_for('principal.inicio'))
             sala.status = 'Solicitada'
             solicitacao.status = 'Confirmada'
@@ -125,7 +131,7 @@ def confirma_solicitacao(solicitacao_id):
                 id=form.equipamento.data).filter_by(
                 status='Disponível').filter_by(ativo=True).first()
             if solicitacao.equipamento == None:
-                flash('O equipamento não está mais disponível.', 'warning')
+                flash('O equipamento não está disponível.', 'warning')
                 return redirect(url_for('principal.inicio'))
             solicitacao.equipamento.status = 'Solicitado'
             solicitacao.tipo_eqp.qtd_disponivel -= 1

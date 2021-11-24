@@ -16,6 +16,8 @@
     {% if current_user == solicitacao.autor or current_user.admin == True %}
         {% if solicitacao.status == 'Em Atraso' %}
         <tr class="table-danger text-danger">
+        {% elif solicitacao.status == 'Em Espera' %}
+        <tr class="table-warning text-warning">
         {% elif solicitacao.status == 'Confirmada' %}
         <tr class="table-success text-success">
         {% elif solicitacao.status == 'Em Uso' %}
@@ -34,7 +36,7 @@
             <td>
                 <a class="btn-sm btn-outline-info" href="#" data-toggle="modal" data-target="#visualizarSolicitacao{{ solicitacao.id }}"><i class="fas fa-search"></i></a> 
                 {% if current_user.admin == True %}
-                    {% if solicitacao.status == 'Em Aberto' %}
+                    {% if solicitacao.status == 'Em Aberto' or solicitacao.status == 'Em Espera' %}
                         <a class="btn-sm btn-outline-success" href="{{ url_for('solicitacoes.confirma_solicitacao', solicitacao_id=solicitacao.id) }}"><i class="fas fa-check-square"></i></a>
                     {% endif %}
                     {% if solicitacao.status == 'Confirmada' %}
