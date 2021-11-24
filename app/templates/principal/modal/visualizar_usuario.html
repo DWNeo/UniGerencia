@@ -13,7 +13,12 @@
                     <img class="rounded-circle article-img" src="{{ url_for('static', filename='img_perfil/' + usuario.imagem_perfil) }}">
                     <div class="media-body">
                         <div class="article-metadata">
-                            <a class="mr-2" href="#">{{ usuario.email }}</a>
+                            <a class="mr-2" href="#"><strong>Email:</strong> {{ usuario.email }}</a>
+                            {% if usuario.admin == True %}
+                                <a class="mr-2" href="#"><strong>Admin:</strong> Sim</a>
+                            {% else %}
+                                <a class="mr-2" href="#"><strong>Admin:</strong> Não</a>
+                            {% endif %}
                         </div>
                         <h4 class="article-title">{{ usuario.nome }}</h4>
                         <p class="article-content">{{ usuario.identificacao }}</p>

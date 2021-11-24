@@ -1,6 +1,6 @@
 <!-- Modal para Visualização de Solicitações -->
 <div class="modal fade" id="visualizarSolicitacao{{ solicitacao.id }}" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="visualizarSolicitacaoLabel">Visualizar Solicitação</h5>
@@ -12,16 +12,30 @@
                 <article class="media content-section">
                     <div class="media-body">
                         <div class="article-metadata">
-                            <a class="mr-2" href="#">Status: {{ solicitacao.status }}</a>
-                            <a class="mr-2" href="#">Tipo: {{ solicitacao.tipo }}</a>
-                            <small class="text-muted">{{ solicitacao.data_abertura.strftime('%d-%m-%Y %H:%M:%S') }}</small>
+                            <a class="mr-2" href="#"><strong>Status:</strong> {{ solicitacao.status }}</a>
+                            <a class="mr-2" href="#"><strong>Tipo:</strong> {{ solicitacao.tipo }}</a>
+                            <small class="text-muted"><strong>{{ solicitacao.data_abertura.strftime('%d-%m-%Y %H:%M:%S') }}</strong></small>
                         </div>
                         {% if solicitacao.sala.numero %}
-                        <h3 class="article-title">Sala: {{ solicitacao.sala.numero }}</h2>
+                        <h5 class="article-title"><strong>Sala:</strong> {{ solicitacao.sala.numero }}</h5>
                         {% endif %}
                         {% if solicitacao.tipo_eqp.nome %}
-                        <h4 class="article-content">Tipo de Equipamento: {{ solicitacao.tipo_eqp.nome }}</h4>
-                        <h4 class="article-content">Equipamento: {{ solicitacao.equipamento }}</h4>
+                        <h5 class="article-content"><strong>Tipo de Equipamento:</strong> {{ solicitacao.tipo_eqp.nome }}</h5>
+                        {% endif %}
+                        {% if solicitacao.equipamento %}
+                        <h5 class="article-content"><strong>Equipamento:</strong> {{ solicitacao.equipamento }}</h5>
+                        {% endif %}
+                        {% if solicitacao.data_entrega %}
+                        <h5 class="article-content"><strong>Data de Entrega:</strong> {{ solicitacao.data_entrega }}</h5>
+                        {% endif %}
+                        {% if solicitacao.data_devolucao %}
+                        <h5 class="article-content"><strong>Data de Devolução:</strong> {{ solicitacao.data_devolucao }}</h5>
+                        {% endif %}
+                        {% if solicitacao.data_cancelamento %}
+                        <h5 class="article-content"><strong>Data de Cancelamento:</strong> {{ solicitacao.data_cancelamento }}</h5>
+                        {% endif %}
+                        {% if solicitacao.data_finalizacao %}
+                        <h5 class="article-content"><strong>Data de Finalização:</strong> {{ solicitacao.data_finalizacao }}</h5>
                         {% endif %}
                     </div>
                 </article>
