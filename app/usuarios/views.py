@@ -17,7 +17,7 @@ usuarios = Blueprint('usuarios', __name__)
 @usuarios.route("/registrar", methods=['GET', 'POST'])
 def registrar():
     if current_user.is_authenticated:
-        return redirect(url_for('principal.inicio', tab=5))
+        return redirect(url_for('principal.inicio'))
     form = RegistraForm()
     if form.validate_on_submit():
         hash_senha = bcrypt.generate_password_hash(
@@ -38,7 +38,7 @@ def registrar():
 @usuarios.route("/login", methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('principal.inicio', tab=5))
+        return redirect(url_for('principal.inicio'))
     form = LoginForm()
     if form.validate_on_submit():
         usuario = Usuario.query.filter_by(
@@ -59,7 +59,7 @@ def login():
 @usuarios.route("/logout")
 def logout():
     logout_user()
-    return redirect(url_for('principal.inicio', tab=5))
+    return redirect(url_for('principal.inicio'))
 
 
 @usuarios.route("/perfil", methods=['GET', 'POST'])
@@ -172,7 +172,7 @@ def exclui_usuario(usuario_id):
 @usuarios.route("/redefinir_senha", methods=['GET', 'POST'])
 def redefinir_senha():
     if current_user.is_authenticated:
-        return redirect(url_for('principal.inicio', tab=5))
+        return redirect(url_for('principal.inicio'))
     form = RedefineSenhaForm()
     if form.validate_on_submit():
         usuario = Usuario.query.filter_by(email=form.email.data).first()
@@ -187,7 +187,7 @@ def redefinir_senha():
 @usuarios.route("/redefinir_senha/<token>", methods=['GET', 'POST'])
 def redefinir_token(token):
     if current_user.is_authenticated:
-        return redirect(url_for('principal.inicio', tab=5))
+        return redirect(url_for('principal.inicio'))
     usuario = Usuario.verifica_token_redefinicao(token)
     if usuario is None:
         flash('Este token é inválido ou já expirou.', 'warning')
