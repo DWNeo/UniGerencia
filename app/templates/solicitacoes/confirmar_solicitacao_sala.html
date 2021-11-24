@@ -58,16 +58,16 @@
                 {% endif %}
             </div>
             <div class="form-group">
-                {{ form.sala.label(class="form-control-label") }}
-                {% if form.sala.errors %}
-                    {{ form.sala(class="form-control form-control-lg is-invalid") }}
+                {{ form.sala_solicitada.label(class="form-control-label") }}
+                {% if form.sala_solicitada.errors %}
+                    {{ form.sala_solicitada(class="form-control form-control-lg is-invalid") }}
                     <div class="invalid-feedback">
-                        {% for error in form.sala.errors %}
+                        {% for error in form.sala_solicitada.errors %}
                             <span>{{ error }}</span>
                         {% endfor %}
                     </div>
                 {% else %}
-                    {{ form.sala(class="form-control form-control-lg") }}
+                    {{ form.sala_solicitada(class="form-control form-control-lg") }}
                 {% endif %}
             </div>
         </fieldset>

@@ -56,7 +56,7 @@ def nova_solicitacao_sala():
     form = SolicitacaoSalaForm()
     salas = Sala.query.filter_by(
         ativo=True).all()
-    lista_salas=[(sala.id, sala) for sala in salas]
+    lista_salas = [(sala.id, sala) for sala in salas]
     if lista_salas:
         form.sala.choices = lista_salas
     else:
@@ -110,7 +110,7 @@ def confirma_solicitacao(solicitacao_id):
             form.identificacao.data = solicitacao.autor.identificacao
             form.data_abertura.data = solicitacao.data_abertura.strftime('%d-%m-%Y %H:%M:%S')
             form.turno.data = solicitacao.turno
-            form.sala.data = solicitacao.sala
+            form.sala_solicitada.data = solicitacao.sala
         return render_template('solicitacoes/confirmar_solicitacao_sala.html', 
                                title='Confirmar Solicitação de Sala', form=form,
                                legend='Confirmar Solicitação de Sala',

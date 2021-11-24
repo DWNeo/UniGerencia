@@ -18,6 +18,12 @@ html {
     scroll-behavior: smooth;
 }
 
+.select2-choices {
+    min-height: 150px;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
 .content-section {
     background: #ffffff;
     padding: 5px 5px;

@@ -14,6 +14,10 @@
     <!-- DataTables CSS -->
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/dataTables.bootstrap4.min.css">
 
+    <!-- Select2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.css"/>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='select2-bootstrap.css') }}">
+
     <!-- Font Awesome CSS -->
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css">
 
@@ -94,12 +98,17 @@
     <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.3/js/dataTables.bootstrap4.min.js"></script>
     
-    <!-- Configuração das Tabelas do DataTables -->
+    <!-- JavaScript do Select2 -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <!-- Configuração dos Scripts -->
     <script>
     $(document).ready(function() {
+        // Configuração da duração das mensagens de alerta
         setTimeout(function() {
             $(".alert").alert('close');
         }, 4000);
+        // Configuração das Tabelas do DataTables
         $('#table-solicitacoes').DataTable({
             responsive: true,
             "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
@@ -214,6 +223,29 @@
                 "infoEmpty": "Nenhum registro",
                 "infoFiltered": "(filtrado de um total de _MAX_ registros)"
             }
+        });
+        // Configuração do Select2
+        $('#sala').select2({
+            placeholder: "Sala",
+            allowClear: false,
+            theme: "bootstrap",
+            "language": {
+                "noResults": function(){
+                    return "Nenhum resultado encontrado";
+                }
+            },
+            "width": "100%"
+        });
+        $('#equipamento').select2({
+            placeholder: "Equipamento",
+            allowClear: false,
+            theme: "bootstrap",
+            "language": {
+                "noResults": function(){
+                    return "Nenhum resultado encontrado";
+                }
+            },
+            "width": "100%"
         });
     } );
     </script>
