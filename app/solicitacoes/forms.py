@@ -9,7 +9,8 @@ class SolicitacaoEquipamentoForm(FlaskForm):
         DataRequired(message='Este campo é obrigatório.')],
         choices=[('Integral', 'Integral'), ('Matutino', 'Matutino'),\
                  ('Noturno', 'Noturno')])
-    tipo_equipamento = SelectField('Tipo de Equipamento', coerce=int)
+    tipo_equipamento = SelectField('Tipo de Equipamento', choices=[(-1, "")],
+        validators=[InputRequired()], coerce=int)
     submit = SubmitField('Solicitar')
 
 
@@ -19,7 +20,8 @@ class SolicitacaoSalaForm(FlaskForm):
         DataRequired(message='Este campo é obrigatório.')],
         choices=[('Integral', 'Integral'), ('Matutino', 'Matutino'),\
                  ('Noturno', 'Noturno')])
-    sala = SelectField('Sala', coerce=int)
+    sala = SelectField('Sala', coerce=int, choices=[(-1, "")],
+        validators=[InputRequired()])
     submit = SubmitField('Solicitar')
 
 
@@ -33,7 +35,8 @@ class ConfirmaSolicitacaoEquipamentoForm(FlaskForm):
         render_kw={'disabled':''})
     qtd_disponivel = StringField('Quantidade Disponível', 
         render_kw={'disabled':''})
-    equipamento = SelectField('Equipamento', coerce=int)
+    equipamento = SelectField('Equipamento', 
+        validators=[InputRequired()], choices=[(-1, "")], coerce=int)
     submit = SubmitField('Confirmar')
 
 
@@ -43,5 +46,5 @@ class ConfirmaSolicitacaoSalaForm(FlaskForm):
     identificacao = StringField('Identificação', render_kw={'disabled':''})
     data_abertura = StringField('Data de Abertura', render_kw={'disabled':''})
     turno = StringField('Turno', render_kw={'disabled':''})
-    sala = StringField('Sala', render_kw={'disabled':''})
+    sala_solicitada = StringField('Sala Solicitada', render_kw={'disabled':''})
     submit = SubmitField('Confirmar')

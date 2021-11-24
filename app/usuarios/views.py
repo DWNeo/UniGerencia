@@ -17,7 +17,7 @@ usuarios = Blueprint('usuarios', __name__)
 @usuarios.route("/registrar", methods=['GET', 'POST'])
 def registrar():
     if current_user.is_authenticated:
-        return redirect(url_for('principal.inicio'))
+        return redirect(url_for('principal.inicio', tab=5))
     form = RegistraForm()
     if form.validate_on_submit():
         hash_senha = bcrypt.generate_password_hash(
@@ -38,7 +38,7 @@ def registrar():
 @usuarios.route("/login", methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('principal.inicio'))
+        return redirect(url_for('principal.inicio', tab=5))
     form = LoginForm()
     if form.validate_on_submit():
         usuario = Usuario.query.filter_by(
@@ -59,7 +59,7 @@ def login():
 @usuarios.route("/logout")
 def logout():
     logout_user()
-    return redirect(url_for('principal.inicio'))
+    return redirect(url_for('principal.inicio', tab=5))
 
 
 @usuarios.route("/perfil", methods=['GET', 'POST'])
@@ -122,7 +122,7 @@ def novo_usuario():
         db.session.add(usuario)
         db.session.commit()
         flash('A conta foi registrada com sucesso!.', 'success')
-        return redirect(url_for('principal.inicio'))
+        return redirect(url_for('principal.inicio', tab=5))
     return render_template('usuarios/novo_usuario.html', 
                            title='Novo Usuário', form=form)
 
@@ -144,7 +144,7 @@ def atualiza_usuario(usuario_id):
         usuario.admin = form.admin.data
         db.session.commit()
         flash('A conta do usuário foi atualizada com sucesso!', 'success')
-        return redirect(url_for('principal.inicio'))
+        return redirect(url_for('principal.inicio', tab=5))
     elif request.method == 'GET':
         form.nome.data = usuario.nome
         form.admin.data = usuario.admin
@@ -163,16 +163,16 @@ def exclui_usuario(usuario_id):
             id=usuario_id).filter_by(ativo=True).first_or_404()
     if current_user.id == usuario.id:
         flash('Não é possível excluir a própria conta!', 'danger')
-        return redirect(url_for('principal.inicio'))
+        return redirect(url_for('principal.inicio', tab=5))
     usuario.ativo = False
     db.session.commit()
     flash('O usuário foi excluído com sucesso!', 'success')
-    return redirect(url_for('principal.inicio'))
+    return redirect(url_for('principal.inicio', tab=5))
 
 @usuarios.route("/redefinir_senha", methods=['GET', 'POST'])
 def redefinir_senha():
     if current_user.is_authenticated:
-        return redirect(url_for('principal.inicio'))
+        return redirect(url_for('principal.inicio', tab=5))
     form = RedefineSenhaForm()
     if form.validate_on_submit():
         usuario = Usuario.query.filter_by(email=form.email.data).first()
@@ -187,7 +187,7 @@ def redefinir_senha():
 @usuarios.route("/redefinir_senha/<token>", methods=['GET', 'POST'])
 def redefinir_token(token):
     if current_user.is_authenticated:
-        return redirect(url_for('principal.inicio'))
+        return redirect(url_for('principal.inicio', tab=5))
     usuario = Usuario.verifica_token_redefinicao(token)
     if usuario is None:
         flash('Este token é inválido ou já expirou.', 'warning')

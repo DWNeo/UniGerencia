@@ -31,7 +31,7 @@ def nova_sala():
         db.session.add(sala)
         db.session.commit()
         flash('A sala foi cadastrada com sucesso!', 'success')
-        return redirect(url_for('principal.inicio'))
+        return redirect(url_for('principal.inicio', tab=4))
     return render_template('salas/nova_sala.html', title='Nova Sala',
                            form=form, legend='Nova Sala')
 
@@ -44,7 +44,7 @@ def atualiza_sala(sala_id):
         id=sala_id).filter_by(ativo=True).first_or_404()
     if sala.status == 'Solicitada' or sala.status == 'Em Uso' or sala.status == 'Em Atraso':
         flash('Não é possível atualizar uma sala solicitada ou em uso.', 'warning')  
-        return redirect(url_for('principal.inicio'))
+        return redirect(url_for('principal.inicio', tab=4))
     form = AtualizaSalaForm()
     if form.validate_on_submit():
         sala.setor = form.setor.data
@@ -52,7 +52,7 @@ def atualiza_sala(sala_id):
         sala.status = form.status.data
         db.session.commit()
         flash('A sala foi atualizada com sucesso!', 'success')
-        return redirect(url_for('principal.inicio'))
+        return redirect(url_for('principal.inicio', tab=4))
     elif request.method == 'GET':
         form.setor.data = sala.setor
         form.qtd_aluno.data = sala.qtd_aluno
@@ -71,4 +71,4 @@ def exclui_sala(sala_id):
     sala.ativo = False
     db.session.commit()
     flash('A Sala foi excluída com sucesso!', 'success')
-    return redirect(url_for('principal.inicio'))
+    return redirect(url_for('principal.inicio', tab=4))
