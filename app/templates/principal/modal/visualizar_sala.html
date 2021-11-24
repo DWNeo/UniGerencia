@@ -12,9 +12,9 @@
                 <article class="media content-section">
                     <div class="media-body">
                         <div class="article-metadata">
-                            <a class="mr-2" href="#">Status: {{ sala.status }}</a>
-                            <a class="mr-2" href="#">Qtd. de Alunos: {{ sala.qtd_aluno }}</a>
-                            <small class="text-muted">{{ sala.data_cadastro.strftime('%Y-%m-%d') }}</small>
+                            <a class="mr-2" href="#"><strong>Status:</strong> {{ sala.status }}</a>
+                            <a class="mr-2" href="#"><strong>Qtd. de Alunos:</strong> {{ sala.qtd_aluno }}</a>
+                            <small class="text-muted"><strong>{{ sala.data_cadastro.strftime('%Y-%m-%d') }}</strong></small>
                         </div>
                         <h4 class="article-title">Sala {{ sala.numero }}</h4>
                         <p class="article-content">Setor: {{ sala.setor }}</p>
