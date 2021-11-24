@@ -84,6 +84,19 @@
                 {% endif %}
             </div>
             <div class="form-group">
+                {{ form.data_preferencial.label(class="form-control-label") }}
+                {% if form.data_preferencial.errors %}
+                    {{ form.data_preferencial(class="form-control is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.data_preferencial.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.data_preferencial(class="form-control") }}
+                {% endif %}
+            </div>
+            <div class="form-group">
                 {{ form.equipamento.label(class="form-control-label") }}
                 {% if form.equipamento.errors %}
                     {{ form.equipamento(class="form-control is-invalid") }}
