@@ -42,7 +42,7 @@ def nova_sala():
 def atualiza_sala(sala_id):
     sala = Sala.query.filter_by(
         id=sala_id).filter_by(ativo=True).first_or_404()
-    if sala.status == 'Solicitada' or sala.status == 'Em Uso':
+    if sala.status == 'Solicitada' or sala.status == 'Em Uso' or sala.status == 'Em Atraso':
         flash('Não é possível atualizar uma sala solicitada ou em uso.', 'warning')  
         return redirect(url_for('principal.inicio'))
     form = AtualizaSalaForm()

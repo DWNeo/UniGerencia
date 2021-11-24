@@ -190,7 +190,7 @@ def entrega_solicitacao(solicitacao_id):
 def recebe_solicitacao(solicitacao_id):
     solicitacao = Solicitacao.query.filter_by(
         id=solicitacao_id).filter_by(ativo=True).first_or_404()
-    if solicitacao.status != 'Em Uso':
+    if solicitacao.status != 'Em Uso' and solicitacao.status != 'Em Atraso':
         flash('Esta solicitação não está em uso!', 'warning')
         return redirect(url_for('principal.inicio'))
     solicitacao.status = 'Finalizada'
