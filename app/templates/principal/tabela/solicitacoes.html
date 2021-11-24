@@ -30,7 +30,7 @@
         <tr>
         {% endif %}
             <td>{{ solicitacao.id }}</td>
-            <td>{{ solicitacao.data_abertura.strftime('%d-%m-%Y %H:%M:%S') }}</td>
+            <td>{{ solicitacao.data_abertura.strftime('%d/%m/%Y %H:%M:%S') }}</td>
             <td>{{ solicitacao.tipo }}</td>
             <td>{{ solicitacao.turno }}</td>
             <td>{{ solicitacao.autor.nome }}</td>
