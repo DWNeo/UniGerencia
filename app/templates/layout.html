@@ -7,19 +7,19 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
+    <!-- CSS Principal e do Bootstrap -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
 
-    <!-- DataTables CSS -->
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/dataTables.bootstrap4.min.css">
+    <!-- CSS do DataTables -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/jszip-2.5.0/dt-1.11.3/b-2.0.1/b-colvis-2.0.1/b-html5-2.0.1/b-print-2.0.1/cr-1.5.5/fh-3.2.0/r-2.2.9/rr-1.2.8/sp-1.4.0/sl-1.3.3/datatables.min.css"/>
 
-    <!-- Select2 CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.css"/>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ttskch/select2-bootstrap4-theme@x.x.x/dist/select2-bootstrap4.min.css">
+    <!-- CSS do Select2 -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/select2.min.css') }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/select2-bootstrap4.min.css') }}">
 
-    <!-- Font Awesome CSS -->
-    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css">
+    <!-- CSS do Font Awesome -->
+    <link rel="stylesheet" type="text/css" href="https://pro.fontawesome.com/releases/v5.15.0/css/all.css">
 
     <!-- FavIcon e Fonte Roboto -->
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
@@ -27,17 +27,18 @@
     
     <!-- Título da Página -->
     {% if title %}
-        <title>UniGerencia : {{ title }}</title>
+        <title>UniGerência: {{ title }}</title>
     {% else %}
-        <title>UniGerencia</title>
+        <title>UniGerência</title>
     {% endif %}
 </head>
 <body>
-    <!-- Navbar-->
     <header class="site-header">
+        <!-- Navbar -->
         <nav class="navbar navbar-expand-md navbar-dark bg-primary fixed-top">
             <div class="container">
-                <a class="navbar-brand mr-4" href="{{ url_for('principal.inicio') }}"><i class="fas fa-tasks"></i> UniGerencia</a>
+                <!-- Logo da Navbar -->
+                <a class="navbar-brand mr-4" href="{{ url_for('principal.inicio') }}"><i class="fas fa-tasks"></i> UniGerência</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -48,6 +49,7 @@
                         <a class="nav-item nav-link" href="{{ url_for('principal.sobre') }}"><i class="fas fa-file-alt"></i>&nbsp;Sobre</a>
                     </div>
                     <!-- Lado Direito da Navbar -->
+                    <!-- Itens mudam de acordo com a autenticação do usuário-->
                     <div class="navbar-nav">
                     {% if current_user.is_authenticated %}
                         <a class="nav-item nav-link" href="{{ url_for('usuarios.perfil') }}"><i class="fas fa-user-circle"></i>&nbsp;Perfil</a>
@@ -61,10 +63,12 @@
             </div>
         </nav>
     </header>
-    <main role="main" class="container h-100">
+
+    <main role="main" class="container-md">
         <!-- Mensagens de Alerta -->
+        <!-- Mensagens retornadas pelas funções flash são exibidas aqui -->
         <div class="row justify-content-center">
-            <div class="col-7">
+            <div class="col-md-7">
             {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
@@ -80,13 +84,16 @@
             </div>
         </div>
         <!-- Blocos de Conteúdo -->
+        <!-- Os outros templates são renderizados aqui -->
         <div class="row justify-content-center">
-            <div class="col-12">
+            <div class="col-md-12 pl-50">
+            <!-- Bloco da página inicial -->
             {% block inicio %}{% endblock %}
             </div>
         </div>
         <div class="row justify-content-center">
-            <div class="col-7">
+            <div class="col-md-7">
+            <!-- Bloco dos erros e das outras páginas de conteúdo -->
             {% block erro %}{% endblock %}
             {% block conteudo %}{% endblock %}
             </div>
@@ -94,143 +101,62 @@
     </main>
 
     <!-- JavaScript do jQuery, Pooper.js e Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.slim.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
 
     <!-- JavaScript do DataTables -->
-    <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.11.3/js/dataTables.bootstrap4.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/jszip-2.5.0/dt-1.11.3/b-2.0.1/b-colvis-2.0.1/b-html5-2.0.1/b-print-2.0.1/cr-1.5.5/fh-3.2.0/r-2.2.9/rr-1.2.8/sp-1.4.0/sl-1.3.3/datatables.min.js"></script>
     
     <!-- JavaScript do Select2 -->
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/select2.min.js') }}"></script>
 
-    <!-- Configuração dos Scripts -->
     <script>
     $(document).ready(function() {
         // Configuração da duração das mensagens de alerta
+        // Permite que a mensagem se feche sozinha após um determinado tempo
         setTimeout(function() {
             $(".alert").alert('close');
-        }, 4000);
+        }, 4000);  // 4 Segundos
 
-        // Configuração das Tabelas do DataTables
-        $('#table-solicitacoes').DataTable({
+        // Configuração do DataTables
+        // Todas as tabelas da página inicial fazem uso dessa configuração
+        $('table.display').DataTable({
+            fixedHeader: true,
             responsive: true,
+            rowReorder: true,
+            colReorder: true,
+            // Quantidade de registros a exibir
             "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+            // Ordenação dos registros
             "order": [[ 0, "desc" ]],
+            // Localização dos textos
             "language": {
-                "lengthMenu": "Exibir _MENU_ registros",
+                "emptyTable": "Nenhum registro encontrado",
+                "info": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+                "infoEmpty": "Mostrando 0 até 0 de 0 registros",
+                "infoFiltered": "(Filtrados de _MAX_ registros)",
+                "infoThousands": ".",
                 "loadingRecords": "Carregando...",
                 "processing": "Processando...",
-                "search": "Pesquisa:",
+                "zeroRecords": "Nenhum registro encontrado",
+                "search": "Pesquisar",
+                "lengthMenu": "Exibir _MENU_ resultados por página",
+                "decimal": ",",
+                "thousands": ".",
                 "paginate": {
-                    "first": "Primeiro",
-                    "last": "Último",
                     "next": "Próximo",
-                    "previous": "Anterior"
-                },
-                "pagingType": "full_numbers",
-                "emptyTable": "Não existe nenhum registro para ser exibido",
-                "zeroRecords": "Nenhum registro encontrado na pesquisa",
-                "info": "Exibindo registros _START_ a _END_",
-                "infoEmpty": "Nenhum registro",
-                "infoFiltered": "(filtrado de um total de _MAX_ registros)"
-            }
-        });
-        $('#table-posts').DataTable({
-            responsive: true,
-            "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
-            "order": [[ 0, "desc" ]],
-            "language": {
-                "lengthMenu": "Exibir _MENU_ registros",
-                "loadingRecords": "Carregando...",
-                "processing": "Processando...",
-                "search": "Pesquisa:",
-                "paginate": {
+                    "previous": "Anterior",
                     "first": "Primeiro",
-                    "last": "Último",
-                    "next": "Próximo",
-                    "previous": "Anterior"
+                    "last": "Último"
                 },
-                "pagingType": "full_numbers",
-                "emptyTable": "Não existe nenhum registro para ser exibido",
-                "zeroRecords": "Nenhum registro encontrado na pesquisa",
-                "info": "Exibindo registros _START_ a _END_",
-                "infoEmpty": "Nenhum registro",
-                "infoFiltered": "(filtrado de um total de _MAX_ registros)"
-            }
-        });
-        $('#table-equipamentos').DataTable({
-            responsive: true,
-            "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
-            "order": [[ 0, "desc" ]],
-            "language": {
-                "lengthMenu": "Exibir _MENU_ registros",
-                "loadingRecords": "Carregando...",
-                "processing": "Processando...",
-                "search": "Pesquisa:",
-                "paginate": {
-                    "first": "Primeiro",
-                    "last": "Último",
-                    "next": "Próximo",
-                    "previous": "Anterior"
-                },
-                "pagingType": "full_numbers",
-                "emptyTable": "Não existe nenhum registro para ser exibido",
-                "zeroRecords": "Nenhum registro encontrado na pesquisa",
-                "info": "Exibindo registros _START_ a _END_",
-                "infoEmpty": "Nenhum registro",
-                "infoFiltered": "(filtrado de um total de _MAX_ registros)"
-            }
-        });
-        $('#table-salas').DataTable({
-            responsive: true,
-            "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
-            "order": [[ 0, "desc" ]],
-            "language": {
-                "lengthMenu": "Exibir _MENU_ registros",
-                "loadingRecords": "Carregando...",
-                "processing": "Processando...",
-                "search": "Pesquisa:",
-                "paginate": {
-                    "first": "Primeiro",
-                    "last": "Último",
-                    "next": "Próximo",
-                    "previous": "Anterior"
-                },
-                "pagingType": "full_numbers",
-                "emptyTable": "Não existe nenhum registro para ser exibido",
-                "zeroRecords": "Nenhum registro encontrado na pesquisa",
-                "info": "Exibindo registros _START_ a _END_",
-                "infoEmpty": "Nenhum registro",
-                "infoFiltered": "(filtrado de um total de _MAX_ registros)"
-            }
-        });
-        $('#table-usuarios').DataTable({
-            responsive: true,
-            "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
-            "order": [[ 0, "desc" ]],
-            "language": {
-                "lengthMenu": "Exibir _MENU_ registros",
-                "loadingRecords": "Carregando...",
-                "processing": "Processando...",
-                "search": "Pesquisa:",
-                "paginate": {
-                    "first": "Primeiro",
-                    "last": "Último",
-                    "next": "Próximo",
-                    "previous": "Anterior"
-                },
-                "pagingType": "full_numbers",
-                "emptyTable": "Não existe nenhum registro para ser exibido",
-                "zeroRecords": "Nenhum registro encontrado na pesquisa",
-                "info": "Exibindo registros _START_ a _END_",
-                "infoEmpty": "Nenhum registro",
-                "infoFiltered": "(filtrado de um total de _MAX_ registros)"
             }
         });
 
-        // Configuração dos campos do Select2
+        // Configuração dos campos que o usam o Select2
+        // As telas de confirmação de uma solicitação fazem uso dele
         $('#sala').select2({
             placeholder: "Sala",
             allowClear: false,
