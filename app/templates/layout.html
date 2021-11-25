@@ -61,10 +61,10 @@
             </div>
         </nav>
     </header>
-    <main role="main" class="container">
+    <main role="main" class="container h-100">
         <!-- Mensagens de Alerta -->
         <div class="row justify-content-center">
-            <div class="col-md-7">
+            <div class="col-7">
             {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
@@ -80,9 +80,13 @@
             </div>
         </div>
         <!-- Blocos de Conteúdo -->
-        {% block inicio %}{% endblock %}
         <div class="row justify-content-center">
-            <div class="col-md-7">
+            <div class="col-12">
+            {% block inicio %}{% endblock %}
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-7">
             {% block erro %}{% endblock %}
             {% block conteudo %}{% endblock %}
             </div>
@@ -108,6 +112,7 @@
         setTimeout(function() {
             $(".alert").alert('close');
         }, 4000);
+
         // Configuração das Tabelas do DataTables
         $('#table-solicitacoes').DataTable({
             responsive: true,
@@ -224,7 +229,8 @@
                 "infoFiltered": "(filtrado de um total de _MAX_ registros)"
             }
         });
-        // Configuração do Select2
+
+        // Configuração dos campos do Select2
         $('#sala').select2({
             placeholder: "Sala",
             allowClear: false,

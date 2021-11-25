@@ -1,36 +1,14 @@
+
 {% extends "layout.html" %}
+{% from "formhelper.html" import render_field %}
 {% block conteudo %}
 <div class="content-section">
     <form method="POST" action="">
         {{ form.hidden_tag() }}
         <fieldset class="form-group">
             <legend class="border-bottom mb-4">Redefinir Senha</legend>
-            <div class="form-group">
-                {{ form.senha.label(class="form-control-label") }}
-                {% if form.senha.errors %}
-                    {{ form.senha(class="form-control is-invalid") }}
-                    <div class="invalid-feedback">
-                        {% for error in form.senha.errors %}
-                            <span>{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    {{ form.senha(class="form-control") }}
-                {% endif %}
-            </div>
-            <div class="form-group">
-                {{ form.confirmar_senha.label(class="form-control-label") }}
-                {% if form.confirmar_senha.errors %}
-                    {{ form.confirmar_senha(class="form-control is-invalid") }}
-                    <div class="invalid-feedback">
-                        {% for error in form.confirmar_senha.errors %}
-                            <span>{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    {{ form.confirmar_senha(class="form-control") }}
-                {% endif %}
-            </div>
+            {{ render_field(form.senha) }}
+            {{ render_field(form.confirmar_senha) }}
         </fieldset>
         <div class="form-group">
             {{ form.submit(class="btn btn-outline-info") }}

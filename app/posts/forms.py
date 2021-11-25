@@ -3,6 +3,7 @@ from wtforms import StringField, SubmitField, TextAreaField
 from wtforms.validators import DataRequired
 
 
+# Formulário para cadastro/atualização de uma mensagem
 class PostForm(FlaskForm):
     
     titulo = StringField('Título', validators=[

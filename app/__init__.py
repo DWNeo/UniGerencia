@@ -23,12 +23,12 @@ login_manager.login_message = 'É necessário realizar login para acessar\
                                ver as contas de teste'
 login_manager.needs_refresh_message = 'É necessário realizar login novamente.'
 
-# Define o fuso horário a ser utilizado no datetime
+# Define o fuso horário a ser considerado no datetime
+# No caso desta aplicação é o horário de São Paulo (UTC-3)
 fuso_horario = timezone('America/Sao_Paulo')
 
-
 def create_app(config_class=Config):
-    # Inicializa o Flask
+    # Inicializa o Flask e seus componentes
     app = Flask(__name__)
     app.config.from_object(Config)
 
@@ -46,7 +46,7 @@ def create_app(config_class=Config):
     from app.salas.views import salas
     from app.solicitacoes.views import solicitacoes
 
-    # Registra os blueprints
+    # Registra as blueprints
     app.register_blueprint(principal, url_prefix='/')
     app.register_blueprint(erros, url_prefix='/erros')
     app.register_blueprint(usuarios, url_prefix='/usuarios')

@@ -2,15 +2,15 @@ from datetime import datetime
 
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app
-from flask_login import UserMixin, current_user
+from flask_login import UserMixin
 
 from app import db, login_manager, fuso_horario
+
 
 # Carrega o usuário que faz login da tabela apropriada
 @login_manager.user_loader
 def load_user(user_id):
     return Usuario.query.get(int(user_id)) 
-
 
 class Usuario(db.Model, UserMixin):
     __tablename__ = 'usuarios'
@@ -26,13 +26,16 @@ class Usuario(db.Model, UserMixin):
     imagem_perfil = db.Column(db.String(20), nullable=False, 
                            default='default.jpg')
     
+    # Um usuário pode estar associado a múltiplas mensagens e solicitações
     posts = db.relationship('Post', backref='autor', lazy=True)
     solicitacoes = db.relationship('Solicitacao', backref='autor', lazy=True)
 
+    # Retorna o token necessário para que o usuário possa redefinir sua senha
     def obtem_token_redefinicao(self, expires_sec=1800):
         s = Serializer(current_app.config['SECRET_KEY'], expires_sec)
         return s.dumps({'usuario_id': self.id}).decode('utf-8')
 
+    # Verifica se o token fornecido pelo usuário é válido
     @staticmethod
     def verifica_token_redefinicao(token):
         s = Serializer(current_app.config['SECRET_KEY'])
@@ -56,6 +59,7 @@ class Post(db.Model):
     conteudo = db.Column(db.Text, nullable=False)
     ativo = db.Column(db.Boolean, nullable=False, default=True)
 
+    # Uma mensagem tem somente um usuário como autor
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), 
                            nullable=False)
 
@@ -80,6 +84,7 @@ class Solicitacao(db.Model):
     data_finalizacao = db.Column(db.DateTime, nullable=True)
     ativo = db.Column(db.Boolean, nullable=False, default=True)
 
+    # Uma solicitação está associada a múltiplos registros
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), 
                            nullable=False)
     tipo_eqp_id = db.Column(db.Integer, db.ForeignKey('tipos_equipamento.id'), 
@@ -105,9 +110,11 @@ class Equipamento(db.Model):
     status = db.Column(db.String(20), nullable=False, default='Disponível')
     ativo = db.Column(db.Boolean, nullable=False, default=True)
 
+    # Um equipamento pertence a um tipo em específico
     tipo_eqp_id = db.Column(db.Integer, db.ForeignKey('tipos_equipamento.id'), 
                             nullable=False)
 
+    # Um equipamento faz parte de diferentes solicitações ao longo do tempo
     solicitacoes = db.relationship('Solicitacao', backref='equipamento', lazy=True)
    
     def __repr__(self):
@@ -123,6 +130,7 @@ class TipoEquipamento(db.Model):
     qtd_disponivel = db.Column(db.Integer, nullable=False, default=0)
     ativo = db.Column(db.Boolean, nullable=False, default=True)
 
+    # Um tipo está associado a múltiplos equipamentos e solicitações
     equipamentos = db.relationship('Equipamento', backref='tipo_eqp', lazy=True)
     solicitacoes = db.relationship('Solicitacao', backref='tipo_eqp', lazy=True)
 
@@ -144,6 +152,7 @@ class Sala(db.Model):
                        default='Disponível')
     ativo = db.Column(db.Boolean, nullable=False, default=True)
     
+    # Uma sala faz parte de diferentes solicitações ao longo do tempo
     solicitacoes = db.relationship('Solicitacao', backref='sala', lazy=True)
     
     def __repr__(self):
