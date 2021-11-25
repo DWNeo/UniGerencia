@@ -1,114 +1,19 @@
 {% extends "layout.html" %}
+{% from "formhelper.html" import render_field %}
 {% block conteudo %}
 <div class="content-section">
     <form method="POST" action="">
         {{ form.hidden_tag() }}
         <fieldset class="form-group">
             <legend class="border-bottom mb-4">{{ legend }}</legend>
-            <div class="form-group">
-                {{ form.autor.label(class="form-control-label") }}
-                {% if form.autor.errors %}
-                    {{ form.autor(class="form-control is-invalid") }}
-                    <div class="invalid-feedback">
-                        {% for error in form.autor.errors %}
-                            <span>{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    {{ form.autor(class="form-control") }}
-                {% endif %}
-            </div>
-            <div class="form-group">
-                {{ form.identificacao.label(class="form-control-label") }}
-                {% if form.identificacao.errors %}
-                    {{ form.identificacao(class="form-control is-invalid") }}
-                    <div class="invalid-feedback">
-                        {% for error in form.identificacao.errors %}
-                            <span>{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    {{ form.identificacao(class="form-control") }}
-                {% endif %}
-            </div>
-            <div class="form-group">
-                {{ form.data_abertura.label(class="form-control-label") }}
-                {% if form.data_abertura.errors %}
-                    {{ form.data_abertura(class="form-control is-invalid") }}
-                    <div class="invalid-feedback">
-                        {% for error in form.data_abertura.errors %}
-                            <span>{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    {{ form.data_abertura(class="form-control") }}
-                {% endif %}
-            </div>
-            <div class="form-group">
-                {{ form.turno.label(class="form-control-label") }}
-                {% if form.turno.errors %}
-                    {{ form.turno(class="form-control is-invalid") }}
-                    <div class="invalid-feedback">
-                        {% for error in form.turno.errors %}
-                            <span>{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    {{ form.turno(class="form-control") }}
-                {% endif %}
-            </div>
-            <div class="form-group">
-                {{ form.tipo_equipamento.label(class="form-control-label") }}
-                {% if form.tipo_equipamento.errors %}
-                    {{ form.tipo_equipamento(class="form-control is-invalid") }}
-                    <div class="invalid-feedback">
-                        {% for error in form.tipo_equipamento.errors %}
-                            <span>{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    {{ form.tipo_equipamento(class="form-control") }}
-                {% endif %}
-            </div>
-            <div class="form-group">
-                {{ form.qtd_disponivel.label(class="form-control-label") }}
-                {% if form.qtd_disponivel.errors %}
-                    {{ form.qtd_disponivel(class="form-control is-invalid") }}
-                    <div class="invalid-feedback">
-                        {% for error in form.qtd_disponivel.errors %}
-                            <span>{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    {{ form.qtd_disponivel(class="form-control") }}
-                {% endif %}
-            </div>
-            <div class="form-group">
-                {{ form.data_preferencial.label(class="form-control-label") }}
-                {% if form.data_preferencial.errors %}
-                    {{ form.data_preferencial(class="form-control is-invalid") }}
-                    <div class="invalid-feedback">
-                        {% for error in form.data_preferencial.errors %}
-                            <span>{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    {{ form.data_preferencial(class="form-control") }}
-                {% endif %}
-            </div>
-            <div class="form-group">
-                {{ form.equipamento.label(class="form-control-label") }}
-                {% if form.equipamento.errors %}
-                    {{ form.equipamento(class="form-control is-invalid") }}
-                    <div class="invalid-feedback">
-                        {% for error in form.equipamento.errors %}
-                            <span>{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    {{ form.equipamento(class="form-control") }}
-                {% endif %}
-            </div>
+            {{ render_field(form.autor) }}
+            {{ render_field(form.identificacao) }}
+            {{ render_field(form.data_abertura) }}
+            {{ render_field(form.turno) }}
+            {{ render_field(form.tipo_equipamento) }}
+            {{ render_field(form.qtd_disponivel) }}
+            {{ render_field(form.data_preferencial) }}
+            {{ render_field(form.equipamento) }}
         </fieldset>
         <div class="form-group">
             {{ form.submit(class="btn btn-outline-info") }}

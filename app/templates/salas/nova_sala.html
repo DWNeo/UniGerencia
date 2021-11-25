@@ -1,49 +1,14 @@
 {% extends "layout.html" %}
+{% from "formhelper.html" import render_field %}
 {% block conteudo %}
 <div class="content-section">
     <form method="POST" action="">
         {{ form.hidden_tag() }}
         <fieldset class="form-group">
             <legend class="border-bottom mb-4">{{ legend }}</legend>
-            <div class="form-group">
-                {{ form.numero.label(class="form-control-label") }}
-                {% if form.numero.errors %}
-                    {{ form.numero(class="form-control is-invalid") }}
-                    <div class="invalid-feedback">
-                        {% for error in form.numero.errors %}
-                            <span>{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    {{ form.numero(class="form-control") }}
-                {% endif %}
-            </div>
-            <div class="form-group">
-                {{ form.setor.label(class="form-control-label") }}
-                {% if form.setor.errors %}
-                    {{ form.setor(class="form-control is-invalid") }}
-                    <div class="invalid-feedback">
-                        {% for error in form.setor.errors %}
-                            <span>{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    {{ form.setor(class="form-control") }}
-                {% endif %}
-            </div>
-            <div class="form-group">
-                {{ form.qtd_aluno.label(class="form-control-label") }}
-                {% if form.qtd_aluno.errors %}
-                    {{ form.qtd_aluno(class="form-control is-invalid") }}
-                    <div class="invalid-feedback">
-                        {% for error in form.qtd_aluno.errors %}
-                            <span>{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    {{ form.qtd_aluno(class="form-control") }}
-                {% endif %}
-            </div>
+            {{ render_field(form.numero) }}
+            {{ render_field(form.setor) }}
+            {{ render_field(form.qtd_aluno) }}
         </fieldset>
         <div class="form-group">
             {{ form.submit(class="btn btn-outline-info") }}
