@@ -41,7 +41,7 @@ def salva_imagem(form_picture):
 # Envia o email de redefinição de senha com o token gerado
 def envia_email_redefinicao(user):
     token = user.obtem_token_redefinicao()
-    msg = Message('UniGerencia: Pedido de Redefinição de Senha',
+    msg = Message('UniGerência: Pedido de Redefinição de Senha',
                   sender='noreply@demo.com',
                   recipients=[user.email])
     msg.body = f'''Para redefinir a sua senha, visite o seguinte link:
