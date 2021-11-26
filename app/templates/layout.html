@@ -66,11 +66,11 @@
         </nav>
     </header>
 
-    <main role="main" class="container">
+    <main role="main" class="container-fluid">
         <!-- Mensagens de Alerta -->
         <!-- Mensagens retornadas pelas funções flash são exibidas aqui -->
         <div class="row justify-content-center">
-            <div class="col-md-7">
+            <div class="col-md-6">
             {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
@@ -88,13 +88,13 @@
         <!-- Blocos de Conteúdo -->
         <!-- Os outros templates são renderizados aqui -->
         <div class="row justify-content-center">
-            <div class="col-md-12">
+            <div class="col-md-11">
             <!-- Bloco da página inicial -->
             {% block inicio %}{% endblock %}
             </div>
         </div>
         <div class="row justify-content-center">
-            <div class="col-md-7">
+            <div class="col-md-6">
             <!-- Bloco de erros e de outras páginas de conteúdo -->
             {% block erro %}{% endblock %}
             {% block conteudo %}{% endblock %}
