@@ -1,39 +1,44 @@
 <!-- Tabela para rederização de Usuários -->
-<table id="table-usuarios" class="table display dt-responsive table-hover table-responsive-sm" style="width:100%">
+<table id="table-usuarios" class="table display dt-responsive nowrap table-hover table-responsive-md" style="width:100%;height:100%">
     <thead>
+    <!-- Colunas da Tabela -->
     <tr class="bg-primary text-light">
-        <th scope="col">#</th>
-        <th scope="col">Nome</th>
-        <th scope="col">Identificação</th>
-        <th scope="col">Email</th>
-        <th scope="col">Admin</th>
-        <th scope="col">Ações</th>
+        <th class="align-middle">#</th>
+        <th class="align-middle">Nome</th>
+        <th class="align-middle">Identificação</th>
+        <th class="align-middle">Email</th>
+        <th class="align-middle">Admin</th>
+        <th class="align-middle">Ações</th>
     </tr>
     </thead>
     <tbody>
+    <!-- Cria uma nova linha pra cada registro de usuário ativo -->
     {% for usuario in usuarios %}
     {% if usuario.admin == True %}
-    <tr class="table-success text-success">
+        <tr class="table-success text-success">
     {% else %}
-    <tr>
+        <tr>
     {% endif %}
-        <td>{{ usuario.id }}</td>
-        <td>{{ usuario.nome }}</td>
-        <td>{{ usuario.identificacao }}</td>
-        <td>{{ usuario.email }}</td>
+        <!-- Linhas da Tabela -->
+        <td class="align-middle">{{ usuario.id }}</td>
+        <td class="align-middle">{{ usuario.nome }}</td>
+        <td class="align-middle">{{ usuario.identificacao }}</td>
+        <td class="align-middle">{{ usuario.email }}</td>
+        <!-- Muda a cor das linhas com registros de admins -->
         {% if usuario.admin == True %}
-            <td><a class="btn-sm btn-outline-success" href="#"><i class="fas fa-check"></i></a></td>
+            <td class="align-middle"><a class="btn-lg btn-outline-success" href="#"><i class="fas fa-check"></i></a></td>
         {% endif %}
         {% if usuario.admin == False %}
-            <td><a class="btn-sm btn-outline-danger" href="#"><i class="fas fa-ban"></i></a></td>
+            <td class="align-middle"><a class="btn-lg btn-outline-danger" href="#"><i class="fas fa-ban"></i></a></td>
         {% endif %}
-        <td>
-            <a class="btn-sm btn-outline-info" href="#" data-toggle="modal" data-target="#visualizarUsuario{{ usuario.id }}"><i class="fas fa-search"></i></a>
-            <a class="btn-sm btn-outline-secondary" href="{{ url_for('usuarios.atualiza_usuario', usuario_id=usuario.id) }}" alt="Atualizar"><i class="fas fa-edit"></i></a>
-            <a class="btn-sm btn-outline-danger" href="#" data-toggle="modal" data-target="#excluirUsuario{{ usuario.id }}"><i class="fas fa-trash"></i></a>
+        <td class="align-middle">
+            <!-- Botões de Ação-->
+            <a class="btn-lg btn-outline-info" href="#" data-toggle="modal" data-target="#visualizarUsuario{{ usuario.id }}"><i class="fas fa-search"></i></a>
+            <a class="btn-lg btn-outline-secondary" href="{{ url_for('usuarios.atualiza_usuario', usuario_id=usuario.id) }}" alt="Atualizar"><i class="fas fa-edit"></i></a>
+            <a class="btn-lg btn-outline-danger" href="#" data-toggle="modal" data-target="#excluirUsuario{{ usuario.id }}"><i class="fas fa-trash"></i></a>
         </td>
     </tr>
-    <!-- Modal -->
+    <!-- Modals Inclusos -->
     {% include 'principal/modal/visualizar_usuario.html' %}
     {% include 'principal/modal/excluir_usuario.html' %}
     {% endfor %}

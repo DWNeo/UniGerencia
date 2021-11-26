@@ -1,31 +1,36 @@
 <!-- Tabela para rederização de Posts -->
-<table id="table-posts" class="table display dt-responsive table-hover table-responsive-sm" style="width:100%">
+<table id="table-posts" class="table display dt-responsive nowrap table-hover table-responsive-md" style="width:100%;height:100%">
     <thead>
+    <!-- Colunas da Tabela -->
     <tr class="bg-primary text-light">
-        <th scope="col">#</th>
-        <th scope="col">Data de Postagem</th>
-        <th scope="col">Título</th>
-        <th scope="col">Autor</th>
-        <th scope="col">Ações</th>
+        <th class="align-middle">#</th>
+        <th class="align-middle">Data de Postagem</th>
+        <th class="align-middle">Título</th>
+        <th class="align-middle">Autor</th>
+        <th class="align-middle">Ações</th>
     </tr>
     </thead>
     <tbody>
+    <!-- Cria uma nova linha pra cada registro de post ativo -->
     {% for post in posts %}
+    <!-- Exibe os registros somente para o autor ou para os admins-->
     {% if current_user == post.autor or current_user.admin == True %}
         <tr>
-            <td>{{ post.id }}</td>
-            <td>{{ post.data_postado.strftime('%d/%m/%Y %H:%M:%S') }}</td>
-            <td>{{ post.titulo }}</td>
-            <td>{{ post.autor.nome }}</td>
-            <td>
-                <a class="btn-sm btn-outline-info" href="#" data-toggle="modal" data-target="#visualizarPost{{ post.id }}" alt="Visualizar"><i class="fas fa-search"></i></a>
+            <!-- Linhas da Tabela -->
+            <td class="align-middle">{{ post.id }}</td>
+            <td class="align-middle">{{ post.data_postado.strftime('%d/%m/%Y\n%H:%M:%S') }}</td>
+            <td class="align-middle">{{ post.titulo }}</td>
+            <td class="align-middle">{{ post.autor.nome }}</td>
+            <td class="align-middle">
+                <!-- Botões de Ação-->
+                <a class="btn-lg btn-outline-info" href="#" data-toggle="modal" data-target="#visualizarPost{{ post.id }}" alt="Visualizar"><i class="fas fa-search"></i></a>
                 {% if current_user == post.autor or current_user.admin == True %}
-                <a class="btn-sm btn-outline-secondary" href="{{ url_for('posts.atualiza_post', post_id=post.id) }}"><i class="fas fa-edit"></i></a>
-                <a class="btn-sm btn-outline-danger" href="#" data-toggle="modal" data-target="#excluirPost{{ post.id }}"><i class="fas fa-trash"></i></a>
+                    <a class="btn-lg btn-outline-secondary" href="{{ url_for('posts.atualiza_post', post_id=post.id) }}"><i class="fas fa-edit"></i></a>
+                    <a class="btn-lg btn-outline-danger" href="#" data-toggle="modal" data-target="#excluirPost{{ post.id }}"><i class="fas fa-trash"></i></a>
                 {% endif %}
             </td>
         </tr>
-        <!-- Modal -->
+        <!-- Modals Inclusos -->
         {% include 'principal/modal/visualizar_post.html' %}
         {% include 'principal/modal/excluir_post.html' %}
     {% endif %}

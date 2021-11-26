@@ -1,3 +1,5 @@
+<!-- Layout base de todas as páginas do aplicativo -->
+<!-- Metatags, folhas de estilo, scripts e blocos de conteúdo ficam aqui -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -64,7 +66,7 @@
         </nav>
     </header>
 
-    <main role="main" class="container-md">
+    <main role="main" class="container">
         <!-- Mensagens de Alerta -->
         <!-- Mensagens retornadas pelas funções flash são exibidas aqui -->
         <div class="row justify-content-center">
@@ -86,14 +88,14 @@
         <!-- Blocos de Conteúdo -->
         <!-- Os outros templates são renderizados aqui -->
         <div class="row justify-content-center">
-            <div class="col-md-12 pl-50">
+            <div class="col-md-12">
             <!-- Bloco da página inicial -->
             {% block inicio %}{% endblock %}
             </div>
         </div>
         <div class="row justify-content-center">
             <div class="col-md-7">
-            <!-- Bloco dos erros e das outras páginas de conteúdo -->
+            <!-- Bloco de erros e de outras páginas de conteúdo -->
             {% block erro %}{% endblock %}
             {% block conteudo %}{% endblock %}
             </div>
@@ -113,6 +115,7 @@
     <!-- JavaScript do Select2 -->
     <script type="text/javascript" src="{{ url_for('static', filename='js/select2.min.js') }}"></script>
 
+    <!-- Configuração de scripts para funcionalidades importantes -->
     <script>
     $(document).ready(function() {
         // Configuração da duração das mensagens de alerta
@@ -124,7 +127,6 @@
         // Configuração do DataTables
         // Todas as tabelas da página inicial fazem uso dessa configuração
         $('table.display').DataTable({
-            fixedHeader: true,
             responsive: true,
             colReorder: true,
             // Quantidade de registros a exibir
@@ -155,7 +157,7 @@
         });
 
         // Configuração dos campos que o usam o Select2
-        // As telas de confirmação de uma solicitação fazem uso dele
+        // Os campos de seleção de sala/equipamento em solicitações fazem uso dele
         $('#sala').select2({
             placeholder: "Sala",
             allowClear: false,

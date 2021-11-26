@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% from "formhelper.html" import render_field %}
+{% from "formhelper.html" import render_field, render_button %}
 {% block conteudo %}
 <div class="content-section">
     <form method="POST" action="">
@@ -13,7 +13,7 @@
             {{ render_field(form.confirmar_senha) }}
         </fieldset>
         <div class="form-group">
-            {{ form.submit(class="btn btn-outline-info") }}
+            {{ render_button(form.submit) }}
         </div>
     </form>
 </div>

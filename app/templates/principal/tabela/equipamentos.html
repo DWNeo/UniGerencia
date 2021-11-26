@@ -1,40 +1,45 @@
 <!-- Tabela para rederização de Equipamentos -->
-<table id="table-equipamentos" class="table display dt-responsive table-hover table-responsive-sm" style="width:100%">
+<table id="table-equipamentos" class="table display dt-responsive nowrap table-hover table-responsive-md" style="width:100%;height:100%">
     <thead>
+    <!-- Colunas da Tabela -->
     <tr class="bg-primary text-light">
-        <th scope="col">#</th>
-        <th scope="col">Data de Cadastro</th>
-        <th scope="col">Patrimônio</th>
-        <th scope="col">Tipo</th>
-        <th scope="col">Status</th>
-        <th scope="col">Ações</th>
+        <th class="align-middle">#</th>
+        <th class="align-middle">Data de Cadastro</th>
+        <th class="align-middle">Patrimônio</th>
+        <th class="align-middle">Tipo</th>
+        <th class="align-middle">Status</th>
+        <th class="align-middle">Ações</th>
     </tr>
     </thead>
     <tbody>
+    <!-- Cria uma nova linha pra cada registro de equipamento ativo -->
     {% for equipamento in equipamentos %}
+    <!-- Muda a cor da linha e texto de acordo com o status -->
     {% if equipamento.status == 'Solicitado' %}
-    <tr class="table-success text-success">
+        <tr class="table-success text-success">
     {% elif equipamento.status == 'Em Atraso' %}
-    <tr class="table-danger text-danger">
+        <tr class="table-danger text-danger">
     {% elif equipamento.status == 'Em Uso' %}
-    <tr class="table-info text-info">
+        <tr class="table-info text-info">
     {% elif equipamento.status == 'Debilitado' or equipamento.status == 'Em Manutenção' %}
-    <tr class="text-secondary">
+        <tr class="text-secondary">
     {% else %}
-    <tr>
+        <tr>
     {% endif %}
-        <td>{{ equipamento.id }}</td>
-        <td>{{ equipamento.data_cadastro.strftime('%d/%m/%Y %H:%M:%S') }}</td>
-        <td>{{ equipamento.patrimonio }}</td>
-        <td>{{ equipamento.tipo_eqp.nome }}</td>
-        <td>{{ equipamento.status }}</td>
-        <td>
-            <a class="btn-sm btn-outline-info" href="#" data-toggle="modal" data-target="#visualizarEquipamento{{ equipamento.id }}"><i class="fas fa-search"></i></a>
-            <a class="btn-sm btn-outline-secondary" href="{{ url_for('equipamentos.atualiza_equipamento', eqp_id=equipamento.id) }}" alt="Atualizar"><i class="fas fa-edit"></i></a>
-            <a class="btn-sm btn-outline-danger" href="#" data-toggle="modal" data-target="#excluirEquipamento{{ equipamento.id }}"><i class="fas fa-trash"></i></a>
+        <!-- Linhas da Tabela -->
+        <td class="align-middle">{{ equipamento.id }}</td>
+        <td class="align-middle">{{ equipamento.data_cadastro.strftime('%d/%m/%Y %H:%M:%S') }}</td>
+        <td class="align-middle">{{ equipamento.patrimonio }}</td>
+        <td class="align-middle">{{ equipamento.tipo_eqp.nome }}</td>
+        <td class="align-middle">{{ equipamento.status }}</td>
+        <td class="align-middle">
+            <!-- Botões de Ação-->
+            <a class="btn-lg btn-outline-info" href="#" data-toggle="modal" data-target="#visualizarEquipamento{{ equipamento.id }}"><i class="fas fa-search"></i></a>
+            <a class="btn-lg btn-outline-secondary" href="{{ url_for('equipamentos.atualiza_equipamento', eqp_id=equipamento.id) }}" alt="Atualizar"><i class="fas fa-edit"></i></a>
+            <a class="btn-lg btn-outline-danger" href="#" data-toggle="modal" data-target="#excluirEquipamento{{ equipamento.id }}"><i class="fas fa-trash"></i></a>
         </td>
     </tr>
-    <!-- Modal -->
+    <!-- Modals Inclusos -->
     {% include 'principal/modal/visualizar_equipamento.html' %}
     {% include 'principal/modal/excluir_equipamento.html' %}
     {% endfor %}

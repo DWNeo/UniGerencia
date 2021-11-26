@@ -1,9 +1,13 @@
+<!-- Página Principal do Aplicativo -->
+<!-- As principais funcionalidades são acessadas daqui -->
+<!-- Partes do código foram separadas nas pastas 'modal' e 'tabela' -->
 {% extends "layout.html" %}
 {% block inicio %}
 <div class="content-section">
   <!-- Navegação Principal -->
+  <!-- A aba ativa depende do argumento 'tab' pela URL ou por outra função-->
   <nav class="pb-3">
-    <div class="nav nav-pills nav-justified flex-column flex-sm-row" id="pills-tab" role="tablist">
+    <div class="nav nav-pills nav-justified flex-column flex-md-row" id="pills-tab" role="tablist">
       <a class="nav-item nav-link {% if tab == 1 %}active{% endif %}" id="pills-1-tab" data-toggle="pill" href="#pills-1" role="tab"><i class="fas fa-bookmark"></i>&nbsp;Solicitações</a>
       <a class="nav-item nav-link {% if tab == 2 %}active{% endif %}" id="pills-2-tab" data-toggle="pill" href="#pills-2" role="tab"><i class="fas fa-comment-dots"></i>&nbsp;Mensagens</a> 
       <!-- Menus Extras para Usuários Admin -->

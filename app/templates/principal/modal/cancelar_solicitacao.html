@@ -8,6 +8,7 @@
                     <span>&times;</spans>
                 </button>
             </div>
+            <!-- Solicitações só podem ser canceladas em certos status -->
             {% if solicitacao.status == 'Em Aberto' or solicitacao.status == 'Confirmada' %}
             <div class="modal-body">
                 <p>Deseja mesmo cancelar esta solicitação?</p>
