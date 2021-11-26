@@ -1,5 +1,6 @@
+<!-- Página com o formulário para confirmar uma solicitação de sala -->
 {% extends "layout.html" %}
-{% from "formhelper.html" import render_field %}
+{% from "formhelper.html" import render_field, render_button %}
 {% block conteudo %}
 <div class="content-section">
     <form method="POST" action="">
@@ -14,7 +15,7 @@
             {{ render_field(form.data_preferencial) }}
         </fieldset>
         <div class="form-group">
-            {{ form.submit(class="btn btn-outline-info") }}
+            {{ render_button(form.submit) }}
             <a class="btn btn-outline-secondary" href="{{ url_for('principal.inicio') }}"><i class="fas fa-arrow-left"></i> Voltar</a>
         </div>
     </form>

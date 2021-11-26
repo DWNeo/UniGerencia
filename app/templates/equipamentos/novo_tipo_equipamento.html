@@ -1,5 +1,6 @@
+<!-- Página com o formulário para inserir um novo tipo de equipamento -->
 {% extends "layout.html" %}
-{% from "formhelper.html" import render_field %}
+{% from "formhelper.html" import render_field, render_button %}
 {% block conteudo %}
 <div class="content-section">
     <form method="POST" action="">
@@ -11,7 +12,7 @@
         <p><strong>Atenção:</strong> Escolha o nome com cuidado, 
            pois o mesmo não poderá ser alterado depois!</p>
         <div class="form-group">
-            {{ form.submit(class="btn btn-outline-info") }}
+            {{ render_button(form.submit) }}
             <a class="btn btn-outline-secondary" href="{{ url_for('principal.inicio', tab=3) }}"><i class="fas fa-arrow-left"></i> Voltar</a>
         </div>
     </form>

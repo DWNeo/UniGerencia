@@ -1,8 +1,10 @@
 <!-- Macro que auxilia na renderização de campos dos formulários -->
 {% macro render_field(field) %}
 <div class="form-group">
+    <!-- Título do campo -->
     {{ field.label(class="form-control-label") }}
     {% if field.errors %}
+        <!-- Exibe os erros de validação, caso ocorram -->
         {{ field(class="form-control form-control-lg is-invalid") }}
         <div class="invalid-feedback">
             {% for error in field.errors %}
@@ -10,7 +12,13 @@
             {% endfor %}
         </div>
     {% else %}
+        <!-- Exibe o campo normalmente -->
         {{ field(class="form-control form-control-lg") }}
     {% endif %}
 </div>
+{% endmacro %}
+
+<!-- Macro para renderizar o botão de submit do formulário -->
+{% macro render_button(submit) %}
+{{ submit(class="btn btn-outline-info") }}
 {% endmacro %}
