@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from flask_mail import Mail
+from whitenoise import WhiteNoise
 from pytz import timezone
 
 from app.config import Config
@@ -54,5 +55,9 @@ def create_app(config_class=Config):
     app.register_blueprint(equipamentos, url_prefix='/equipamentos')
     app.register_blueprint(salas, url_prefix='/salas')
     app.register_blueprint(solicitacoes, url_prefix='/solicitacoes')
+
+    # Importa o WhiteNoise
+    # Permite que arquivos na pasta 'static' funcionem corretamente no Heroku
+    app.wsgi_app = WhiteNoise(app.wsgi_app, root='app/static/')
     
     return app
