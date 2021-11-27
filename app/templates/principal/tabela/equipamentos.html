@@ -21,7 +21,7 @@
         <tr class="table-danger text-danger">
     {% elif equipamento.status == 'Em Uso' %}
         <tr class="table-info text-info">
-    {% elif equipamento.status == 'Debilitado' or equipamento.status == 'Em Manutenção' %}
+    {% elif equipamento.status == 'Indisponível' or equipamento.status == 'Em Manutenção' %}
         <tr class="text-secondary">
     {% else %}
         <tr>
@@ -35,12 +35,20 @@
         <td class="align-middle">
             <!-- Botões de Ação-->
             <a class="btn-lg btn-outline-info" href="#" data-toggle="modal" data-target="#visualizarEquipamento{{ equipamento.id }}"><i class="fas fa-search"></i></a>
-            <a class="btn-lg btn-outline-secondary" href="{{ url_for('equipamentos.atualiza_equipamento', eqp_id=equipamento.id) }}" alt="Atualizar"><i class="fas fa-edit"></i></a>
+            <a class="btn-lg btn-outline-secondary" href="{{ url_for('equipamentos.atualiza_equipamento', eqp_id=equipamento.id) }}"><i class="fas fa-edit"></i></a>
+            {% if equipamento.status == 'Disponível' %}
+            <a class="btn-lg btn-outline-warning" href="#" data-toggle="modal" data-target="#indisponibilizarEquipamento{{ equipamento.id }}"><i class="fas fa-notes-medical"></i></a>
+            {% endif %}
+            {% if equipamento.status == 'Indisponível' or equipamento.status == 'Em Manutenção' %}
+            <a class="btn-lg btn-outline-success" href="#" data-toggle="modal" data-target="#disponibilizarEquipamento{{ equipamento.id }}"><i class="fas fa-clipboard-check"></i></a>
+            {% endif %}
             <a class="btn-lg btn-outline-danger" href="#" data-toggle="modal" data-target="#excluirEquipamento{{ equipamento.id }}"><i class="fas fa-trash"></i></a>
         </td>
     </tr>
     <!-- Modals Inclusos -->
     {% include 'principal/modal/visualizar_equipamento.html' %}
+    {% include 'principal/modal/disponibilizar_equipamento.html' %}
+    {% include 'principal/modal/indisponibilizar_equipamento.html' %}
     {% include 'principal/modal/excluir_equipamento.html' %}
     {% endfor %}
     </tbody>

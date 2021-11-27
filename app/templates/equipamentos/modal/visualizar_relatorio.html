@@ -1,0 +1,41 @@
+<!-- Modal para Visualização de Relatórios de Equipamento -->
+<div class="modal fade" id="visualizarRelatorio{{ relatorio.id }}" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="visualizarRelatorioLabel">Visualizar Relatório #{{ relatorio.id }}</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</spans>
+                </button>
+            </div>
+            <div class="modal-body">
+                <article class="media content-section">
+                    <div class="media-body">
+                        <div class="article-metadata">
+                            <a class="mr-2" href="#"><strong>Status:</strong> {{ relatorio.status }}</a>
+                            <a class="mr-2" href="#"><strong>Tipo:</strong> {{ relatorio.tipo }}</a>
+                            <small class="text-muted"><strong>{{ relatorio.data_abertura.strftime('%d/%m/%Y %H:%M:%S') }}</strong></small>
+                        </div>
+                        {% if relatorio.descricao %}
+                        <h6 class="article-content"><strong>Descrição:</strong> {{ relatorio.descricao }}</h6>
+                        {% endif %}
+                        <h6 class="article-content"><strong>Necessita de Manutenção:</strong> {% if relatorio.manutencao == True %}Sim{% else %}Não{% endif %}</h6>
+                        <h6 class="article-content"><strong>Equipamento com Defeito:</strong> {% if relatorio.defeito == True %}Sim{% else %}Não{% endif %}</h6>
+                        {% if relatorio.detalhes == True %}
+                        <h6 class="article-content"><strong>Detalhes Adicionais:</strong> {{ relatorio.detalhes }}</h6>
+                        {% endif %}
+                        {% if relatorio.data_abertura %}
+                        <h6 class="article-content pt-2"><strong>Data de Abertura:</strong> {{ relatorio.data_abertura.strftime('%d/%m/%Y %H:%M:%S') }}</h6>
+                        {% endif %}
+                        {% if relatorio.data_atualizacao %}
+                        <h6 class="article-content"><strong>Data de Atualização:</strong> {{ relatorio.data_atualizacao.strftime('%d/%m/%Y %H:%M:%S') }}</h6>
+                        {% endif %}
+                        {% if relatorio.data_finalizacao %}
+                        <h6 class="article-content"><strong>Data de Finalização:</strong> {{ relatorio.data_finalizacao.strftime('%d/%m/%Y %H:%M:%S') }}</h6>
+                        {% endif %}
+                    </div>
+                </article>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,21 @@
+<!-- Modal para Tornar um Equipamento Indisponível -->
+{% from "formhelper.html" import render_field, render_button %}
+<div class="modal fade" id="disponibilizarEquipamento{{ equipamento.id }}" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="disponibilizarEquipamentoLabel">Tornar Equipamento Disponível</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</spans>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Deseja mesmo tornar este equipamento disponível novamente?</p>
+                <p><strong>Outros usuários poderão voltar a solicitar este equipamento.</strong></p>
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-outline-warning" href="{{ url_for('equipamentos.disponibiliza_equipamento', eqp_id=equipamento.id) }}">Continuar</a>
+            </div>
+        </div>
+    </div>
+</div>

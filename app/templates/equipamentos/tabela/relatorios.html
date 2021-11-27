@@ -1,0 +1,36 @@
+<!-- Tabela para rederização dos relatórios -->
+<table id="table-relatorios-eqp" class="table display dt-responsive nowrap table-hover table-responsive-md" style="width:100%;height:100%">
+    <thead>
+    <!-- Colunas da Tabela -->
+    <tr class="bg-primary text-light">
+        <th class="align-middle">#</th>
+        <th class="align-middle">Data de Abertura</th>
+        <th class="align-middle">Tipo</th>
+        <th class="align-middle">Autor</th>
+        <th class="align-middle">Status</th>
+        <th class="align-middle">Ações</th>
+    </tr>
+    </thead>
+    <tbody>
+        <!-- Cria uma nova linha pra cada registro de relátorio -->
+        {% for relatorio in relatorios %}
+        <tr>
+            <!-- Linhas da Tabela -->
+            <td class="align-middle">{{ relatorio.id }}</td>
+            <td class="align-middle">{{ relatorio.data_abertura.strftime('%d/%m/%Y %H:%M:%S') }}</td>
+            <td class="align-middle">{{ relatorio.tipo }}</td>
+            <td class="align-middle">{{ relatorio.autor.nome }}</td>
+            <td class="align-middle">{{ relatorio.status }}</td>
+            <td class="align-middle">
+                <!-- Botões de Ação-->
+                <a class="btn-lg btn-outline-info" href="#" data-toggle="modal" data-target="#visualizarRelatorio{{ relatorio.id }}"><i class="fas fa-search"></i></a>
+                {% if relatorio.status == 'Aberto' %}
+                <a class="btn-lg btn-outline-secondary" href="{{ url_for('equipamentos.atualiza_relatorio', eqp_id=eqp_id,id=relatorio.id) }}"><i class="fas fa-edit"></i></a>
+                {% endif %}
+            </td>
+        </tr>  
+        <!-- Inclusão do Modal --> 
+        {% include 'equipamentos/modal/visualizar_relatorio.html' %}
+        {% endfor %}
+    </tbody>
+</table>

@@ -15,14 +15,8 @@ bcrypt = Bcrypt()
 mail = Mail()
 login_manager = LoginManager()
 
-# Personaliza as mensagens de login
+# Define a tela de login padrão
 login_manager.login_view = 'usuarios.login'
-login_manager.login_message_category = 'info'
-login_manager.needs_refresh_message_category = 'info'
-login_manager.login_message = 'É necessário realizar login para acessar\
-                               essa página. Acesse a página "Sobre" para\
-                               ver as contas de teste'
-login_manager.needs_refresh_message = 'É necessário realizar login novamente.'
 
 # Define o fuso horário a ser considerado no datetime
 # No caso desta aplicação é o horário de São Paulo (UTC-3)

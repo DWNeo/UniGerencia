@@ -18,8 +18,15 @@
                         </div>
                         <h4 class="article-title"><strong>Patrimônio:</strong> {{ equipamento.patrimonio }}</h4>
                         <p class="article-content"><strong>Descrição:</strong> {{ equipamento.descricao }}</p>
+                        {% if equipamento.motivo_indisponibilidade %}
+                        <p class="article-content pt-2"><strong>Motivo da Indisponibilidade:</strong> {{ equipamento.motivo_indisponibilidade }}</p>
+                        {% endif %}
                     </div>
                 </article>
+            </div>
+            <div class="modal-footer text-center">
+                <a type="button" class="btn btn-outline-info" href="#">Histórico de Solicitações</a>
+                <a type="button" class="btn btn-outline-info" href="{{ url_for('equipamentos.relatorios', eqp_id=equipamento.id) }}">Relatórios</a>
             </div>
         </div>
     </div>

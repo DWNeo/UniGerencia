@@ -18,8 +18,15 @@
                         </div>
                         <h4 class="article-title"><strong>Sala:</strong> {{ sala.numero }}</h4>
                         <p class="article-content"><strong> Setor:</strong> {{ sala.setor }}</p>
+                        {% if sala.motivo_indisponibilidade %}
+                        <p class="article-content pt-2"><strong>Motivo da Indisponibilidade:</strong> {{ sala.motivo_indisponibilidade }}</p>
+                        {% endif %}
                     </div>
                 </article>
+            </div>
+            <div class="modal-footer text-center">
+                <a type="button" class="btn btn-outline-info" href="#">Histórico de Solicitações</a>
+                <a type="button" class="btn btn-outline-info" href="{{ url_for('salas.relatorios', sala_id=sala.id )}}">Relatórios</a>
             </div>
         </div>
     </div>

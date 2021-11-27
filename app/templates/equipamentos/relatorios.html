@@ -1,0 +1,17 @@
+<!-- Página com o tabela de relatórios do equipamento -->
+{% extends "layout.html" %}
+{% block inicio %}
+<div class="content-section">
+    <form method="POST" action="">
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-2">Relatórios do Equipamento</legend>
+        </fieldset>
+        <div class="form-group mb-3">
+            <a class="btn btn-outline-success" href="{{ url_for('equipamentos.novo_relatorio', eqp_id=eqp_id) }}">Novo Relatório</a>
+            <a class="btn btn-outline-secondary" href="{{ url_for('principal.inicio', tab=3) }}"><i class="fas fa-arrow-left"></i> Voltar</a>
+        </div>
+    </form>
+    <!-- Tabela de Relatórios do Equipamento -->
+    {% include 'equipamentos/tabela/relatorios.html' %}
+</div>
+{% endblock inicio %}

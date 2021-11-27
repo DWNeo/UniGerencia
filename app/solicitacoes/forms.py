@@ -6,15 +6,16 @@ from wtforms.validators import DataRequired, InputRequired, ValidationError
 from wtforms.fields.html5 import DateField
 
 from app import fuso_horario
+from app.locale import (obrigatorio, data_preferencial_invalida)
 
 class SolicitacaoEquipamentoForm(FlaskForm):
 
     turno = SelectField('Turno', validators=[
-        DataRequired(message='Este campo é obrigatório.')],
+        DataRequired(message=obrigatorio)],
         choices=[('Integral', 'Integral'), ('Matutino', 'Matutino'),\
                  ('Noturno', 'Noturno')])
-    tipo_equipamento = SelectField('Tipo de Equipamento', choices=[(-1, "")],
-        validators=[InputRequired()], coerce=int)
+    tipo_equipamento = SelectField('Tipo de Equipamento', validators=[
+        InputRequired()], coerce=int)
     data_preferencial = DateField('Data Preferencial (Opcional)',
         default=datetime.now().astimezone(fuso_horario))
     submit = SubmitField('Solicitar')
@@ -28,11 +29,10 @@ class SolicitacaoEquipamentoForm(FlaskForm):
 class SolicitacaoSalaForm(FlaskForm):
 
     turno = SelectField('Turno', validators=[
-        DataRequired(message='Este campo é obrigatório.')],
+        DataRequired(message=obrigatorio)],
         choices=[('Integral', 'Integral'), ('Matutino', 'Matutino'),\
                  ('Noturno', 'Noturno')])
-    sala = SelectField('Sala', coerce=int, choices=[(-1, "")],
-        validators=[InputRequired()])
+    sala = SelectField('Sala', validators=[InputRequired()], coerce=int)
     data_preferencial = DateField('Data Preferencial (Opcional)',
         default=datetime.now().astimezone(fuso_horario))
     submit = SubmitField('Solicitar')
@@ -54,7 +54,7 @@ class ConfirmaSolicitacaoEquipamentoForm(FlaskForm):
     qtd_disponivel = StringField('Quantidade Disponível', 
         render_kw={'disabled':''})
     equipamento = SelectField('Equipamento', 
-        validators=[InputRequired()], choices=[(-1, "")], coerce=int)
+        validators=[InputRequired()], coerce=int)
     data_preferencial = DateField('Data Preferencial', 
         render_kw={'disabled':''})
     submit = SubmitField('Confirmar')

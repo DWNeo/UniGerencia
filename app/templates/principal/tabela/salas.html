@@ -7,7 +7,6 @@
         <th class="align-middle">Data de Cadastro</th>
         <th class="align-middle">Número</th>
         <th class="align-middle">Setor</th>
-        <th class="align-middle">Qtd. de Alunos</th>
         <th class="align-middle">Status</th>
         <th class="align-middle">Ações</th>
     </tr>
@@ -21,7 +20,7 @@
         <tr class="table-danger text-danger">
     {% elif sala.status == 'Em Uso' %}
         <tr class="table-info text-info">
-    {% elif sala.status == 'Debilitada' or sala.status == 'Em Reforma' %}
+    {% elif sala.status == 'Indisponível' or sala.status == 'Em Manutenção' %}
         <tr class="text-secondary">
     {% else %}
         <tr>
@@ -31,17 +30,24 @@
         <td class="align-middle">{{ sala.data_cadastro.strftime('%d/%m/%Y %H:%M:%S') }}</td>
         <td class="align-middle">{{ sala.numero }}</td>
         <td class="align-middle">{{ sala.setor }}</td>
-        <td class="align-middle">{{ sala.qtd_aluno }}</td>
         <td class="align-middle">{{ sala.status }}</td>
         <td class="align-middle">
             <!-- Botões de Ação-->
             <a class="btn-lg btn-outline-info" href="#" data-toggle="modal" data-target="#visualizarSala{{ sala.id }}"><i class="fas fa-search"></i></a>
             <a class="btn-lg btn-outline-secondary" href="{{ url_for('salas.atualiza_sala', sala_id=sala.id) }}"><i class="fas fa-edit"></i></a>
+            {% if sala.status == 'Disponível' %}
+            <a class="btn-lg btn-outline-warning" href="#" data-toggle="modal" data-target="#indisponibilizarSala{{ sala.id }}"><i class="fas fa-notes-medical"></i></a>
+            {% endif %}
+            {% if sala.status == 'Indisponível' or sala.status == 'Em Manutenção' %}
+            <a class="btn-lg btn-outline-success" href="#" data-toggle="modal" data-target="#disponibilizarSala{{ sala.id }}"><i class="fas fa-clipboard-check"></i></a>
+            {% endif %}
             <a class="btn-lg btn-outline-danger" href="#" data-toggle="modal" data-target="#excluirSala{{ sala.id }}"><i class="fas fa-trash"></i></a>
         </td>
     </tr>
     <!-- Modals Inclusos -->
     {% include 'principal/modal/visualizar_sala.html' %}
+    {% include 'principal/modal/disponibilizar_sala.html' %}
+    {% include 'principal/modal/indisponibilizar_sala.html' %}
     {% include 'principal/modal/excluir_sala.html' %}
     {% endfor %}
     </tbody>
