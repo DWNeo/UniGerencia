@@ -1,0 +1,17 @@
+<!-- Página com o tabela de relatórios da sala -->
+{% extends "layout.html" %}
+{% block inicio %}
+<div class="content-section">
+    <form method="POST" action="">
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-2">Relatórios da Sala</legend>
+        </fieldset>
+        <div class="form-group mb-3">
+            <a class="btn btn-outline-success" href="{{ url_for('salas.novo_relatorio', sala_id=sala_id) }}">Novo Relatório</a>
+            <a class="btn btn-outline-secondary" href="{{ url_for('principal.inicio', tab=4) }}"><i class="fas fa-arrow-left"></i> Voltar</a>
+        </div>
+    </form>
+    <!-- Tabela de Relatórios da Sala -->
+    {% include 'salas/tabela/relatorios.html' %}
+</div>
+{% endblock inicio %}

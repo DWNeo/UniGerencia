@@ -1,41 +1,72 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, SelectField
-from wtforms.validators import DataRequired, Length, ValidationError
+from wtforms import (StringField, SubmitField, IntegerField, TextAreaField, 
+                     BooleanField, SelectField)
+from wtforms.validators import DataRequired, Length, ValidationError, NumberRange
 
 from app.models import Sala
+from app.locale import obrigatorio, max_20, max_200, num_max, sala_existente
 
-
+# Formulário para cadastro de uma nova sala
 class SalaForm(FlaskForm):
 
     numero = StringField('Número', validators=[
-        DataRequired(message='Este campo é obrigatório.'), 
-        Length(max=20, message='Este campo só pode ter até 20 caracteres.')])
+        DataRequired(message=obrigatorio), 
+        Length(max=20, message=max_20)])
     setor = StringField('Setor', validators=[
-        DataRequired(message='Este campo é obrigatório.'), 
-        Length(max=20, message='Este campo só pode ter até 20 caracteres.')])
-    qtd_aluno = StringField('Quantidade de Alunos', validators=[
-        DataRequired(message='Este campo é obrigatório.'), 
-        Length(max=10, message='Este campo só pode ter até 10 caracteres.')])
+        DataRequired(message=obrigatorio), 
+        Length(max=20, message=max_20)])
+    qtd_aluno = IntegerField('Quantidade de Alunos', validators=[
+        DataRequired(message=obrigatorio), 
+        NumberRange(min=1, max=999, message=num_max)])
     
     submit = SubmitField('Cadastrar')
 
     def validate_numero(self, numero):
         sala = Sala.query.filter_by(numero=numero.data).first()
         if sala:
-            raise ValidationError('Já existe uma sala com esse número.\
-                Por favor, insira um diferente.')
+            raise ValidationError(sala_existente)
 
-
-
+# Formulário para atualização de um sala
 class AtualizaSalaForm(FlaskForm):
     
     setor = StringField('Setor', validators=[
-        DataRequired(message='Este campo é obrigatório.'), 
-        Length(max=20, message='Este campo só pode ter até 20 caracteres.')])
-    qtd_aluno = StringField('Quantidade de Alunos', validators=[
-        DataRequired(message='Este campo é obrigatório.'), 
-        Length(max=10, message='Este campo só pode ter até 10 caracteres.')])
-    status = SelectField('Status', choices=[
-        ('Disponível', 'Disponível'), ('Debilitada', 'Debilitada'),
-        ('Em Reforma', 'Em Reforma')])
+        DataRequired(message=obrigatorio), 
+        Length(max=20, message=max_20)])
+    qtd_aluno = IntegerField('Quantidade de Alunos', validators=[
+        DataRequired(message=obrigatorio), 
+        NumberRange(min=1, max=999, message=num_max)])
+    submit = SubmitField('Atualizar')
+
+# Formulário para indisponibilização um equipamento
+class IndisponibilizaSalaForm(FlaskForm):
+    
+    motivo = TextAreaField('Motivo', validators=[
+        DataRequired(message=obrigatorio), 
+        Length(max=200, message=max_200)])
+    submit = SubmitField('Confirmar')
+
+# Formulário para cadastro de um novo relatório da sala
+class RelatorioSalaForm(FlaskForm):
+
+    tipo = SelectField('Tipo do Relatório', choices=[
+        ('Revisão', 'Revisão'), ('Manutenção', 'Manutenção'), ('Outro', 'Outro')])
+    descricao = TextAreaField('Descrição', validators=[
+        DataRequired(message=obrigatorio)])
+    manutencao = BooleanField('Necessita de Manutenção')
+    reforma = BooleanField('Necessita de Reforma')
+    detalhes = TextAreaField('Detalhes Adicionais')
+    submit = SubmitField('Cadastrar')
+
+# Formulário para atualização de um relatório da sala
+class AtualizaRelatorioSalaForm(FlaskForm):
+
+    tipo = SelectField('Tipo do Relatório', choices=[
+        ('Revisão', 'Revisão'), ('Manutenção', 'Manutenção'), ('Outro', 'Outro')])
+    descricao = TextAreaField('Descrição', validators=[
+        DataRequired(message=obrigatorio)])
+    manutencao = BooleanField('Necessita de Manutenção')
+    reforma = BooleanField('Necessita de Reforma')
+    detalhes = TextAreaField('Detalhes Adicionais')
+    status = SelectField('Status', 
+        choices=[('Aberto', 'Aberto'), ('Finalizado', 'Finalizado')])
     submit = SubmitField('Atualizar')

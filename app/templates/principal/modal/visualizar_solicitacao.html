@@ -26,8 +26,7 @@
                         <h5 class="article-content"><strong>Equipamento:</strong> {{ solicitacao.equipamento }}</h5>
                         {% endif %}
                         {% if solicitacao.data_preferencial %}
-                        </br>
-                        <h6 class="article-content"><strong>Data Preferencial:</strong> {{ solicitacao.data_preferencial.strftime('%d/%m/%Y') }}</h6>
+                        <h6 class="article-content pt-2"><strong>Data Preferencial:</strong> {{ solicitacao.data_preferencial.strftime('%d/%m/%Y') }}</h6>
                         {% endif %}
                         {% if solicitacao.data_entrega %}
                         <h6 class="article-content"><strong>Data de Entrega:</strong> {{ solicitacao.data_entrega.strftime('%d/%m/%Y %H:%M:%S') }}</h6>

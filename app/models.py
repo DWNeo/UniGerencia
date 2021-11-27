@@ -2,7 +2,7 @@ from datetime import datetime
 
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app
-from flask_login import UserMixin
+from flask_login import UserMixin, current_user
 
 from app import db, login_manager, fuso_horario
 
@@ -29,6 +29,7 @@ class Usuario(db.Model, UserMixin):
     # Um usuário pode estar associado a múltiplas mensagens e solicitações
     posts = db.relationship('Post', backref='autor', lazy=True)
     solicitacoes = db.relationship('Solicitacao', backref='autor', lazy=True)
+    relatorios = db.relationship('Relatorio', backref='autor', lazy=True)
 
     # Retorna o token necessário para que o usuário possa redefinir sua senha
     def obtem_token_redefinicao(self, expires_sec=1800):
@@ -56,6 +57,7 @@ class Post(db.Model):
     titulo = db.Column(db.String(100), nullable=False)
     data_postado = db.Column(db.DateTime, nullable=False, 
                              default=datetime.now().astimezone(fuso_horario))
+    data_atualizacao = db.Column(db.DateTime, nullable=True)
     conteudo = db.Column(db.Text, nullable=False)
     ativo = db.Column(db.Boolean, nullable=False, default=True)
 
@@ -95,7 +97,7 @@ class Solicitacao(db.Model):
                            nullable=True)
 
     def __repr__(self):
-        return f"Solicitacao #{self.id} - {self.tipo} - {self.turno}"
+        return f"Solicitacao #{self.id} - {self.tipo} - {self.status}"
 
 
 class Equipamento(db.Model):
@@ -107,15 +109,18 @@ class Equipamento(db.Model):
     descricao = db.Column(db.String(50), nullable=False)
     data_cadastro = db.Column(db.DateTime, nullable=False, 
                               default=datetime.now().astimezone(fuso_horario))
+    data_atualizacao = db.Column(db.DateTime, nullable=True)
     status = db.Column(db.String(20), nullable=False, default='Disponível')
+    motivo_indisponibilidade = db.Column(db.Text, nullable=True)
     ativo = db.Column(db.Boolean, nullable=False, default=True)
 
     # Um equipamento pertence a um tipo em específico
     tipo_eqp_id = db.Column(db.Integer, db.ForeignKey('tipos_equipamento.id'), 
                             nullable=False)
 
-    # Um equipamento faz parte de diferentes solicitações ao longo do tempo
+    # Um equipamento faz parte de diferentes solicitações e relatórios
     solicitacoes = db.relationship('Solicitacao', backref='equipamento', lazy=True)
+    relatorios = db.relationship('Relatorio', backref='equipamento', lazy=True)
    
     def __repr__(self):
         return f"{self.patrimonio} - {self.descricao}"
@@ -148,12 +153,44 @@ class Sala(db.Model):
     qtd_aluno = db.Column(db.Integer, nullable=False)
     data_cadastro = db.Column(db.DateTime, nullable=False, 
                               default=datetime.now().astimezone(fuso_horario))
+    data_atualizacao = db.Column(db.DateTime, nullable=True)
     status = db.Column(db.String(20), nullable=False, 
                        default='Disponível')
+    motivo_indisponibilidade = db.Column(db.Text, nullable=True)
     ativo = db.Column(db.Boolean, nullable=False, default=True)
     
-    # Uma sala faz parte de diferentes solicitações ao longo do tempo
+    # Uma sala faz parte de diferentes solicitações e relatórios
     solicitacoes = db.relationship('Solicitacao', backref='sala', lazy=True)
+    relatorios = db.relationship('Relatorio', backref='sala', lazy=True)
     
     def __repr__(self):
         return f"{self.numero} - {self.setor} - Alunos: {self.qtd_aluno} - {self.status}"
+
+class Relatorio(db.Model):
+    __tablename__ = 'relatorios'
+    __table_args__ = {'extend_existing': True}
+    
+    id = db.Column(db.Integer, primary_key=True)
+    tipo = db.Column(db.String(20), nullable=False)
+    descricao = db.Column(db.Text, nullable=False)
+    manutencao = db.Column(db.Boolean, nullable=False, default=False)
+    defeito = db.Column(db.Boolean, nullable=False, default=False)
+    reforma = db.Column(db.Boolean, nullable=False, default=False)
+    detalhes = db.Column(db.Text, nullable=False)
+    status = db.Column(db.String(20), nullable=False, default='Aberto')
+    data_abertura = db.Column(db.DateTime, nullable=False, 
+                              default=datetime.now().astimezone(fuso_horario))
+    data_atualizacao = db.Column(db.DateTime, nullable=True)
+    data_finalizacao = db.Column(db.DateTime, nullable=True)
+    ativo = db.Column(db.Boolean, nullable=False, default=True)
+
+    # Um relatório está associado a um usuário, e uma sala ou equipamento
+    usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), 
+                           nullable=False)
+    equipamento_id = db.Column(db.Integer, db.ForeignKey('equipamentos.id'), 
+                           nullable=True)
+    sala_id = db.Column(db.Integer, db.ForeignKey('salas.id'), 
+                           nullable=True)
+
+    def __repr__(self):
+        return f"Relatório #{self.id} - {self.tipo} - {self.status}"

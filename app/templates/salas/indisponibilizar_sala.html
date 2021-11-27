@@ -1,4 +1,4 @@
-<!-- Página com o formulário para atualizar uma sala -->
+<!-- Página com o formulário para atualizar um equipamento -->
 {% extends "layout.html" %}
 {% from "formhelper.html" import render_field, render_button %}
 {% block conteudo %}
@@ -7,12 +7,11 @@
         {{ form.hidden_tag() }}
         <fieldset class="form-group">
             <legend class="border-bottom mb-4">{{ legend }}</legend>
-            {{ render_field(form.setor) }}
-            {{ render_field(form.qtd_aluno) }}
+            {{ render_field(form.motivo) }}
         </fieldset>
         <div class="form-group">
             {{ render_button(form.submit) }}
-            <a class="btn btn-outline-secondary" href="{{ url_for('principal.inicio', tab=4) }}"><i class="fas fa-arrow-left"></i> Voltar</a>
+            <a class="btn btn-outline-secondary" href="{{ url_for('principal.inicio', tab=3) }}"><i class="fas fa-arrow-left"></i> Voltar</a>
         </div>
     </form>
 </div>

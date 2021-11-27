@@ -2,7 +2,8 @@ from flask import Blueprint, render_template
 
 erros = Blueprint('erros', __name__)
 
-
+# Em caso de erro, essas funções redirecionam o usuário para 
+# páginas personalizadas ao invés das páginas padrão
 @erros.app_errorhandler(403)
 def error_403(error):
     return render_template('erros/403.html', title='Erro 403'), 403

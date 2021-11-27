@@ -1,4 +1,4 @@
-<!-- Página com o formulário para atualizar um equipamento -->
+<!-- Página com o formulário para inserir um novo equipamento -->
 {% extends "layout.html" %}
 {% from "formhelper.html" import render_field, render_button %}
 {% block conteudo %}
@@ -7,11 +7,16 @@
         {{ form.hidden_tag() }}
         <fieldset class="form-group">
             <legend class="border-bottom mb-4">{{ legend }}</legend>
+            {{ render_field(form.tipo) }}
             {{ render_field(form.descricao) }}
+            {{ render_field(form.manutencao) }}
+            {{ render_field(form.reforma) }}
+            {{ render_field(form.detalhes) }}
+            {{ render_field(form.status) }}
         </fieldset>
         <div class="form-group">
             {{ render_button(form.submit) }}
-            <a class="btn btn-outline-secondary" href="{{ url_for('principal.inicio', tab=3) }}"><i class="fas fa-arrow-left"></i> Voltar</a>
+            <a class="btn btn-outline-secondary" href="{{ url_for('salas.relatorios', sala_id=sala_id) }}"><i class="fas fa-arrow-left"></i> Voltar</a>
         </div>
     </form>
 </div>
