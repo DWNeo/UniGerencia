@@ -1,4 +1,4 @@
-<!-- Macro que auxilia na renderização de campos dos formulários -->
+<!-- Macro para rendereizar os campos dos formulários -->
 {% macro render_field(field) %}
 <div class="form-group">
     <!-- Título do campo -->
@@ -18,7 +18,27 @@
 </div>
 {% endmacro %}
 
-<!-- Macro para renderizar o botão de submit do formulário -->
+{% macro render_multiple(field) %}
+<div class="form-group">
+    <label> {{ field.label(class="form-control-label") }} </label>
+    <select multiple class="form-control form-control-lg" data-allow-clear="1" style="width:100%">
+        {% for choice in field.choices %}
+        <option value="{{ choice[0] }}">{{ choice[1] }}</option>
+        {% endfor %}
+    </select>
+    {% if field.errors %}
+    {% for error in field.errors %}
+    <div class="invalid-feedback">
+        {% for error in field.errors %}
+            <span>{{ error }}</span>
+        {% endfor %}
+    </div>  
+    {% endfor %}
+    {% endif %}      
+</div>
+{% endmacro %}
+
+<!-- Macro para renderizar o botão de submit dos formulários -->
 {% macro render_button(submit) %}
 {{ submit(class="btn btn-outline-info") }}
 {% endmacro %}

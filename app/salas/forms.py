@@ -4,7 +4,7 @@ from wtforms import (StringField, SubmitField, IntegerField, TextAreaField,
 from wtforms.validators import DataRequired, Length, ValidationError, NumberRange
 
 from app.models import Sala
-from app.locale import obrigatorio, max_20, max_200, num_max, sala_existente
+from app.locale import obrigatorio, max_20, num_invalido, sala_existente
 
 # Formulário para cadastro de uma nova sala
 class SalaForm(FlaskForm):
@@ -17,7 +17,7 @@ class SalaForm(FlaskForm):
         Length(max=20, message=max_20)])
     qtd_aluno = IntegerField('Quantidade de Alunos', validators=[
         DataRequired(message=obrigatorio), 
-        NumberRange(min=1, max=999, message=num_max)])
+        NumberRange(min=1, max=999, message=num_invalido)])
     
     submit = SubmitField('Cadastrar')
 
@@ -34,15 +34,14 @@ class AtualizaSalaForm(FlaskForm):
         Length(max=20, message=max_20)])
     qtd_aluno = IntegerField('Quantidade de Alunos', validators=[
         DataRequired(message=obrigatorio), 
-        NumberRange(min=1, max=999, message=num_max)])
+        NumberRange(min=1, max=999, message=num_invalido)])
     submit = SubmitField('Atualizar')
 
 # Formulário para indisponibilização um equipamento
 class IndisponibilizaSalaForm(FlaskForm):
     
     motivo = TextAreaField('Motivo', validators=[
-        DataRequired(message=obrigatorio), 
-        Length(max=200, message=max_200)])
+        DataRequired(message=obrigatorio)])
     submit = SubmitField('Confirmar')
 
 # Formulário para cadastro de um novo relatório da sala
@@ -50,7 +49,7 @@ class RelatorioSalaForm(FlaskForm):
 
     tipo = SelectField('Tipo do Relatório', choices=[
         ('Revisão', 'Revisão'), ('Manutenção', 'Manutenção'), ('Outro', 'Outro')])
-    descricao = TextAreaField('Descrição', validators=[
+    conteudo = TextAreaField('Descrição', validators=[
         DataRequired(message=obrigatorio)])
     manutencao = BooleanField('Necessita de Manutenção')
     reforma = BooleanField('Necessita de Reforma')
@@ -62,7 +61,7 @@ class AtualizaRelatorioSalaForm(FlaskForm):
 
     tipo = SelectField('Tipo do Relatório', choices=[
         ('Revisão', 'Revisão'), ('Manutenção', 'Manutenção'), ('Outro', 'Outro')])
-    descricao = TextAreaField('Descrição', validators=[
+    conteudo = TextAreaField('Conteúdo', validators=[
         DataRequired(message=obrigatorio)])
     manutencao = BooleanField('Necessita de Manutenção')
     reforma = BooleanField('Necessita de Reforma')

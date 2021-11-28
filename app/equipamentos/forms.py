@@ -4,7 +4,7 @@ from wtforms import (StringField, SubmitField, SelectField,
 from wtforms.validators import DataRequired, Length, ValidationError
 
 from app.models import Equipamento, TipoEquipamento
-from app.locale import (obrigatorio, max_20, max_50, max_200,
+from app.locale import (obrigatorio, max_20, max_50, 
                         patrimonio_existente, eqp_nome_existente)
 
 # Formulário para cadastro de um novo equipamento
@@ -51,8 +51,7 @@ class TipoEquipamentoForm(FlaskForm):
 class IndisponibilizaEquipamentoForm(FlaskForm):
     
     motivo = TextAreaField('Motivo', validators=[
-        DataRequired(message=obrigatorio), 
-        Length(max=200, message=max_200)])
+        DataRequired(message=obrigatorio)])
     submit = SubmitField('Confirmar')
 
 # Formulário para cadastro de um novo relatório do equipamento
@@ -60,7 +59,7 @@ class RelatorioEquipamentoForm(FlaskForm):
 
     tipo = SelectField('Tipo do Relatório', choices=[
         ('Revisão', 'Revisão'), ('Manutenção', 'Manutenção'), ('Outro', 'Outro')])
-    descricao = TextAreaField('Descrição', validators=[
+    conteudo = TextAreaField('Conteúdo', validators=[
         DataRequired(message=obrigatorio)])
     manutencao = BooleanField('Necessita de Manutenção')
     defeito = BooleanField('Com Defeito')
@@ -72,7 +71,7 @@ class AtualizaRelatorioEquipamentoForm(FlaskForm):
 
     tipo = SelectField('Tipo do Relatório', choices=[
         ('Revisão', 'Revisão'), ('Manutenção', 'Manutenção'), ('Outro', 'Outro')])
-    descricao = TextAreaField('Descrição', validators=[
+    conteudo = TextAreaField('Descrição', validators=[
         DataRequired(message=obrigatorio)])
     manutencao = BooleanField('Necessita de Manutenção')
     defeito = BooleanField('Com Defeito')

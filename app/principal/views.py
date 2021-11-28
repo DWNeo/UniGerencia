@@ -24,6 +24,8 @@ def inicio():
     equipamentos = Equipamento.query.filter_by(ativo=True).all()
     salas = Sala.query.filter_by(ativo=True).all()
     usuarios = Usuario.query.filter_by(ativo=True).all()
+
+    print(len(equipamentos))
     
     # Verifica se há solicitações em uso atrasadas 
     # e atualiza o status das que estão

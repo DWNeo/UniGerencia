@@ -134,6 +134,11 @@ def exclui_sala(sala_id):
     sala = Sala.query.filter_by(
         id=sala_id).filter_by(ativo=True).first_or_404()
 
+    # Impede uma sala de ser indevidamente excluída
+    if sala.status != 'Disponível' and sala.status != 'Indisponível':
+        flash('Não é possível excluir uma sala solicitada ou em uso.', 'warning')
+        return redirect(url_for('principal.inicio', tab=4))
+
     # Desativa o registro da sala
     sala.ativo = False
     db.session.commit()
@@ -165,7 +170,7 @@ def novo_relatorio(sala_id):
     form = RelatorioSalaForm()
     if form.validate_on_submit():
         relatorio = Relatorio(tipo=form.tipo.data, 
-                              descricao=form.descricao.data,
+                              conteudo=form.conteudo.data,
                               manutencao=form.manutencao.data,
                               reforma=form.reforma.data,
                               detalhes=form.detalhes.data,
@@ -198,7 +203,7 @@ def atualiza_relatorio(sala_id, id):
     form = AtualizaRelatorioSalaForm()
     if form.validate_on_submit():
         relatorio.tipo = form.tipo.data
-        relatorio.descricao = form.descricao.data
+        relatorio.conteudo = form.conteudo.data
         relatorio.manutencao = form.manutencao.data
         relatorio.reforma = form.reforma.data
         relatorio.detalhes = form.detalhes.data
@@ -212,13 +217,13 @@ def atualiza_relatorio(sala_id, id):
         else:
             relatorio.data_atualizacao = datetime.now().astimezone(fuso_horario)
 
-        db.session.add(relatorio)
+        # Atualiza o relatório
         db.session.commit()
         flash('O relatório foi atualizado com sucesso!', 'success') 
         return redirect(url_for('salas.relatorios', sala_id=sala_id))
     elif request.method == 'GET':
         form.tipo.data = relatorio.tipo
-        form.descricao.data = relatorio.descricao
+        form.conteudo.data = relatorio.conteudo
         form.manutencao.data = relatorio.manutencao
         form.reforma.data = relatorio.reforma
         form.detalhes.data = relatorio.detalhes

@@ -6,7 +6,7 @@ from flask_login import current_user, login_required
 
 from app import db, fuso_horario
 from app.models import Post
-from app.posts.forms import PostForm
+from app.posts.forms import PostForm, AtualizaPostForm
 
 posts = Blueprint('posts', __name__)
 
@@ -30,7 +30,7 @@ def novo_post():
     form = PostForm()
     if form.validate_on_submit():
         post = Post(titulo=form.titulo.data, 
-                    conteudo=form.conteudo.data, 
+                    conteudo=form.conteudo.data,
                     autor=current_user)
         db.session.add(post)
         db.session.commit()
@@ -55,7 +55,7 @@ def atualiza_post(post_id):
     
     # Valida o formulário enviado e atualiza o registro
     # do post no banco de dados de acordo com ele
-    form = PostForm()
+    form = AtualizaPostForm()
     if form.validate_on_submit():
         post.titulo = form.titulo.data
         post.conteudo = form.conteudo.data
@@ -67,7 +67,7 @@ def atualiza_post(post_id):
         form.titulo.data = post.titulo
         form.conteudo.data = post.conteudo
 
-    return render_template('posts/novo_post.html', title='Atualizar Mensagem',
+    return render_template('posts/atualizar_post.html', title='Atualizar Mensagem',
                            form=form, legend='Atualizar Mensagem')
 
 
