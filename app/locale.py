@@ -25,5 +25,4 @@ eqp_nome_existente = 'Já existe um equipamento com esse nome.'
 sala_existente = 'Já existe uma sala com esse número.'
 senha_diferente = 'As senhas inseridas não são iguais.'
 imagem_invalida = 'Formato de imagem inválido.'
-data_preferencial_invalida = 'A data preferencial não pode ser antes\
-                              da data de hoje.'
+data_invalida = 'A data inserida não pode ser antes da data atual.'

@@ -89,13 +89,14 @@
         <!-- Os outros templates são renderizados aqui -->
         <div class="row justify-content-center">
             <div class="col-md-11">
-            <!-- Bloco da página inicial -->
+            <!-- Bloco da página inicial e de páginas mais detalhadas -->
             {% block inicio %}{% endblock %}
+            {% block detalhes %}{% endblock %}
             </div>
         </div>
         <div class="row justify-content-center">
             <div class="col-md-6">
-            <!-- Bloco de erros e de outras páginas de conteúdo -->
+            <!-- Bloco de erros e das outras páginas de conteúdo -->
             {% block erro %}{% endblock %}
             {% block conteudo %}{% endblock %}
             </div>
@@ -168,18 +169,8 @@
             },
             "width": '100%'
         });
-        $('#destinatario').select2({
-            allowClear: false,
-            theme: "bootstrap4",
-            "language": {
-                "noResults": function(){
-                    return "Nenhum resultado encontrado";
-                }
-            },
-            "width": '100%'
-        });
         $('#equipamentos').select2({
-            placeholder: "Selecione os equipamentos",
+            placeholder: "Equipamentos disponíveis",
             allowClear: true,
             "language": {
                 "noResults": function(){

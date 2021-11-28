@@ -21,6 +21,9 @@ class Usuario(db.Model, UserMixin):
     identificacao = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
     senha = db.Column(db.String(60), nullable=False)
+    data_cadastro = db.Column(db.DateTime, nullable=False, 
+                              default=datetime.now().astimezone(fuso_horario))
+    data_atualizacao = db.Column(db.DateTime, nullable=True)
     admin = db.Column(db.Boolean, nullable=False, default=False)
     ativo = db.Column(db.Boolean, nullable=False, default=True)
     imagem_perfil = db.Column(db.String(20), nullable=False, 
@@ -109,7 +112,7 @@ class Solicitacao(db.Model):
     tipo_eqp = db.relationship('TipoEquipamento', back_populates='solicitacoes')
 
     def __repr__(self):
-        return f"Solicitacao #{self.id} - {self.tipo} - {self.status}"
+        return f"Solicitação #{self.id} - {self.tipo} - {self.status}"
 
 
 class Equipamento(db.Model):

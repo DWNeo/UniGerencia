@@ -18,6 +18,10 @@ def post(post_id):
     post = Post.query.filter_by(
         id=post_id).filter_by(ativo=True).first_or_404()
 
+    # Permite acesso somente ao autor do post ou a um admin
+    if post.autor != current_user and current_user.admin == False:
+        abort(403)
+
     # Renderiza o template
     return render_template('posts/post.html', title=post.titulo, post=post)
 

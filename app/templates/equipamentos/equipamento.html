@@ -1,0 +1,18 @@
+<!-- Página para visualizar um equipamento com mais detalhes -->
+{% extends "layout.html" %}
+{% block detalhes %}
+<article class="media content-section">
+    <div class="media-body">
+        <div class="article-metadata mb-3">
+            <a class="mr-2" href="#"><strong>Status:</strong> {{ equipamento.status }}</a>
+            <a class="mr-2" href="#"><strong>Tipo:</strong> {{ equipamento.tipo_eqp.nome }}</a>
+            <small class="text-muted"><strong>{{ equipamento.data_cadastro.strftime('%d/%m/%Y %H:%M:%S') }}</strong></small>
+        </div>
+        <h5 class="article-title"><strong>Patrimônio:</strong> {{ equipamento.patrimonio }}</h5>
+        <h5 class="article-content"><strong>Descrição:</strong> {{ equipamento.descricao }}</h5>
+        {% if equipamento.motivo_indisponibilidade %}
+            <h5 class="article-content pt-2"><strong>Motivo da Indisponibilidade:</strong> {{ equipamento.motivo_indisponibilidade }}</h5>
+        {% endif %}
+    </div>
+</article>
+{% endblock detalhes %}

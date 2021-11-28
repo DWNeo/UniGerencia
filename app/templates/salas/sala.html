@@ -1,0 +1,18 @@
+<!-- Página para visualizar um equipamento com mais detalhes -->
+{% extends "layout.html" %}
+{% block detalhes %}
+<article class="media content-section">
+    <div class="media-body">
+        <div class="article-metadata mb-3>
+            <a class="mr-2" href="#"><strong>Status:</strong> {{ sala.status }}</a>
+            <a class="mr-2" href="#"><strong>Qtd. de Alunos:</strong> {{ sala.qtd_aluno }}</a>
+            <small class="text-muted"><strong>{{ sala.data_cadastro.strftime('%d/%m/%Y %H:%M:%S') }}</strong></small>
+        </div>
+        <h5 class="article-title"><strong>Sala:</strong> {{ sala.numero }}</h5>
+        <h5 class="article-content"><strong> Setor:</strong> {{ sala.setor }}</h5>
+        {% if sala.motivo_indisponibilidade %}
+            <h5 class="article-content pt-2"><strong>Motivo da Indisponibilidade:</strong> {{ sala.motivo_indisponibilidade }}</h5>
+        {% endif %}
+    </div>
+</article>
+{% endblock detalhes %}

@@ -1,0 +1,23 @@
+<!-- Página para visualizar um equipamento com mais detalhes -->
+{% extends "layout.html" %}
+{% block detalhes %}
+<article class="media content-section">
+    <img class="rounded-circle article-img" src="{{ url_for('static', filename='img_perfil/' + usuario.imagem_perfil) }}">
+    <div class="media-body">
+        <div class="article-metadata">
+            <a class="mr-2" href="#"><strong>Email:</strong> {{ usuario.email }}</a>
+            {% if usuario.admin == True %}
+                <a class="mr-2" href="#"><strong>Admin:</strong> Sim</a>
+            {% else %}
+                <a class="mr-2" href="#"><strong>Admin:</strong> Não</a>
+            {% endif %}
+        </div>
+        <h4 class="article-title"><strong>Nome:</strong> {{ usuario.nome }}</h4>
+        <h5 class="article-content"><strong>Identificação:</strong> {{ usuario.identificacao }}</h5>
+        <h5 class="article-content"><strong>Data de Cadastro:</strong> {{ usuario.data_cadastro.strftime('%d/%m/%Y %H:%M:%S') }}</h5>
+        {% if usuario.data_atualizacao %}
+            <h5 class="article-content"><strong>Última Atualização:</strong> {{ usuario.data_atualizacao.strftime('%d/%m/%Y %H:%M:%S') }}</h5>
+        {% endif %}
+    </div>
+</article>
+{% endblock detalhes %}

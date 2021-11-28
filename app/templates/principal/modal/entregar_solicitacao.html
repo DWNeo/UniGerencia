@@ -1,23 +1,27 @@
 <!-- Modal para Exclusão de Solicitação -->
+{% from "formhelper.html" import render_field, render_button %}
 <div class="modal fade" id="entregarSolicitacao{{ solicitacao.id }}" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="entregarSolicitacaoLabel">Confirmar Entrega</h5>
+                <h5 class="modal-title" id="entregarSolicitacaoLabel">Confirmar Empréstimo</h5>
                 <button type="button" class="close" data-dismiss="modal">
                     <span>&times;</spans>
                 </button>
             </div>
             <div class="modal-body">
-                <p>Deseja confirmar a entrega?</p>
-                {% if solicitacao.turno == 'Matutino' %}
-                <p>A data de devolução prevista será fixada em 12:30 deste mesmo dia.</p>
-                {% else %}
-                <p>A data de devolução prevista será fixada em 22:30 deste mesmo dia.</p>
-                {% endif %}
+                <p>Insira a data de devolução prevista abaixo:</p>
+                <form method="POST" action="{{ url_for('solicitacoes.entrega_solicitacao', solicitacao_id=solicitacao.id) }}">
+                    {{ form.hidden_tag() }}
+                    <fieldset class="form-group">
+                    {{ render_field(form.data_devolucao) }}
+                    </fieldset>
             </div>
             <div class="modal-footer">
-                <a type="button" class="btn btn-outline-success" href="{{ url_for('solicitacoes.entrega_solicitacao', solicitacao_id=solicitacao.id) }}">Confirmar</a>
+                <div class="form-group">
+                {{ render_button(form.submit) }}
+                </div>
+                </form>
             </div>
         </div>
     </div>
