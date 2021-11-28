@@ -24,8 +24,8 @@ def equipamento(eqp_id):
 
     # Renderiza o template
     return render_template('equipamentos/equipamento.html', 
-                           title=equipamento.patrimonio, 
-                           post=equipamento)
+                           title=equipamento, 
+                           equipamento=equipamento)
 
 
 @equipamentos.route("/novo", methods=['GET', 'POST'])
@@ -187,7 +187,7 @@ def exclui_equipamento(eqp_id):
     if equipamento.status != 'Disponível' and equipamento.status != 'Indisponível':
         flash('Não é possível excluir uma equipamento\
                solicitado ou em uso.', 'warning')
-        return redirect(url_for('principal.inicio', tab=4))
+        return redirect(url_for('principal.inicio', tab=3))
 
     # Diminui a quantidade de equipamentos disponíveis do tipo
     # caso o status do equipamento esteja contando como um

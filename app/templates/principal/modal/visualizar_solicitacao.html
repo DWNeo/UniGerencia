@@ -32,10 +32,10 @@
                             {% endfor %}
                         {% endif %}
                         {% if solicitacao.data_preferencial %}
-                        <h6 class="article-content pt-2"><strong>Data Preferencial:</strong> {{ solicitacao.data_preferencial.strftime('%d/%m/%Y') }}</h6>
+                        <h6 class="article-content pt-2"><strong>Data Preferencial:</strong> {{ solicitacao.data_preferencial.strftime('%d/%m/%Y %H:%M:%S') }}</h6>
                         {% endif %}
                         {% if solicitacao.data_entrega %}
-                        <h6 class="article-content"><strong>Data de Entrega:</strong> {{ solicitacao.data_entrega.strftime('%d/%m/%Y %H:%M:%S') }}</h6>
+                        <h6 class="article-content"><strong>Data de Empréstimo:</strong> {{ solicitacao.data_entrega.strftime('%d/%m/%Y %H:%M:%S') }}</h6>
                         {% endif %}
                         {% if solicitacao.data_devolucao %}
                         <h6 class="article-content"><strong>Data de Devolução:</strong> {{ solicitacao.data_devolucao.strftime('%d/%m/%Y %H:%M:%S') }}</h6>
@@ -50,7 +50,7 @@
                 </article>
             </div>
             <div class="modal-footer">
-                <a type="button" class="btn btn-outline-info" href="#">Mais Detalhes</a>
+                <a type="button" class="btn btn-outline-info" href="{{ url_for('solicitacoes.solicitacao', solicitacao_id=solicitacao.id) }}">Mais Detalhes</a>
             </div>
         </div>
     </div>

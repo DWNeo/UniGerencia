@@ -7,13 +7,29 @@ from flask_login import current_user, login_required
 from app import db, fuso_horario
 from app.models import Solicitacao, Equipamento, Sala, TipoEquipamento
 from app.solicitacoes.forms import (SolicitacaoEquipamentoForm, 
-                                    SolicitacaoSalaForm,
+                                    SolicitacaoSalaForm, EntregaSolicitacaoForm,
                                     ConfirmaSolicitacaoEquipamentoForm,
                                     ConfirmaSolicitacaoSalaForm)
                                  
 from app.usuarios.utils import admin_required
 
 solicitacoes = Blueprint('solicitacoes', __name__)
+
+
+@solicitacoes.route("/<int:solicitacao_id>")
+@login_required
+def solicitacao(solicitacao_id):
+    # Recupera a sala pela ID
+    solicitacao = Solicitacao.query.filter_by(
+        id=solicitacao_id).filter_by(ativo=True).first_or_404()
+
+    # Permite acesso somente ao autor da solicitação ou a um admin
+    if solicitacao.autor != current_user and current_user.admin == False:
+        abort(403)
+
+    # Renderiza o template
+    return render_template('solicitacoes/solicitacao.html', 
+                           title=solicitacao, solicitacao=solicitacao)
 
 
 @solicitacoes.route("/nova/equipamento", methods=['GET', 'POST'])
@@ -204,7 +220,7 @@ def confirma_solicitacao(solicitacao_id):
             form.qtd_solicitada.data = solicitacao.qtd_equipamento
             form.qtd_disponivel.data = solicitacao.tipo_eqp.qtd_disponivel
             form.equipamentos.data = solicitacao.equipamentos
-            form.data_preferencial.data = solicitacao.data_preferencial
+            form.data_preferencial.data = solicitacao.data_preferencial.strftime('%d/%m/%Y %H:%M:%S')
 
         return render_template('solicitacoes/confirmar_solicitacao_equipamento.html', 
                                title='Confirmar Solicitação de Equipamento', 
@@ -224,30 +240,28 @@ def entrega_solicitacao(solicitacao_id):
         flash('Esta solicitação não foi confirmada!', 'warning')
         return redirect(url_for('principal.inicio'))
 
-    # Calcula a data atual e define as datas provisórias de devolução
-    # de acordo com o turno da solicitação (12:30 e 22:30)
-    data_atual = datetime.now().astimezone(fuso_horario).strftime('%Y-%m-%d')
-    if solicitacao.turno == 'Matutino':
-        string_data = (data_atual + ' 12:30:00')
-        solicitacao.data_devolucao = datetime.strptime(
-            string_data, '%Y-%m-%d %H:%M:%S')
-    if solicitacao.turno == 'Noturno' or solicitacao.turno == 'Integral':
-        string_data = (data_atual + ' 22:30:00')
-        solicitacao.data_devolucao = datetime.strptime(
-            string_data, '%Y-%m-%d %H:%M:%S')
-    
-    # Altera o status da sala/equipamentos associados para 'Em Uso'
-    if solicitacao.equipamentos:
-        for equipamento in solicitacao.equipamentos:
-            equipamento.status = 'Em Uso'
-    if solicitacao.sala: 
-        solicitacao.sala.status = 'Em Uso'
+    # Em caso de envio de formulário (POST)
+    form = EntregaSolicitacaoForm()
+    if form.validate_on_submit():
+        # Define a data prevista de devolução da solicitação
+        # com base na data recebida no formulário
+        solicitacao.data_devolucao = form.data_devolucao.data
+        
+        # Altera o status da sala/equipamentos associados para 'Em Uso'
+        if solicitacao.equipamentos:
+            for equipamento in solicitacao.equipamentos:
+                equipamento.status = 'Em Uso'
+        if solicitacao.sala: 
+            solicitacao.sala.status = 'Em Uso'
 
-    # Atualiza o registro da solicitação
-    solicitacao.status = 'Em Uso'
-    solicitacao.data_entrega = datetime.now().astimezone(fuso_horario)
-    db.session.commit()
-    flash('A entrega foi confirmada com sucesso!', 'success')
+        # Atualiza o registro da solicitação
+        solicitacao.status = 'Em Uso'
+        solicitacao.data_entrega = datetime.now().astimezone(fuso_horario)
+        db.session.commit()
+        flash('A entrega foi confirmada com sucesso!', 'success')
+    else:
+        flash('A data de devolução inserida é inválida.', 'warning')
+
     return redirect(url_for('principal.inicio'))
 
 
@@ -262,7 +276,13 @@ def recebe_solicitacao(solicitacao_id):
     if solicitacao.status != 'Em Uso' and solicitacao.status != 'Em Atraso':
         flash('Esta solicitação não está em uso!', 'warning')
         return redirect(url_for('principal.inicio'))
-        
+    
+    # Atualiza o status dos equipamentos recebidos para 'Disponível'
+    if solicitacao.equipamentos:
+        for equipamento in solicitacao.equipamentos:
+            equipamento.status = 'Disponível'
+        solicitacao.tipo_eqp.qtd_disponivel += len(solicitacao.equipamentos)
+
     # Atualiza o status da sala recebida para 'Disponível'
     # Além disso, verifica se há alguma solicitação em espera da mesma
     # sala e atualiza o status da primeira realizada, caso exista
@@ -325,9 +345,14 @@ def exclui_solicitacao(solicitacao_id):
     solicitacao = Solicitacao.query.filter_by(
         id=solicitacao_id).filter_by(ativo=True).first_or_404()
 
+    # Impede a exclusão de solicitações indevidas
+    if solicitacao.status == 'Em Uso' or solicitacao.status == 'Em Atraso':
+        flash('Não é possível excluir solicitação em uso.', 'warning')
+        return redirect(url_for('principal.inicio'))
+
     # Verifica o status da solicitação no momento da exclusão
     # Realiza um processo similar ao da função de cancelamento
-    if solicitacao.status == 'Confirmada' or solicitacao.status == 'Em Uso':
+    if solicitacao.status == 'Confirmada':
         if solicitacao.tipo_eqp:
             solicitacao.tipo_eqp.qtd_disponivel += len(solicitacao.equipamentos)
         if solicitacao.equipamentos:

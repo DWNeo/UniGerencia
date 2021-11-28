@@ -25,8 +25,8 @@
                 </article>
             </div>
             <div class="modal-footer">
-                <a type="button" class="btn btn-outline-info" href="#">Histórico de Solicitações</a>
-                <a type="button" class="btn btn-outline-info" href="{{ url_for('salas.relatorios', sala_id=sala.id )}}">Relatórios</a>
+                <a type="button" class="btn btn-outline-info" href="{{ url_for('salas.sala', sala_id=sala.id) }}">Mais Detalhes</a>
+                <a type="button" class="btn btn-outline-info" href="{{ url_for('salas.relatorios', sala_id=sala.id) }}">Relatórios</a>
             </div>
         </div>
     </div>

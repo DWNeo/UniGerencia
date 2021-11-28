@@ -52,3 +52,16 @@ def envia_email_redefinicao(user):
 Se você não fez esse pedido, então apenas ignore este email e nenhuma alteração será feita.
 '''
     mail.send(msg)
+
+# Envia o email de aviso para um usuário com solicitações com devolução atrasada
+def envia_email_atraso(solicitacao):
+    msg = Message('UniGerência: Aviso de Devolução Atrasada',
+                  sender='unigerencia.app@gmail.com',
+                  recipients=[solicitacao.autor.email])
+    msg.body = f'''Você possui uma solicitação com devolução atrasada:
+{url_for('solicitacoes.solicitacao', solicitacao_id=solicitacao.id, _external=True)}
+
+Por favor, regularize sua situação assim que possível.
+Se você já está regularizado, então ignore este email.
+'''
+    mail.send(msg)

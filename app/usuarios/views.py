@@ -1,8 +1,10 @@
+from datetime import datetime
+
 from flask import (render_template, url_for, flash, 
                    redirect, abort, request, Blueprint)
 from flask_login import login_user, current_user, logout_user, login_required
 
-from app import db, bcrypt
+from app import db, bcrypt, fuso_horario
 from app.models import Usuario, Post
 from app.usuarios.forms import (RegistraForm, LoginForm, AtualizaPerfilForm, 
                                 RedefineSenhaForm, NovaSenhaForm,
@@ -12,6 +14,19 @@ from app.usuarios.utils import (salva_imagem, envia_email_redefinicao,
                                 admin_required)
 
 usuarios = Blueprint('usuarios', __name__)
+
+
+@usuarios.route("/<int:usuario_id>")
+@login_required
+@admin_required
+def usuario(usuario_id):
+    # Recupera a sala pela ID
+    usuario = Usuario.query.filter_by(
+        id=usuario_id).filter_by(ativo=True).first_or_404()
+
+    # Renderiza o template
+    return render_template('usuarios/usuario.html', 
+                           title=usuario, usuario=usuario)
 
 
 @usuarios.route("/registrar", methods=['GET', 'POST'])
@@ -99,6 +114,7 @@ def perfil():
         current_user.nome = form.nome.data
         current_user.identificacao = form.identificacao.data
         current_user.email = form.email.data
+        current_user.data_atualizacao = datetime.now().astimezone(fuso_horario)
         db.session.commit()
         flash('Sua conta foi atualizada com sucesso!', 'success')
         return redirect(url_for('usuarios.perfil'))  
@@ -184,6 +200,7 @@ def atualiza_usuario(usuario_id):
         usuario.senha = hash_senha
         usuario.nome = form.nome.data
         usuario.admin = form.admin.data
+        usuario.data_atualizacao = datetime.now().astimezone(fuso_horario)
         db.session.commit()
         flash('A conta do usuário foi atualizada com sucesso!', 'success')
         return redirect(url_for('principal.inicio', tab=5))
@@ -257,6 +274,7 @@ def redefinir_token(token):
         hash_senha = bcrypt.generate_password_hash(
             form.senha.data).decode('utf-8')
         usuario.senha = hash_senha
+        usuario.data_atualizacao = datetime.now().astimezone(fuso_horario)
         db.session.commit()
         flash('Sua senha foi atualizada com sucesso!\
               Você já pode realizar login usando ela.', 'success')

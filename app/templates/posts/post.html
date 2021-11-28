@@ -1,21 +1,15 @@
-<!-- Página com o formulário para visualizar um post com mais detalhes -->
+<!-- Página para visualizar um post com mais detalhes -->
 {% extends "layout.html" %}
-{% block conteudo %}
-  <article class="media content-section">
+{% block detalhes %}
+<article class="media content-section">
     <img class="rounded-circle article-img" src="{{ url_for('static', filename='img_perfil/' + post.autor.imagem_perfil) }}">
     <div class="media-body">
-        <div class="article-metadata">
-            <a class="mr-2" href="{{ url_for('usuarios.posts_usuario', usuario=post.autor.usuario) }}">{{ post.autor.usuario }}</a>
-            <small class="text-muted">{{ post.data_postado.strftime('%Y-%m-%d') }}</small>
-            {% if post.autor == current_user %}
-            <div class="pt-2 pb-2">
-                <a class="btn btn-outline-info btn-sm mt-1 mb-1" href="{{ url_for('posts.atualiza_post', post_id=post.id) }}">Atualizar</a>
-                <a class="btn btn-outline-danger btn-sm mt-1 mb-1" href="{{ url_for('posts.exclui_post', post_id=post.id) }}">Excluir</a>
-            </div>
-            {% endif %}
+        <div class="article-metadata mb-2">
+            <a class="mr-2" href="{{ url_for('usuarios.posts_usuario', usuario_id=post.autor.id) }}"><strong>Autor: </strong>{{ post.autor.nome }}</a>
+            <small class="text-muted"><strong>Data de Postagem: </strong>{{ post.data_postado.strftime('%Y-%m-%d') }}</small>
         </div>
         <h2 class="article-title">{{ post.titulo }}</h2>
         <p class="article-content">{{ post.conteudo }}</p>
     </div>
 </article>
-{% endblock conteudo %}
+{% endblock detalhes %}

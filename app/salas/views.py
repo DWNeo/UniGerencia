@@ -23,7 +23,7 @@ def sala(sala_id):
 
     # Renderiza o template
     return render_template('salas/sala.html', 
-                           title=sala.numero, post=sala)
+                           title=sala, sala=sala)
 
 
 @salas.route("/nova", methods=['GET', 'POST'])
