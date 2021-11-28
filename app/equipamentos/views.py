@@ -183,6 +183,12 @@ def exclui_equipamento(eqp_id):
     equipamento = Equipamento.query.filter_by(
         id=eqp_id).filter_by(ativo=True).first_or_404()
     
+    # Impede um equipamento de ser indevidamente excluído
+    if equipamento.status != 'Disponível' and equipamento.status != 'Indisponível':
+        flash('Não é possível excluir uma equipamento\
+               solicitado ou em uso.', 'warning')
+        return redirect(url_for('principal.inicio', tab=4))
+
     # Diminui a quantidade de equipamentos disponíveis do tipo
     # caso o status do equipamento esteja contando como um
     if equipamento.status == 'Disponível':
@@ -221,7 +227,7 @@ def novo_relatorio(eqp_id):
     form = RelatorioEquipamentoForm()
     if form.validate_on_submit():
         relatorio = Relatorio(tipo=form.tipo.data, 
-                              descricao=form.descricao.data,
+                              conteudo=form.conteudo.data,
                               manutencao=form.manutencao.data, 
                               defeito=form.defeito.data,
                               detalhes=form.detalhes.data,
@@ -254,7 +260,7 @@ def atualiza_relatorio(eqp_id, id):
     form = AtualizaRelatorioEquipamentoForm()
     if form.validate_on_submit():
         relatorio.tipo = form.tipo.data
-        relatorio.descricao = form.descricao.data
+        relatorio.conteudo = form.conteudo.data
         relatorio.manutencao = form.manutencao.data
         relatorio.defeito = form.defeito.data
         relatorio.detalhes = form.detalhes.data
@@ -268,13 +274,13 @@ def atualiza_relatorio(eqp_id, id):
         else:
             relatorio.data_atualizacao = datetime.now().astimezone(fuso_horario)
 
-        db.session.add(relatorio)
+        # Atualiza o relatório
         db.session.commit()
         flash('O relatório foi atualizado com sucesso!', 'success') 
         return redirect(url_for('equipamentos.relatorios', eqp_id=eqp_id))
     elif request.method == 'GET':
         form.tipo.data = relatorio.tipo
-        form.descricao.data = relatorio.descricao
+        form.conteudo.data = relatorio.conteudo
         form.manutencao.data = relatorio.manutencao
         form.defeito.data = relatorio.defeito
         form.detalhes.data = relatorio.detalhes

@@ -2,7 +2,7 @@ from datetime import datetime
 
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app
-from flask_login import UserMixin, current_user
+from flask_login import UserMixin
 
 from app import db, login_manager, fuso_horario
 
@@ -24,7 +24,7 @@ class Usuario(db.Model, UserMixin):
     admin = db.Column(db.Boolean, nullable=False, default=False)
     ativo = db.Column(db.Boolean, nullable=False, default=True)
     imagem_perfil = db.Column(db.String(20), nullable=False, 
-                           default='default.jpg')
+                              default='default.jpg')
     
     # Um usuário pode estar associado a múltiplas mensagens e solicitações
     posts = db.relationship('Post', backref='autor', lazy=True)
@@ -68,6 +68,13 @@ class Post(db.Model):
     def __repr__(self):
         return f"Post: {self.titulo} ({self.data_postado})"
 
+# Tabelas que associam as solicitações aos equipamentos
+solicitacao_e = db.Table('solicitacao_equipamento',
+    db.Column('solicitacao_id', db.Integer, db.ForeignKey('solicitacoes.id'), 
+              primary_key=True),
+    db.Column('equipamento_id', db.Integer, db.ForeignKey('equipamentos.id'), 
+              primary_key=True)
+)
 
 class Solicitacao(db.Model):
     __tablename__ = 'solicitacoes'
@@ -76,7 +83,7 @@ class Solicitacao(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     tipo = db.Column(db.String(20), nullable=False)
     turno = db.Column(db.String(20), nullable=False)
-    status = db.Column(db.String(20), nullable=False, default='Solicitado')
+    status = db.Column(db.String(20), nullable=False, default='Em Aberto')
     data_abertura = db.Column(db.DateTime, nullable=False, 
                               default=datetime.now().astimezone(fuso_horario))
     data_preferencial = db.Column(db.DateTime, nullable=True)
@@ -84,17 +91,22 @@ class Solicitacao(db.Model):
     data_devolucao = db.Column(db.DateTime, nullable=True)
     data_cancelamento = db.Column(db.DateTime, nullable=True)
     data_finalizacao = db.Column(db.DateTime, nullable=True)
+    qtd_equipamento = db.Column(db.Integer, nullable=True, default=0)
     ativo = db.Column(db.Boolean, nullable=False, default=True)
 
-    # Uma solicitação está associada a múltiplos registros
+    # Uma solicitação está associada a um usuário e um tipo de equipamento
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), 
+                           nullable=False)
+    sala_id = db.Column(db.Integer, db.ForeignKey('salas.id'), 
                            nullable=False)
     tipo_eqp_id = db.Column(db.Integer, db.ForeignKey('tipos_equipamento.id'), 
                            nullable=True)
-    equipamento_id = db.Column(db.Integer, db.ForeignKey('equipamentos.id'), 
-                           nullable=True)
-    sala_id = db.Column(db.Integer, db.ForeignKey('salas.id'), 
-                           nullable=True)
+
+    # Uma solicitação está associada a múltiplos equipamentos ou uma sala
+    equipamentos = db.relationship('Equipamento', secondary=solicitacao_e, 
+                                   back_populates='solicitacoes')
+    sala = db.relationship('Sala', back_populates='solicitacoes')
+    tipo_eqp = db.relationship('TipoEquipamento', back_populates='solicitacoes')
 
     def __repr__(self):
         return f"Solicitacao #{self.id} - {self.tipo} - {self.status}"
@@ -119,8 +131,10 @@ class Equipamento(db.Model):
                             nullable=False)
 
     # Um equipamento faz parte de diferentes solicitações e relatórios
-    solicitacoes = db.relationship('Solicitacao', backref='equipamento', lazy=True)
-    relatorios = db.relationship('Relatorio', backref='equipamento', lazy=True)
+    tipo_eqp = db.relationship('TipoEquipamento', back_populates='equipamentos')
+    solicitacoes = db.relationship('Solicitacao', secondary=solicitacao_e, 
+                                   back_populates='equipamentos')
+    relatorios = db.relationship('Relatorio', back_populates='equipamento')
    
     def __repr__(self):
         return f"{self.patrimonio} - {self.descricao}"
@@ -136,8 +150,8 @@ class TipoEquipamento(db.Model):
     ativo = db.Column(db.Boolean, nullable=False, default=True)
 
     # Um tipo está associado a múltiplos equipamentos e solicitações
-    equipamentos = db.relationship('Equipamento', backref='tipo_eqp', lazy=True)
-    solicitacoes = db.relationship('Solicitacao', backref='tipo_eqp', lazy=True)
+    equipamentos = db.relationship('Equipamento', back_populates='tipo_eqp')
+    solicitacoes = db.relationship('Solicitacao', back_populates='tipo_eqp')
 
     def __repr__(self):
         return f"{self.nome} - Qtd. Disponível: {self.qtd_disponivel}"
@@ -160,8 +174,8 @@ class Sala(db.Model):
     ativo = db.Column(db.Boolean, nullable=False, default=True)
     
     # Uma sala faz parte de diferentes solicitações e relatórios
-    solicitacoes = db.relationship('Solicitacao', backref='sala', lazy=True)
-    relatorios = db.relationship('Relatorio', backref='sala', lazy=True)
+    solicitacoes = db.relationship('Solicitacao', back_populates='sala')
+    relatorios = db.relationship('Relatorio', back_populates='sala')
     
     def __repr__(self):
         return f"{self.numero} - {self.setor} - Alunos: {self.qtd_aluno} - {self.status}"
@@ -172,7 +186,7 @@ class Relatorio(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     tipo = db.Column(db.String(20), nullable=False)
-    descricao = db.Column(db.Text, nullable=False)
+    conteudo = db.Column(db.Text, nullable=False)
     manutencao = db.Column(db.Boolean, nullable=False, default=False)
     defeito = db.Column(db.Boolean, nullable=False, default=False)
     reforma = db.Column(db.Boolean, nullable=False, default=False)
@@ -191,6 +205,9 @@ class Relatorio(db.Model):
                            nullable=True)
     sala_id = db.Column(db.Integer, db.ForeignKey('salas.id'), 
                            nullable=True)
+
+    equipamento = db.relationship('Equipamento', back_populates='relatorios')
+    sala = db.relationship('Sala', back_populates='relatorios')
 
     def __repr__(self):
         return f"Relatório #{self.id} - {self.tipo} - {self.status}"

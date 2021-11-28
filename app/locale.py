@@ -3,8 +3,8 @@ from app import login_manager
 # Personaliza as mensagens de login
 login_manager.login_message_category = 'info'
 login_manager.needs_refresh_message_category = 'info'
-login_manager.login_message = ('É necessário realizar login para acessar'
-                               'essa página. Acesse a página "Sobre" para'
+login_manager.login_message = ('É necessário realizar login para acessar '
+                               'essa página. Acesse a página "Sobre" para '
                                'ver as contas de teste')
 login_manager.needs_refresh_message = 'É necessário realizar login novamente.'
 
@@ -15,7 +15,7 @@ max_20 = 'Este campo só pode ter até 20 caracteres.'
 max_50 = 'Este campo só pode ter até 50 caracteres.'
 max_100 = 'Este campo só pode ter até 100 caracteres.'
 max_200 = 'Este campo só pode ter até 200 caracteres.'
-num_max = 'Este campo excede o valor númerico máximo permitido.'
+num_invalido = 'O valor inserido está fora da faixa permitida.'
 identificacao_existente = 'Esta identificação já está sendo utilizada.'
 email_invalido = 'O email inserido é inválido.'
 email_inexistente = 'Não existe uma conta utilizando esse email.'
