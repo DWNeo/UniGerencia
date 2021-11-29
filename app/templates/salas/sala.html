@@ -1,11 +1,32 @@
-<!-- Página para visualizar um equipamento com mais detalhes -->
+<!-- Página para visualizar uma sala com mais detalhes -->
 {% extends "layout.html" %}
-{% block detalhes %}
+{% block conteudo %}
+{% if sala.status != 'Em Atraso' %}
+<div class="alert alert-info" role="alert" id="alert-message">
+    <button type="button" class="close" data-dismiss="alert">
+    <span>&times;</span>
+    </button>
+    {% if sala.status == 'Disponível' %}
+    Esta sala está disponível para ser solicitada.
+    {% elif sala.status == 'Em Uso' %}
+    Esta sala está em uso.
+    {% elif sala.status == 'Indisponível' %}
+    Esta sala está indisponível para ser solicitada.
+    {% endif %}
+</div>
+{% else %}
+<div class="alert alert-danger" role="alert" id="alert-message">
+    <button type="button" class="close" data-dismiss="alert">
+    <span>&times;</span>
+    </button>
+    Esta sala está em uma solicitação com a devolução atrasada.
+</div>
+{% endif %}
 <article class="media content-section">
     <div class="media-body">
         <div class="article-metadata mb-3>
-            <a class="mr-2" href="#"><strong>Status:</strong> {{ sala.status }}</a>
-            <a class="mr-2" href="#"><strong>Qtd. de Alunos:</strong> {{ sala.qtd_aluno }}</a>
+            <a class="mr-2"><strong>Status:</strong> {{ sala.status }}</a>
+            <a class="mr-2"><strong>Qtd. de Alunos:</strong> {{ sala.qtd_aluno }}</a>
             <small class="text-muted"><strong>{{ sala.data_cadastro.strftime('%d/%m/%Y %H:%M:%S') }}</strong></small>
         </div>
         <h5 class="article-title"><strong>Sala:</strong> {{ sala.numero }}</h5>
@@ -15,4 +36,20 @@
         {% endif %}
     </div>
 </article>
-{% endblock detalhes %}
+<article class="media content-section">
+    <div class="media-body">
+        <h4 class="article-content text-center"><strong>Últimas Solicitações</strong></h4>
+    </div>
+</article>
+{% for solicitacao in solicitacoes %}
+<article class="media content-section">
+    <div class="media-body">
+        <div class="article-metadata mb-3">
+            <a class="mr-2" href="{{ url_for('solicitacoes.solicitacao', solicitacao_id=solicitacao.id )}}"><strong>Solicitação #{{ solicitacao.id }}</strong></a>
+        </div>
+        <h5 class="article-content"><strong>Tipo:</strong> {{ solicitacao.tipo }}</h5>
+        <h5 class="article-content"><strong>Status:</strong> {{ solicitacao.status }}</h5>
+    </div>
+</article>
+{% endfor %}
+{% endblock conteudo %}

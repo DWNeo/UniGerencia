@@ -1,6 +1,6 @@
 <!-- Página para visualizar um post com mais detalhes -->
 {% extends "layout.html" %}
-{% block detalhes %}
+{% block conteudo %}
 <article class="media content-section">
     <img class="rounded-circle article-img" src="{{ url_for('static', filename='img_perfil/' + post.autor.imagem_perfil) }}">
     <div class="media-body">
@@ -8,8 +8,8 @@
             <a class="mr-2" href="{{ url_for('usuarios.posts_usuario', usuario_id=post.autor.id) }}"><strong>Autor: </strong>{{ post.autor.nome }}</a>
             <small class="text-muted"><strong>Data de Postagem: </strong>{{ post.data_postado.strftime('%Y-%m-%d') }}</small>
         </div>
-        <h2 class="article-title">{{ post.titulo }}</h2>
+        <h2 class="article-title"><strong>{{ post.titulo }}</strong></h2>
         <p class="article-content">{{ post.conteudo }}</p>
     </div>
 </article>
-{% endblock detalhes %}
+{% endblock conteudo %}

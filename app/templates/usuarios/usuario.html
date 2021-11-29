@@ -1,15 +1,15 @@
 <!-- Página para visualizar um equipamento com mais detalhes -->
 {% extends "layout.html" %}
-{% block detalhes %}
+{% block conteudo %}
 <article class="media content-section">
     <img class="rounded-circle article-img" src="{{ url_for('static', filename='img_perfil/' + usuario.imagem_perfil) }}">
     <div class="media-body">
         <div class="article-metadata">
-            <a class="mr-2" href="#"><strong>Email:</strong> {{ usuario.email }}</a>
+            <a class="mr-2"><strong>Email:</strong> {{ usuario.email }}</a>
             {% if usuario.admin == True %}
-                <a class="mr-2" href="#"><strong>Admin:</strong> Sim</a>
+                <a class="mr-2"><strong>Admin:</strong> Sim</a>
             {% else %}
-                <a class="mr-2" href="#"><strong>Admin:</strong> Não</a>
+                <a class="mr-2"><strong>Admin:</strong> Não</a>
             {% endif %}
         </div>
         <h4 class="article-title"><strong>Nome:</strong> {{ usuario.nome }}</h4>
@@ -20,4 +20,20 @@
         {% endif %}
     </div>
 </article>
-{% endblock detalhes %}
+<article class="media content-section">
+    <div class="media-body">
+        <h4 class="article-content text-center"><strong>Últimas Solicitações</strong></h4>
+    </div>
+</article>
+{% for solicitacao in solicitacoes %}
+<article class="media content-section">
+    <div class="media-body">
+        <div class="article-metadata mb-3">
+            <a class="mr-2" href="{{ url_for('solicitacoes.solicitacao', solicitacao_id=solicitacao.id )}}"><strong>Solicitação #{{ solicitacao.id }}</strong></a>
+        </div>
+        <h5 class="article-content"><strong>Tipo:</strong> {{ solicitacao.tipo }}</h5>
+        <h5 class="article-content"><strong>Status:</strong> {{ solicitacao.status }}</h5>
+    </div>
+</article>
+{% endfor %}
+{% endblock conteudo %}

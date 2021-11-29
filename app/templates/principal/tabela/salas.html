@@ -15,11 +15,11 @@
     {% for sala in salas %}
     <!-- Muda a cor da linha e texto de acordo com o status -->
     {% if sala.status == 'Solicitada' %}
-        <tr class="table-success text-success">
+        <tr class="table-success">
     {% elif sala.status == 'Em Atraso' %}
-        <tr class="table-danger text-danger">
+        <tr class="table-danger">
     {% elif sala.status == 'Em Uso' %}
-        <tr class="table-info text-info">
+        <tr class="table-info">
     {% elif sala.status == 'Indisponível' or sala.status == 'Em Manutenção' %}
         <tr class="text-secondary">
     {% else %}

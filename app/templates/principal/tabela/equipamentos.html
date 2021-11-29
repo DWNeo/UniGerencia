@@ -16,11 +16,11 @@
     {% for equipamento in equipamentos %}
     <!-- Muda a cor da linha e texto de acordo com o status -->
     {% if equipamento.status == 'Solicitado' %}
-        <tr class="table-success text-success">
+        <tr class="table-success">
     {% elif equipamento.status == 'Em Atraso' %}
-        <tr class="table-danger text-danger">
+        <tr class="table-danger">
     {% elif equipamento.status == 'Em Uso' %}
-        <tr class="table-info text-info">
+        <tr class="table-info">
     {% elif equipamento.status == 'Indisponível' or equipamento.status == 'Em Manutenção' %}
         <tr class="text-secondary">
     {% else %}

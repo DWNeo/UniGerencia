@@ -5,7 +5,7 @@ from flask import (render_template, url_for, flash,
 from flask_login import login_required, current_user
 
 from app import db, fuso_horario
-from app.models import Equipamento, TipoEquipamento, Relatorio
+from app.models import Equipamento, TipoEquipamento, Relatorio, Solicitacao
 from app.equipamentos.forms import (EquipamentoForm, IndisponibilizaEquipamentoForm,
                                     AtualizaEquipamentoForm, TipoEquipamentoForm,
                                     RelatorioEquipamentoForm, AtualizaRelatorioEquipamentoForm)
@@ -22,10 +22,15 @@ def equipamento(eqp_id):
     equipamento = Equipamento.query.filter_by(
         id=eqp_id).filter_by(ativo=True).first_or_404()
 
+    # Recupera as últimas solicitações associadas ao equipamento
+    solicitacoes = Solicitacao.query.filter(
+        Solicitacao.equipamentos.contains(equipamento)).filter_by(
+        ativo=True).order_by(Solicitacao.id.desc()).limit(5)
+
     # Renderiza o template
     return render_template('equipamentos/equipamento.html', 
-                           title=equipamento, 
-                           equipamento=equipamento)
+                           title=equipamento, equipamento=equipamento,
+                           solicitacoes=solicitacoes)
 
 
 @equipamentos.route("/novo", methods=['GET', 'POST'])
