@@ -70,7 +70,7 @@
         <!-- Mensagens de Alerta -->
         <!-- Mensagens retornadas pelas funções flash são exibidas aqui -->
         <div class="row justify-content-center">
-            <div class="col-md-6">
+            <div class="col-md-7">
             {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
@@ -87,15 +87,15 @@
         </div>
         <!-- Blocos de Conteúdo -->
         <!-- Os outros templates são renderizados aqui -->
-        <div class="row justify-content-center">
-            <div class="col-md-11">
+        <div class="row align-items-center justify-content-center">
+            <div class="col-md-11 align-self-center">
             <!-- Bloco da página inicial e de páginas mais detalhadas -->
             {% block inicio %}{% endblock %}
             {% block detalhes %}{% endblock %}
             </div>
         </div>
-        <div class="row justify-content-center">
-            <div class="col-md-6">
+        <div class="row align-items-center justify-content-center">
+            <div class="col-md-7 align-self-center">
             <!-- Bloco de erros e das outras páginas de conteúdo -->
             {% block erro %}{% endblock %}
             {% block conteudo %}{% endblock %}
@@ -122,7 +122,7 @@
         // Configuração da duração das mensagens de alerta
         // Permite que a mensagem se feche sozinha após um determinado tempo
         setTimeout(function() {
-            $(".alert").alert('close');
+            $(".alert-dismissable").alert('close');
         }, 5000);  // 5 Segundos
 
         // Configuração do DataTables

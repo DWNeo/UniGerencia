@@ -5,7 +5,7 @@ from flask import (render_template, url_for, flash,
 from flask_login import login_user, current_user, logout_user, login_required
 
 from app import db, bcrypt, fuso_horario
-from app.models import Usuario, Post
+from app.models import Usuario, Post, Solicitacao
 from app.usuarios.forms import (RegistraForm, LoginForm, AtualizaPerfilForm, 
                                 RedefineSenhaForm, NovaSenhaForm,
                                 AdminRegistraForm, AdminAtualizaPerfilForm)
@@ -24,9 +24,15 @@ def usuario(usuario_id):
     usuario = Usuario.query.filter_by(
         id=usuario_id).filter_by(ativo=True).first_or_404()
 
+    # Recupera as últimas solicitações associadas ao usuário
+    solicitacoes = Solicitacao.query.filter_by(
+        autor=usuario).filter_by(ativo=True).order_by(
+        Solicitacao.id.desc()).limit(5)
+
     # Renderiza o template
     return render_template('usuarios/usuario.html', 
-                           title=usuario, usuario=usuario)
+                           title=usuario, usuario=usuario,
+                           solicitacoes=solicitacoes)
 
 
 @usuarios.route("/registrar", methods=['GET', 'POST'])

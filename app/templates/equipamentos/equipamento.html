@@ -1,6 +1,27 @@
 <!-- Página para visualizar um equipamento com mais detalhes -->
 {% extends "layout.html" %}
-{% block detalhes %}
+{% block conteudo %}
+{% if equipamento.status != 'Em Atraso' %}
+<div class="alert alert-info" role="alert" id="alert-message">
+    <button type="button" class="close" data-dismiss="alert">
+    <span>&times;</span>
+    </button>
+    {% if equipamento.status == 'Disponível' %}
+    Este equipamento está disponível para ser solicitado.
+    {% elif equipamento.status == 'Em Uso' %}
+    Este equipamento está em uso.
+    {% elif equipamento.status == 'Indisponível' %}
+    Este equipamento está indisponível para ser solicitado.
+    {% endif %}
+</div>
+{% else %}
+<div class="alert alert-danger" role="alert" id="alert-message">
+    <button type="button" class="close" data-dismiss="alert">
+    <span>&times;</span>
+    </button>
+    Este equipamento está em uma solicitação com a devolução atrasada.
+</div>
+{% endif %}
 <article class="media content-section">
     <div class="media-body">
         <div class="article-metadata mb-3">
@@ -15,4 +36,20 @@
         {% endif %}
     </div>
 </article>
-{% endblock detalhes %}
+<article class="media content-section">
+    <div class="media-body">
+        <h4 class="article-content text-center"><strong>Últimas Solicitações</strong></h4>
+    </div>
+</article>
+{% for solicitacao in solicitacoes %}
+<article class="media content-section">
+    <div class="media-body">
+        <div class="article-metadata mb-3">
+            <a class="mr-2" href="{{ url_for('solicitacoes.solicitacao', solicitacao_id=solicitacao.id )}}"><strong>Solicitação #{{ solicitacao.id }}</strong></a>
+        </div>
+        <h5 class="article-content"><strong>Tipo:</strong> {{ solicitacao.tipo }}</h5>
+        <h5 class="article-content"><strong>Status:</strong> {{ solicitacao.status }}</h5>
+    </div>
+</article>
+{% endfor %}
+{% endblock conteudo %}

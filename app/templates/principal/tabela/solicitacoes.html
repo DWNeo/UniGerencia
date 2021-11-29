@@ -21,13 +21,13 @@
         {% if solicitacao.status == 'Em Aberto' %}
             <tr class="table-secondary">
         {% elif solicitacao.status == 'Em Atraso' %}
-            <tr class="table-danger text-danger">
+            <tr class="table-danger">
         {% elif solicitacao.status == 'Em Espera' %}
-            <tr class="table-warning text-warning">
+            <tr class="table-warning">
         {% elif solicitacao.status == 'Confirmada' %}
-            <tr class="table-success text-success">
+            <tr class="table-success">
         {% elif solicitacao.status == 'Em Uso' %}
-            <tr class="table-info text-info">
+            <tr class="table-info">
         {% elif solicitacao.status == 'Cancelada' or solicitacao.status == 'Finalizada' %}
             <tr class="text-secondary">
         {% else %}

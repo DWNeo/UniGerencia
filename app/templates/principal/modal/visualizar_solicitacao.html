@@ -12,8 +12,8 @@
                 <article class="media content-section">
                     <div class="media-body">
                         <div class="article-metadata">
-                            <a class="mr-2" href="#"><strong>Status:</strong> {{ solicitacao.status }}</a>
-                            <a class="mr-2" href="#"><strong>Tipo:</strong> {{ solicitacao.tipo }}</a>
+                            <a class="mr-2"><strong>Status:</strong> {{ solicitacao.status }}</a>
+                            <a class="mr-2"><strong>Tipo:</strong> {{ solicitacao.tipo }}</a>
                             <small class="text-muted"><strong>{{ solicitacao.data_abertura.strftime('%d/%m/%Y %H:%M:%S') }}</strong></small>
                         </div>
                         {% if solicitacao.sala %}

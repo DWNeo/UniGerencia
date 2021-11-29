@@ -1,30 +1,46 @@
 <!-- Página para visualizar um equipamento com mais detalhes -->
 {% extends "layout.html" %}
-{% block detalhes %}
+{% block conteudo %}
+{% if solicitacao.status != 'Em Atraso' %}
+<div class="alert alert-info" role="alert" id="alert-message">
+    <button type="button" class="close" data-dismiss="alert">
+    <span>&times;</span>
+    </button>
+    {% if solicitacao.status == 'Em Aberto' %}
+    Esta solicitação ainda não foi confirmada.
+    {% elif solicitacao.status == 'Em Espera' %}
+    Esta solicitação está na lista de espera.
+    {% elif solicitacao.status == 'Confirmada' %}
+    Esta solicitação foi confirmada. 
+    {% elif solicitacao.status == 'Cancelada' %}
+    Esta solicitação foi cancelada.
+    {% elif solicitacao.status == 'Finalizada' %}
+    Esta solicitação já foi finalizada.
+    {% endif %}
+</div>
+{% else %}
+<div class="alert alert-danger" role="alert" id="alert-message">
+    <button type="button" class="close" data-dismiss="alert">
+    <span>&times;</span>
+    </button>
+    Esta solicitação está com a devolução atrasada.
+</div>
+{% endif %}
 <article class="media content-section">
     <div class="media-body">
         <div class="article-metadata mb-3">
-            <a class="mr-2" href="#"><strong>Status:</strong> {{ solicitacao.status }}</a>
-            <a class="mr-2" href="#"><strong>Tipo:</strong> {{ solicitacao.tipo }}</a>
+            <a class="mr-2"><strong>Status:</strong> {{ solicitacao.status }}</a>
+            <a class="mr-2"><strong>Tipo:</strong> {{ solicitacao.tipo }}</a>
             <small class="text-muted"><strong>{{ solicitacao.data_abertura.strftime('%d/%m/%Y %H:%M:%S') }}</strong></small>
         </div>
-        {% if solicitacao.sala %}
-            <h5 class="article-title"><strong>Sala:</strong> {{ solicitacao.sala.numero }} - {{ solicitacao.sala.setor }}</h5>
-        {% endif %}
         {% if solicitacao.tipo_eqp.nome %}
             <h5 class="article-content"><strong>Tipo de Equipamento:</strong> {{ solicitacao.tipo_eqp.nome }}</h5>
         {% endif %}
         {% if solicitacao.qtd_equipamento %}
             <h5 class="article-content"><strong>Quantidade Solicitada:</strong> {{ solicitacao.qtd_equipamento }}</h5>
         {% endif %}
-        {% if solicitacao.equipamentos %}
-            <h5 class="article-title"><strong>Equipamentos Solicitados:</strong></h5>
-            {% for equipamento in solicitacao.equipamentos %}
-                <h5 class="article-title"><strong>-</strong> {{ equipamento }}</h5>
-            {% endfor %}
-        {% endif %}
         {% if solicitacao.data_preferencial %}
-            <h5 class="article-content pt-2"><strong>Data Preferencial:</strong> {{ solicitacao.data_preferencial.strftime('%d/%m/%Y %H:%M:%S') }}</h5>
+            <h5 class="article-content"><strong>Data Preferencial:</strong> {{ solicitacao.data_preferencial.strftime('%d/%m/%Y %H:%M:%S') }}</h5>
         {% endif %}
         {% if solicitacao.data_entrega %}
             <h5 class="article-content"><strong>Data de Empréstimo:</strong> {{ solicitacao.data_entrega.strftime('%d/%m/%Y %H:%M:%S') }}</h5>
@@ -40,4 +56,27 @@
         {% endif %}
     </div>
 </article>
-{% endblock detalhes %}
+{% if solicitacao.sala %}
+<article class="media content-section">
+    <div class="media-body">
+        <div class="article-metadata mb-3">
+            <a class="mr-2"><strong>Sala Solicitada</strong></a>
+        </div>
+        <h5 class="article-content"><strong>Número:</strong> {{ solicitacao.sala.numero }}</h5>
+        <h5 class="article-content"><strong>Setor:</strong> {{ solicitacao.sala.setor }}</h5>
+        <h5 class="article-content"><strong>Qtd. de Alunos:</strong> {{ solicitacao.sala.qtd_aluno }}</h5>
+    </div>
+</article>
+{% endif %}
+{% for equipamento in solicitacao.equipamentos %}
+<article class="media content-section">
+    <div class="media-body">
+        <div class="article-metadata mb-3">
+            <a class="mr-2" href="#"><strong>Equipamento Solicitado #{{ loop.index }}</strong></a>
+        </div>
+        <h5 class="article-content"><strong>Patrimônio:</strong> {{ equipamento.patrimonio }}</h5>
+        <h5 class="article-content"><strong>Descrição:</strong> {{ equipamento.descricao }}</h5>
+    </div>
+</article>
+{% endfor %}
+{% endblock conteudo %}
