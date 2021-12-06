@@ -62,7 +62,7 @@ class ConfirmaSolicitacaoEquipamentoForm(FlaskForm):
     equipamentos = SelectMultipleField('Equipamentos', 
         validators=[DataRequired(obrigatorio)], 
         render_kw={'multiple':'multiple'}, coerce=int)
-    data_preferencial = DateField('Data Preferencial', 
+    data_preferencial = StringField('Data Preferencial', 
         render_kw={'disabled':''})
     submit = SubmitField('Confirmar')
 
@@ -74,7 +74,7 @@ class ConfirmaSolicitacaoSalaForm(FlaskForm):
     data_abertura = StringField('Data de Abertura', render_kw={'disabled':''})
     turno = StringField('Turno', render_kw={'disabled':''})
     sala_solicitada = StringField('Sala Solicitada', render_kw={'disabled':''})
-    data_preferencial = DateField('Data Preferencial', 
+    data_preferencial = StringField('Data Preferencial', 
         render_kw={'disabled':''})
     submit = SubmitField('Confirmar')
 
