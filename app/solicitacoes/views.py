@@ -146,12 +146,13 @@ def confirma_solicitacao(solicitacao_id):
         # Em caso de carregamento da página (GET)
         # Preenche os campos do formulário
         elif request.method == 'GET':
+            print(solicitacao.data_preferencial)
             form.autor.data = solicitacao.autor.nome
             form.identificacao.data = solicitacao.autor.identificacao
             form.data_abertura.data = solicitacao.data_abertura.strftime('%d/%m/%Y %H:%M:%S')
             form.turno.data = solicitacao.turno
             form.sala_solicitada.data = solicitacao.sala
-            form.data_preferencial.data = solicitacao.data_preferencial
+            form.data_preferencial.data = solicitacao.data_preferencial.strftime('%d/%m/%Y %H:%M:%S')
 
         return render_template('solicitacoes/confirmar_solicitacao_sala.html', 
                                title='Confirmar Solicitação de Sala', form=form,
