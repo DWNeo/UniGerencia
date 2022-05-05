@@ -1,6 +1,7 @@
 from datetime import datetime
 
-from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+# from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from itsdangerous.serializer import Serializer
 from flask import current_app
 from flask_login import UserMixin
 
@@ -35,9 +36,9 @@ class Usuario(db.Model, UserMixin):
     relatorios = db.relationship('Relatorio', backref='autor', lazy=True)
 
     # Retorna o token necessário para que o usuário possa redefinir sua senha
-    def obtem_token_redefinicao(self, expires_sec=1800):
-        s = Serializer(current_app.config['SECRET_KEY'], expires_sec)
-        return s.dumps({'usuario_id': self.id}).decode('utf-8')
+    def obtem_token_redefinicao(self):
+        s = Serializer(current_app.config['SECRET_KEY'])
+        return s.dumps({'usuario_id': self.id})
 
     # Verifica se o token fornecido pelo usuário é válido
     @staticmethod

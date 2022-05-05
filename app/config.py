@@ -2,8 +2,9 @@ import os
 
 # Define variáveis de ambiente importantes
 class Config:
+    DEBUG = True
     # Chave criptográfica de sessão do Flask
-    SECRET_KEY = '5791628bb0b13ce0c676dfde280ba245'
+    SECRET_KEY = 'aj5mUuYnFw3Gy/bL2TYpCXjQGRGbuEgq6I5gBE1ZXjI='
 
     # Variáveis do SQLAlchemy
     # Configura acesso ao banco de dados

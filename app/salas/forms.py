@@ -49,7 +49,7 @@ class RelatorioSalaForm(FlaskForm):
 
     tipo = SelectField('Tipo do Relatório', choices=[
         ('Revisão', 'Revisão'), ('Manutenção', 'Manutenção'), ('Outro', 'Outro')])
-    conteudo = TextAreaField('Descrição', validators=[
+    conteudo = TextAreaField('Conteúdo', validators=[
         DataRequired(message=obrigatorio)])
     manutencao = BooleanField('Necessita de Manutenção')
     reforma = BooleanField('Necessita de Reforma')
