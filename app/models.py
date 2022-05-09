@@ -1,7 +1,7 @@
 from datetime import datetime
+import enum
 
-# from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
-from itsdangerous.serializer import Serializer
+from itsdangerous import URLSafeTimedSerializer as Serializer
 from flask import current_app
 from flask_login import UserMixin
 
@@ -13,6 +13,11 @@ from app import db, login_manager, fuso_horario
 def load_user(user_id):
     return Usuario.query.get(int(user_id)) 
 
+class TipoUsuario(enum.Enum):
+    ALUNO = "Aluno"
+    PROF = "Professor"
+    ADMIN = "Administrador"
+    
 class Usuario(db.Model, UserMixin):
     __tablename__ = 'usuarios'
     __table_args__ = {'extend_existing': True}
@@ -24,8 +29,7 @@ class Usuario(db.Model, UserMixin):
     senha = db.Column(db.String(60), nullable=False)
     data_cadastro = db.Column(db.DateTime, nullable=False, 
                               default=datetime.now().astimezone(fuso_horario))
-    data_atualizacao = db.Column(db.DateTime, nullable=True)
-    admin = db.Column(db.Boolean, nullable=False, default=False)
+    tipo = db.Column(db.Enum(TipoUsuario))
     ativo = db.Column(db.Boolean, nullable=False, default=True)
     imagem_perfil = db.Column(db.String(20), nullable=False, 
                               default='default.jpg')
@@ -36,9 +40,9 @@ class Usuario(db.Model, UserMixin):
     relatorios = db.relationship('Relatorio', backref='autor', lazy=True)
 
     # Retorna o token necessário para que o usuário possa redefinir sua senha
-    def obtem_token_redefinicao(self):
-        s = Serializer(current_app.config['SECRET_KEY'])
-        return s.dumps({'usuario_id': self.id})
+    def obtem_token_redefinicao(self, expires_sec=1800):
+        s = Serializer(current_app.config['SECRET_KEY'], expires_sec)
+        return s.dumps({'usuario_id': self.id}).decode('utf-8')
 
     # Verifica se o token fornecido pelo usuário é válido
     @staticmethod
@@ -72,49 +76,102 @@ class Post(db.Model):
     def __repr__(self):
         return f"Post: {self.titulo} ({self.data_postado})"
 
-# Tabelas que associam as solicitações aos equipamentos
-solicitacao_e = db.Table('solicitacao_equipamento',
-    db.Column('solicitacao_id', db.Integer, db.ForeignKey('solicitacoes.id'), 
-              primary_key=True),
-    db.Column('equipamento_id', db.Integer, db.ForeignKey('equipamentos.id'), 
-              primary_key=True)
-)
+class Status(enum.Enum):
+    ABERTO = 'Aberto' 
+    EMUSO = 'Em Uso'
+    FECHADO = 'Fechado'
+    CANCELADO = 'Cancelado'
+    PENDENTE = 'Pendente'
+    EMMANUTENCAO = 'Em Manutencao'
+    DESABILITADO = 'Desabilitado'
+
+class Turno(db.Model):
+    __tablename__ = 'turnos'
+    __table_args__ = {'extend_existing': True}
+
+    id = db.Column(db.Integer, primary_key=True)
+    data_inicio = db.Column(db.DateTime, nullable=False)
+    data_fim = db.Column(db.DateTime, nullable=False)
 
 class Solicitacao(db.Model):
     __tablename__ = 'solicitacoes'
     __table_args__ = {'extend_existing': True}
     
     id = db.Column(db.Integer, primary_key=True)
-    tipo = db.Column(db.String(20), nullable=False)
-    turno = db.Column(db.String(20), nullable=False)
-    status = db.Column(db.String(20), nullable=False, default='Em Aberto')
+    status = db.Column(db.Enum(Status))
     data_abertura = db.Column(db.DateTime, nullable=False, 
                               default=datetime.now().astimezone(fuso_horario))
-    data_preferencial = db.Column(db.DateTime, nullable=True)
-    data_entrega = db.Column(db.DateTime, nullable=True)
+    data_inicio_pref = db.Column(db.DateTime, nullable=False)
+    data_fim_pref = db.Column(db.DateTime, nullable=False)
+    data_retirada = db.Column(db.DateTime, nullable=True)
     data_devolucao = db.Column(db.DateTime, nullable=True)
     data_cancelamento = db.Column(db.DateTime, nullable=True)
     data_finalizacao = db.Column(db.DateTime, nullable=True)
-    qtd_equipamento = db.Column(db.Integer, nullable=True, default=0)
+    quantidade = db.Column(db.Integer, nullable=False, default=0)
+    descricao = db.Column(db.String(20), nullable=False)
     ativo = db.Column(db.Boolean, nullable=False, default=True)
+    tipo = db.Column(db.String(20), nullable=False)
 
     # Uma solicitação está associada a um usuário e um tipo de equipamento
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), 
                            nullable=False)
-    sala_id = db.Column(db.Integer, db.ForeignKey('salas.id'), 
+    turno_id = db.Column(db.Integer, db.ForeignKey('turnos.id'), 
                            nullable=False)
-    tipo_eqp_id = db.Column(db.Integer, db.ForeignKey('tipos_equipamento.id'), 
-                           nullable=True)
 
-    # Uma solicitação está associada a múltiplos equipamentos ou uma sala
-    equipamentos = db.relationship('Equipamento', secondary=solicitacao_e, 
-                                   back_populates='solicitacoes')
-    sala = db.relationship('Sala', back_populates='solicitacoes')
-    tipo_eqp = db.relationship('TipoEquipamento', back_populates='solicitacoes')
+    __mapper_args__ = {
+        'polymorphic_identity': 'solicitacoes',
+        'polymorphic_on': tipo
+    }
 
     def __repr__(self):
         return f"Solicitação #{self.id} - {self.tipo} - {self.status}"
+ 
 
+class SolicitacaoSala(Solicitacao):
+    __tablename__ = 'solicitacoes_salas'
+    
+    id = db.Column(db.Integer, db.ForeignKey('solicitacoes.id'), primary_key=True)
+
+    # Uma solicitação está associada a múltiplos equipamentos ou uma sala
+    sala = db.relationship('Sala', back_populates='solicitacoes')
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'solicitacoes_salas',
+    }
+
+    
+
+# Tabelas que associam as solicitações aos equipamentos
+solicitacao_s = db.Table('solicitacao_s',
+    db.Column('solicitacao_sala_id', db.Integer, db.ForeignKey('solicitacoes_salas.id'), 
+              primary_key=True),
+    db.Column('sala_id', db.Integer, db.ForeignKey('salas.id'), 
+              primary_key=True)
+)
+
+class SolicitacaoEquipamento(Solicitacao):
+    __tablename__ = 'solicitacoes_equipamentos'
+    
+    id = db.Column(db.Integer, db.ForeignKey('solicitacoes.id'), primary_key=True)
+
+    tipo_eqp_id = db.Column(db.Integer, db.ForeignKey('tipos_equipamento.id'), 
+                           nullable=True)
+    # Tabelas que associam as solicitações aos equipamentos
+    equipamentos = db.relationship('Equipamento', secondary='solicitacao_e', 
+                                   back_populates='solicitacoes')
+    tipo_eqp = db.relationship('TipoEquipamento', back_populates='solicitacoes')
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'solicitacoes_equipamentos'
+    }
+
+# Tabelas que associam as solicitações aos equipamentos
+solicitacao_e = db.Table('solicitacao_equip',
+    db.Column('solicitacao_equipamento_id', db.Integer, db.ForeignKey('solicitacoes_equipamentos.id'), 
+              primary_key=True),
+    db.Column('equipamento_id', db.Integer, db.ForeignKey('equipamentos.id'), 
+              primary_key=True)
+)
 
 class Equipamento(db.Model):
     __tablename__ = 'equipamentos'
@@ -126,7 +183,7 @@ class Equipamento(db.Model):
     data_cadastro = db.Column(db.DateTime, nullable=False, 
                               default=datetime.now().astimezone(fuso_horario))
     data_atualizacao = db.Column(db.DateTime, nullable=True)
-    status = db.Column(db.String(20), nullable=False, default='Disponível')
+    status = db.Column(db.Enum(Status))
     motivo_indisponibilidade = db.Column(db.Text, nullable=True)
     ativo = db.Column(db.Boolean, nullable=False, default=True)
 
@@ -172,8 +229,7 @@ class Sala(db.Model):
     data_cadastro = db.Column(db.DateTime, nullable=False, 
                               default=datetime.now().astimezone(fuso_horario))
     data_atualizacao = db.Column(db.DateTime, nullable=True)
-    status = db.Column(db.String(20), nullable=False, 
-                       default='Disponível')
+    status = db.Column(db.Enum(Status))
     motivo_indisponibilidade = db.Column(db.Text, nullable=True)
     ativo = db.Column(db.Boolean, nullable=False, default=True)
     
@@ -189,13 +245,11 @@ class Relatorio(db.Model):
     __table_args__ = {'extend_existing': True}
     
     id = db.Column(db.Integer, primary_key=True)
-    tipo = db.Column(db.String(20), nullable=False)
+    
     conteudo = db.Column(db.Text, nullable=False)
     manutencao = db.Column(db.Boolean, nullable=False, default=False)
-    defeito = db.Column(db.Boolean, nullable=False, default=False)
-    reforma = db.Column(db.Boolean, nullable=False, default=False)
     detalhes = db.Column(db.Text, nullable=False)
-    status = db.Column(db.String(20), nullable=False, default='Aberto')
+    status = db.Column(db.Enum(Status))
     data_abertura = db.Column(db.DateTime, nullable=False, 
                               default=datetime.now().astimezone(fuso_horario))
     data_atualizacao = db.Column(db.DateTime, nullable=True)
@@ -205,13 +259,47 @@ class Relatorio(db.Model):
     # Um relatório está associado a um usuário, e uma sala ou equipamento
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), 
                            nullable=False)
-    equipamento_id = db.Column(db.Integer, db.ForeignKey('equipamentos.id'), 
-                           nullable=True)
+    tipo = db.Column(db.String(50)) # discriminador
+    __mapper_args__ = {
+        'polymorphic_identity': 'relatorios',
+        'polymorphic_on': tipo
+    }
+
+
+class RelatorioSala(Relatorio):
+    __tablename__ = 'relatorios_sala'
+    
+    id = db.Column(db.Integer, db.ForeignKey('relatorios.id'), primary_key=True)
+    reforma = db.Column(db.Boolean, nullable=False, default=False)
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'relatorios_sala'
+    }
+
+    # Um relatório está associado a um sala
     sala_id = db.Column(db.Integer, db.ForeignKey('salas.id'), 
+                           nullable=True)
+    
+    sala = db.relationship('Sala', back_populates='relatorios')
+
+    def __repr__(self):
+        return f"Relatório #{self.id} - {self.tipo} - {self.status}"
+
+
+class RelatorioEquipamento(Relatorio):
+    __tablename__ = 'relatorios_equipamento'
+    
+    id = db.Column(db.Integer, db.ForeignKey('relatorios.id'), primary_key=True)
+    defeito = db.Column(db.Boolean, nullable=False, default=False)
+    
+    __mapper_args__ = {
+        'polymorphic_identity': 'relatorios_equipamento'
+    }
+    # Um relatório está associado a um equipamento
+    equipamento_id = db.Column(db.Integer, db.ForeignKey('equipamentos.id'), 
                            nullable=True)
 
     equipamento = db.relationship('Equipamento', back_populates='relatorios')
-    sala = db.relationship('Sala', back_populates='relatorios')
 
     def __repr__(self):
         return f"Relatório #{self.id} - {self.tipo} - {self.status}"
