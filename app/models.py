@@ -127,25 +127,54 @@ class Solicitacao(db.Model):
         return f"Solicitação #{self.id} - {self.tipo} - {self.status}"
  
 
+# Tabelas que associam as solicitações as salas
+solicitacao_s = db.Table('solicitacao_s',
+    db.Column('solicitacao_sala_id', db.Integer, db.ForeignKey('solicitacoes_salas.id'), 
+              primary_key=True),
+    db.Column('sala_id', db.Integer, db.ForeignKey('salas.id'), 
+              primary_key=True)
+)
+
 class SolicitacaoSala(Solicitacao):
     __tablename__ = 'solicitacoes_salas'
     
     id = db.Column(db.Integer, db.ForeignKey('solicitacoes.id'), primary_key=True)
 
     # Uma solicitação está associada a múltiplos equipamentos ou uma sala
-    sala = db.relationship('Sala', back_populates='solicitacoes')
-
+    salas = db.relationship('Sala', secondary= solicitacao_s, 
+                                    back_populates='solicitacoes')
     __mapper_args__ = {
         'polymorphic_identity': 'solicitacoes_salas',
     }
 
+class Sala(db.Model):
+    __tablename__ = 'salas'
+    __table_args__ = {'extend_existing': True}
     
+    id = db.Column(db.Integer, primary_key=True)
+    numero = db.Column(db.String(20), unique=True, nullable=False)
+    setor = db.Column(db.String(20), nullable=False)
+    qtd_aluno = db.Column(db.Integer, nullable=False)
+    data_cadastro = db.Column(db.DateTime, nullable=False, 
+                              default=datetime.now().astimezone(fuso_horario))
+    data_atualizacao = db.Column(db.DateTime, nullable=True)
+    status = db.Column(db.Enum(Status))
+    motivo_indisponibilidade = db.Column(db.Text, nullable=True)
+    ativo = db.Column(db.Boolean, nullable=False, default=True)
+    
+    # Uma sala faz parte de diferentes solicitações e relatórios
+    solicitacoes = db.relationship('SolicitacaoSala', secondary=solicitacao_s, 
+                                   back_populates='salas')
+    relatorios = db.relationship('RelatorioSala', back_populates='sala')
+    
+    def __repr__(self):
+        return f"{self.numero} - {self.setor} - Alunos: {self.qtd_aluno} - {self.status}"
 
 # Tabelas que associam as solicitações aos equipamentos
-solicitacao_s = db.Table('solicitacao_s',
-    db.Column('solicitacao_sala_id', db.Integer, db.ForeignKey('solicitacoes_salas.id'), 
+solicitacao_e = db.Table('solicitacao_e',
+    db.Column('solicitacao_equipamento_id', db.Integer, db.ForeignKey('solicitacoes_equipamentos.id'), 
               primary_key=True),
-    db.Column('sala_id', db.Integer, db.ForeignKey('salas.id'), 
+    db.Column('equipamento_id', db.Integer, db.ForeignKey('equipamentos.id'), 
               primary_key=True)
 )
 
@@ -157,7 +186,7 @@ class SolicitacaoEquipamento(Solicitacao):
     tipo_eqp_id = db.Column(db.Integer, db.ForeignKey('tipos_equipamento.id'), 
                            nullable=True)
     # Tabelas que associam as solicitações aos equipamentos
-    equipamentos = db.relationship('Equipamento', secondary='solicitacao_e', 
+    equipamentos = db.relationship('Equipamento', secondary=solicitacao_e, 
                                    back_populates='solicitacoes')
     tipo_eqp = db.relationship('TipoEquipamento', back_populates='solicitacoes')
 
@@ -165,13 +194,7 @@ class SolicitacaoEquipamento(Solicitacao):
         'polymorphic_identity': 'solicitacoes_equipamentos'
     }
 
-# Tabelas que associam as solicitações aos equipamentos
-solicitacao_e = db.Table('solicitacao_equip',
-    db.Column('solicitacao_equipamento_id', db.Integer, db.ForeignKey('solicitacoes_equipamentos.id'), 
-              primary_key=True),
-    db.Column('equipamento_id', db.Integer, db.ForeignKey('equipamentos.id'), 
-              primary_key=True)
-)
+
 
 class Equipamento(db.Model):
     __tablename__ = 'equipamentos'
@@ -193,9 +216,9 @@ class Equipamento(db.Model):
 
     # Um equipamento faz parte de diferentes solicitações e relatórios
     tipo_eqp = db.relationship('TipoEquipamento', back_populates='equipamentos')
-    solicitacoes = db.relationship('Solicitacao', secondary=solicitacao_e, 
+    solicitacoes = db.relationship('SolicitacaoEquipamento', secondary=solicitacao_e, 
                                    back_populates='equipamentos')
-    relatorios = db.relationship('Relatorio', back_populates='equipamento')
+    relatorios = db.relationship('RelatorioEquipamento', back_populates='equipamento')
    
     def __repr__(self):
         return f"{self.patrimonio} - {self.descricao}"
@@ -210,35 +233,14 @@ class TipoEquipamento(db.Model):
     qtd_disponivel = db.Column(db.Integer, nullable=False, default=0)
     ativo = db.Column(db.Boolean, nullable=False, default=True)
 
+
     # Um tipo está associado a múltiplos equipamentos e solicitações
     equipamentos = db.relationship('Equipamento', back_populates='tipo_eqp')
-    solicitacoes = db.relationship('Solicitacao', back_populates='tipo_eqp')
+    solicitacoes = db.relationship('SolicitacaoEquipamento', back_populates='tipo_eqp')
 
     def __repr__(self):
         return f"{self.nome} - Qtd. Disponível: {self.qtd_disponivel}"
 
-
-class Sala(db.Model):
-    __tablename__ = 'salas'
-    __table_args__ = {'extend_existing': True}
-    
-    id = db.Column(db.Integer, primary_key=True)
-    numero = db.Column(db.String(20), unique=True, nullable=False)
-    setor = db.Column(db.String(20), nullable=False)
-    qtd_aluno = db.Column(db.Integer, nullable=False)
-    data_cadastro = db.Column(db.DateTime, nullable=False, 
-                              default=datetime.now().astimezone(fuso_horario))
-    data_atualizacao = db.Column(db.DateTime, nullable=True)
-    status = db.Column(db.Enum(Status))
-    motivo_indisponibilidade = db.Column(db.Text, nullable=True)
-    ativo = db.Column(db.Boolean, nullable=False, default=True)
-    
-    # Uma sala faz parte de diferentes solicitações e relatórios
-    solicitacoes = db.relationship('Solicitacao', back_populates='sala')
-    relatorios = db.relationship('Relatorio', back_populates='sala')
-    
-    def __repr__(self):
-        return f"{self.numero} - {self.setor} - Alunos: {self.qtd_aluno} - {self.status}"
 
 class Relatorio(db.Model):
     __tablename__ = 'relatorios'
