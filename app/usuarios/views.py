@@ -52,7 +52,8 @@ def registrar():
         usuario = Usuario(nome=form.nome.data, 
                           identificacao=form.identificacao.data,
                           email=form.email.data, 
-                          senha=hash_senha)
+                          senha=hash_senha,
+                          tipo=form.tipo.data)
         db.session.add(usuario)
         db.session.commit()
         flash('Sua conta foi registrada com sucesso!\
@@ -175,7 +176,7 @@ def novo_usuario():
                           email=form.email.data, 
                           senha=hash_senha,
                           imagem_perfil=imagem_perfil, 
-                          admin=form.admin.data)
+                          tipo=form.tipo.data)
         db.session.add(usuario)
         db.session.commit()
         flash('A conta foi registrada com sucesso!.', 'success')
@@ -191,7 +192,7 @@ def atualiza_usuario(usuario_id):
     # Recupera o usuário pela ID e retorna erro 404 caso não encontre
     usuario = Usuario.query.filter_by(
             id=usuario_id).filter_by(ativo=True).first_or_404()
-
+    print(usuario.tipo.name)
     # Valida os dados do formulário enviado e atualiza
     # o registro do usuário especificado no banco de dados
     form = AdminAtualizaPerfilForm()
@@ -205,14 +206,14 @@ def atualiza_usuario(usuario_id):
             form.senha.data).decode('utf-8')
         usuario.senha = hash_senha
         usuario.nome = form.nome.data
-        usuario.admin = form.admin.data
+        usuario.tipo = form.tipo.data
         usuario.data_atualizacao = datetime.now().astimezone(fuso_horario)
         db.session.commit()
         flash('A conta do usuário foi atualizada com sucesso!', 'success')
         return redirect(url_for('principal.inicio', tab=5))
     elif request.method == 'GET':
         form.nome.data = usuario.nome
-        form.admin.data = usuario.admin
+        form.tipo.data = usuario.tipo.name
     imagem_perfil = url_for('static', filename='img_perfil/' 
                          + usuario.imagem_perfil)
 

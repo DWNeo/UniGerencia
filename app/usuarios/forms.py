@@ -1,6 +1,7 @@
+from tkinter.tix import Select
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
-from wtforms import StringField, PasswordField, SubmitField, BooleanField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 from flask_login import current_user
 
@@ -26,6 +27,7 @@ class RegistraForm(FlaskForm):
     confirmar_senha = PasswordField('Confirmar Senha', validators=[
         DataRequired(message=obrigatorio), 
         EqualTo('senha', message=senha_diferente)])
+    tipo = SelectField(u'Tipo Usuário', choices=[('ALUNO', 'Aluno'), ('PROF','Professor')])
     submit = SubmitField('Registrar')
 
     # Valida se a identificação inserida no formulário é única
@@ -71,6 +73,7 @@ class AtualizaPerfilForm(FlaskForm):
         EqualTo('senha', message=senha_diferente)])
     imagem = FileField('Imagem de Perfil', validators=[
         FileAllowed(['jpg', 'png'], message=imagem_invalida)])
+    tipo = SelectField(u'Tipo Usuário', choices=[('ALUNO', 'Aluno'), ('PROF','Professor'), ('ADMIN', 'Administrador')])
     submit = SubmitField('Atualizar')
 
     def validate_identificacao(self, identificacao):
@@ -99,7 +102,7 @@ class AdminAtualizaPerfilForm(FlaskForm):
         EqualTo('senha', message=senha_diferente)])
     imagem = FileField('Imagem de Perfil', validators=[
         FileAllowed(['jpg', 'png'], message=imagem_invalida)])
-    admin = BooleanField('Administrador')
+    tipo = SelectField(u'Tipo Usuário', choices=[('ALUNO', 'Aluno'), ('PROF','Professor'), ('ADMIN', 'Administrador')])
     submit = SubmitField('Atualizar')
 
 # Formulário para cadastro de um novo usuário por um admin
@@ -121,7 +124,7 @@ class AdminRegistraForm(FlaskForm):
         EqualTo('senha', message=senha_diferente)])
     imagem = FileField('Imagem de Perfil', validators=[
         FileAllowed(['jpg', 'png'], message=imagem_invalida)])
-    admin = BooleanField('Administrador')
+    tipo = SelectField(u'Tipo Usuário', choices=[('ALUNO', 'Aluno'), ('PROF','Professor'), ('ADMIN', 'Administrador')])
     submit = SubmitField('Registrar')
 
     def validate_identificacao(self, identificacao):

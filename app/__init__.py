@@ -28,7 +28,7 @@ fuso_horario = timezone('America/Sao_Paulo')
 def create_app(config_class=Config):
     
     from app import models
-    db.create_all()
+    # db.create_all()
 
     # Importa as views
     from app.principal.views import principal

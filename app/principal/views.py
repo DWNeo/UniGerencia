@@ -30,17 +30,17 @@ def inicio():
     # Verifica se há solicitações em uso atrasadas 
     # e atualiza o status das que estão
     for solicitacao in solicitacoes:
-        if solicitacao.status == 'Em Uso':
+        if solicitacao.status == 'EMUSO':
             # Compara o horário atual com o previsto para devolução
             if (datetime.now().astimezone(fuso_horario) > 
                 solicitacao.data_devolucao.astimezone(fuso_horario)):
                 # Troca o status dos registros associados
-                solicitacao.status = 'Em Atraso'
+                solicitacao.status = 'PENDENTE'
                 if solicitacao.equipamentos:
                     for equipamento in solicitacao.equipamentos:
-                        equipamento.status = 'Em Atraso'
+                        equipamento.status = 'PENDENTE'
                 if solicitacao.sala:
-                    solicitacao.sala.status = 'Em Atraso'
+                    solicitacao.sala.status = 'PENDENTE'
                 db.session.commit()
                 envia_email_atraso(solicitacao)
 

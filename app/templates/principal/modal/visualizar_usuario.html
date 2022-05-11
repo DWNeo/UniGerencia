@@ -14,14 +14,10 @@
                     <div class="media-body">
                         <div class="article-metadata">
                             <a class="mr-2"><strong>Email:</strong> {{ usuario.email }}</a>
-                            {% if usuario.admin == True %}
-                                <a class="mr-2"><strong>Admin:</strong> Sim</a>
-                            {% else %}
-                                <a class="mr-2"><strong>Admin:</strong> Não</a>
-                            {% endif %}
-                        </div>
+                        </div> 
                         <h4 class="article-title"><strong>Nome:</strong> {{ usuario.nome }}</h4>
                         <p class="article-content"><strong>Identificação:</strong> {{ usuario.identificacao }}</p>
+                        <p class="article-content"><strong>Tipo Usuário:</strong> {{ usuario.tipo.value }}</p>
                     </div>
                 </article>
             </div>

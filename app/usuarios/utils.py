@@ -14,9 +14,10 @@ from app import mail
 def admin_required(f):
     @wraps(f)
     def wrap(*args, **kwargs):
-        if current_user.admin == True:
+        if current_user.tipo.name == 'ADMIN':
             return f(*args, **kwargs)
         else:
+            print(current_user.tipo.name)
             flash('Você não tem autorização para acessar esta página.',
                   'danger')
         return redirect(url_for('principal.inicio'))
