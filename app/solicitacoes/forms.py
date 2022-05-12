@@ -3,11 +3,12 @@ from datetime import datetime, date
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, SelectField, SelectMultipleField
 from wtforms.validators import (DataRequired, InputRequired, 
-                                ValidationError, NumberRange)
+                                ValidationError, NumberRange, 
+                                Length)
 from wtforms.fields.html5 import DateField, IntegerField, DateTimeLocalField
 
 from app import fuso_horario
-from app.locale import (obrigatorio, data_invalida, num_invalido)
+from app.locale import (obrigatorio, data_invalida, num_invalido, max_20)
 
 
 class SolicitacaoEquipamentoForm(FlaskForm):
@@ -88,3 +89,13 @@ class EntregaSolicitacaoForm(FlaskForm):
         if data_devolucao.data < datetime.now():
             print('TESTE VALIDATE')
             raise ValidationError(data_invalida)
+
+class TurnoForm(FlaskForm):
+    nome = StringField('Turno',  validators=[
+        DataRequired(message=obrigatorio), 
+        Length(max=20, message=max_20)] )
+    hora_inicio = DateTimeLocalField('Data Preferencial', 
+        format='%Y-%m-%dT%H:%M', default=datetime.now().astimezone(fuso_horario))
+    hora_fim = DateTimeLocalField('Data Preferencial', 
+        format='%Y-%m-%dT%H:%M', default=datetime.now().astimezone(fuso_horario))
+    submit = SubmitField('Cadastrar')

@@ -167,7 +167,7 @@ def novo_usuario():
         # Realiza o tratamento da imagem enviada
         if form.imagem.data:
             arquivo_imagem = salva_imagem(form.imagem.data)
-            imagem_perfil = arquivo_imagem
+        imagem_perfil = arquivo_imagem
         # Gera o hash da senha do novo usuário
         hash_senha = bcrypt.generate_password_hash(
             form.senha.data).decode('utf-8')

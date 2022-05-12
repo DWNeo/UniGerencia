@@ -7,12 +7,12 @@
         {{ form.hidden_tag() }}
         <fieldset class="form-group">
             <legend class="border-bottom mb-4">Novo Usuário</legend>
-            {{ render_field(form.admin) }}
             {{ render_field(form.nome) }}
             {{ render_field(form.identificacao) }}
             {{ render_field(form.email) }}
             {{ render_field(form.senha) }}
             {{ render_field(form.confirmar_senha) }}
+            {{ render_field(form.tipo) }}
             <div class="form-group">
                 {{ form.imagem.label() }}
                 {{ form.imagem(class="form-control-file") }}

@@ -1,12 +1,13 @@
-from datetime import datetime
+from datetime import datetime 
+import pandas as pd
 
 from flask import (render_template, url_for, flash, 
                    redirect, abort, request, Blueprint)
 from flask_login import current_user, login_required
 
 from app import db, fuso_horario
-from app.models import Solicitacao, Equipamento, Sala, TipoEquipamento
-from app.solicitacoes.forms import (SolicitacaoEquipamentoForm, 
+from app.models import Solicitacao, Equipamento, Sala, TipoEquipamento, Turno
+from app.solicitacoes.forms import (SolicitacaoEquipamentoForm, TurnoForm,
                                     SolicitacaoSalaForm, EntregaSolicitacaoForm,
                                     ConfirmaSolicitacaoEquipamentoForm,
                                     ConfirmaSolicitacaoSalaForm)
@@ -366,3 +367,25 @@ def exclui_solicitacao(solicitacao_id):
     db.session.commit()
     flash('A solicitação foi excluída com sucesso!', 'success')
     return redirect(url_for('principal.inicio'))
+
+@solicitacoes.route("/novo_turno", methods=['GET', 'POST'])
+@login_required
+@admin_required
+def novo_turno():
+    # Valida os dados do formulário enviado e insere um 
+    # novo registro de turno no banco de dados
+    form = TurnoForm()
+    if form.validate_on_submit():
+        nome = form.nome.data
+        data_inicio = datetime.timestamp(form.hora_inicio.data) 
+        data_fim =  datetime.timestamp(form.hora_fim.data) 
+        turno = Turno(nome,data_inicio,data_fim)
+        
+        db.session.add(turno)
+        db.session.commit()
+        flash('O turno foi cadastrado com sucesso!', 'success') 
+        return redirect(url_for('principal.inicio', tab=3))
+
+    return render_template('solicitacoes/novo_turno.html', 
+                           title='Novo Turno',
+                           legend='Novo Turno', form=form)

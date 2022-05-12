@@ -15,13 +15,13 @@
     <!-- Cria uma nova linha pra cada registro de equipamento ativo -->
     {% for equipamento in equipamentos %}
     <!-- Muda a cor da linha e texto de acordo com o status -->
-    {% if equipamento.status == 'Solicitado' %}
+    {% if equipamento.status.name == 'SOLICITADO' %}
         <tr class="table-success">
-    {% elif equipamento.status == 'Em Atraso' %}
+    {% elif equipamento.status.name == 'PENDENTE' %}
         <tr class="table-danger">
-    {% elif equipamento.status == 'Em Uso' %}
+    {% elif equipamento.status.name == 'EMUSO' %}
         <tr class="table-info">
-    {% elif equipamento.status == 'Indisponível' or equipamento.status == 'Em Manutenção' %}
+    {% elif equipamento.status.name == 'DESABILITADO' or equipamento.status.name == 'EMMANUTENCAO' %}
         <tr class="text-secondary">
     {% else %}
         <tr>
@@ -31,15 +31,15 @@
         <td class="align-middle">{{ equipamento.data_cadastro.strftime('%d/%m/%Y %H:%M:%S') }}</td>
         <td class="align-middle">{{ equipamento.patrimonio }}</td>
         <td class="align-middle">{{ equipamento.tipo_eqp.nome }}</td>
-        <td class="align-middle">{{ equipamento.status }}</td>
+        <td class="align-middle">{{ equipamento.status.value }}</td>
         <td class="align-middle">
             <!-- Botões de Ação-->
             <a class="btn-lg btn-outline-info" href="#" data-toggle="modal" data-target="#visualizarEquipamento{{ equipamento.id }}"><i class="fas fa-search"></i></a>
             <a class="btn-lg btn-outline-secondary" href="{{ url_for('equipamentos.atualiza_equipamento', eqp_id=equipamento.id) }}"><i class="fas fa-edit"></i></a>
-            {% if equipamento.status == 'Disponível' %}
+            {% if equipamento.status.name == 'ABERTO' %}
             <a class="btn-lg btn-outline-warning" href="#" data-toggle="modal" data-target="#indisponibilizarEquipamento{{ equipamento.id }}"><i class="fas fa-notes-medical"></i></a>
             {% endif %}
-            {% if equipamento.status == 'Indisponível' or equipamento.status == 'Em Manutenção' %}
+            {% if equipamento.status.name == 'DESABILITADO' or equipamento.status.name == 'EMMANUTENCAO' %}
             <a class="btn-lg btn-outline-success" href="#" data-toggle="modal" data-target="#disponibilizarEquipamento{{ equipamento.id }}"><i class="fas fa-clipboard-check"></i></a>
             {% endif %}
             <a class="btn-lg btn-outline-danger" href="#" data-toggle="modal" data-target="#excluirEquipamento{{ equipamento.id }}"><i class="fas fa-trash"></i></a>

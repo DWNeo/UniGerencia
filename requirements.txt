@@ -19,6 +19,10 @@ MarkupSafe==2.1.1
 Pillow==9.1.0
 pycparser==2.21
 pytz==2022.1
+numpy==1.22.3 
+pandas==1.4.2 
+python-dateutil==2.8.2 
+six==1.16.0
 SQLAlchemy==1.4.36
 Werkzeug==2.1.2
 whitenoise==6.0.0

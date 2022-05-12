@@ -14,13 +14,13 @@
     <tbody>
     {% for sala in salas %}
     <!-- Muda a cor da linha e texto de acordo com o status -->
-    {% if sala.status == 'Solicitada' %}
+    {% if sala.status.name == 'SOLICITADO' %}
         <tr class="table-success">
-    {% elif sala.status == 'Em Atraso' %}
+    {% elif sala.status.name == 'PENDENTE' %}
         <tr class="table-danger">
-    {% elif sala.status == 'Em Uso' %}
+    {% elif sala.status.name == 'EMUSO' %}
         <tr class="table-info">
-    {% elif sala.status == 'Indisponível' or sala.status == 'Em Manutenção' %}
+    {% elif sala.status.name == 'DESABILITADO' or sala.status.name == 'EMMANUTENCAO' %}
         <tr class="text-secondary">
     {% else %}
         <tr>
@@ -30,15 +30,15 @@
         <td class="align-middle">{{ sala.data_cadastro.strftime('%d/%m/%Y %H:%M:%S') }}</td>
         <td class="align-middle">{{ sala.numero }}</td>
         <td class="align-middle">{{ sala.setor }}</td>
-        <td class="align-middle">{{ sala.status }}</td>
+        <td class="align-middle">{{ sala.status.value }}</td>
         <td class="align-middle">
             <!-- Botões de Ação-->
             <a class="btn-lg btn-outline-info" href="#" data-toggle="modal" data-target="#visualizarSala{{ sala.id }}"><i class="fas fa-search"></i></a>
             <a class="btn-lg btn-outline-secondary" href="{{ url_for('salas.atualiza_sala', sala_id=sala.id) }}"><i class="fas fa-edit"></i></a>
-            {% if sala.status == 'Disponível' %}
+            {% if sala.status.name == 'ABERTO' %}
             <a class="btn-lg btn-outline-warning" href="#" data-toggle="modal" data-target="#indisponibilizarSala{{ sala.id }}"><i class="fas fa-notes-medical"></i></a>
             {% endif %}
-            {% if sala.status == 'Indisponível' or sala.status == 'Em Manutenção' %}
+            {% if sala.status.name == 'DESABILITADO' or sala.status.name == 'EMMANUTENCAO' %}
             <a class="btn-lg btn-outline-success" href="#" data-toggle="modal" data-target="#disponibilizarSala{{ sala.id }}"><i class="fas fa-clipboard-check"></i></a>
             {% endif %}
             <a class="btn-lg btn-outline-danger" href="#" data-toggle="modal" data-target="#excluirSala{{ sala.id }}"><i class="fas fa-trash"></i></a>

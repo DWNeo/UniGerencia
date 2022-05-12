@@ -1,4 +1,5 @@
 from datetime import datetime
+from email.policy import default
 import enum
 
 from itsdangerous import URLSafeTimedSerializer as Serializer
@@ -77,7 +78,8 @@ class Post(db.Model):
         return f"Post: {self.titulo} ({self.data_postado})"
 
 class Status(enum.Enum):
-    ABERTO = 'Aberto' 
+    ABERTO = 'Aberto'
+    SOLICITADO = 'Solicitado' 
     EMUSO = 'Em Uso'
     FECHADO = 'Fechado'
     CANCELADO = 'Cancelado'
@@ -98,7 +100,7 @@ class Solicitacao(db.Model):
     __table_args__ = {'extend_existing': True}
     
     id = db.Column(db.Integer, primary_key=True)
-    status = db.Column(db.Enum(Status))
+    status = db.Column(db.Enum(Status), default=Status.ABERTO.name)
     data_abertura = db.Column(db.DateTime, nullable=False, 
                               default=datetime.now().astimezone(fuso_horario))
     data_inicio_pref = db.Column(db.DateTime, nullable=False)
@@ -158,7 +160,7 @@ class Sala(db.Model):
     data_cadastro = db.Column(db.DateTime, nullable=False, 
                               default=datetime.now().astimezone(fuso_horario))
     data_atualizacao = db.Column(db.DateTime, nullable=True)
-    status = db.Column(db.Enum(Status))
+    status = db.Column(db.Enum(Status), default=Status.ABERTO.name)
     motivo_indisponibilidade = db.Column(db.Text, nullable=True)
     ativo = db.Column(db.Boolean, nullable=False, default=True)
     
@@ -206,7 +208,7 @@ class Equipamento(db.Model):
     data_cadastro = db.Column(db.DateTime, nullable=False, 
                               default=datetime.now().astimezone(fuso_horario))
     data_atualizacao = db.Column(db.DateTime, nullable=True)
-    status = db.Column(db.Enum(Status))
+    status = db.Column(db.Enum(Status), default=Status.ABERTO.name)
     motivo_indisponibilidade = db.Column(db.Text, nullable=True)
     ativo = db.Column(db.Boolean, nullable=False, default=True)
 
