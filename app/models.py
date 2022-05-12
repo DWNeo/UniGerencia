@@ -30,7 +30,7 @@ class Usuario(db.Model, UserMixin):
     senha = db.Column(db.String(60), nullable=False)
     data_cadastro = db.Column(db.DateTime, nullable=False, 
                               default=datetime.now().astimezone(fuso_horario))
-    tipo = db.Column(db.Enum(TipoUsuario))
+    tipo = db.Column(db.Enum(TipoUsuario), nullable=False)
     ativo = db.Column(db.Boolean, nullable=False, default=True)
     imagem_perfil = db.Column(db.String(20), nullable=False, 
                               default='default.jpg')

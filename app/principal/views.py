@@ -5,7 +5,7 @@ from flask_login import login_required, current_user
 
 from app import db, fuso_horario
 from app.models import Post, Equipamento, Sala, Usuario, Solicitacao
-from app.usuarios.utils import envia_email_atraso
+from app.usuarios.utils import admin_required, envia_email_atraso
 from app.solicitacoes.forms import EntregaSolicitacaoForm
 
 principal = Blueprint('principal', __name__)
@@ -59,6 +59,17 @@ def inicio():
     return render_template('principal/inicio.html', tab=tab, form=form,
                            posts=posts, equipamentos=equipamentos, salas=salas, 
                            usuarios=usuarios, solicitacoes=solicitacoes)
+
+
+@principal.route("/criar_db", methods=['GET'])
+@login_required
+@admin_required
+def criar_db():
+    # Cria as tabelas no banco conforme as classes no models caso não existam
+    db.create_all()
+    db.session.commit()
+    
+    return 'Tabelas no banco criadas com sucesso!'
 
 
 @principal.route("/sobre")

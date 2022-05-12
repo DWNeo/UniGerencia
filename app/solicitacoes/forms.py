@@ -5,7 +5,7 @@ from wtforms import StringField, SubmitField, SelectField, SelectMultipleField
 from wtforms.validators import (DataRequired, InputRequired, 
                                 ValidationError, NumberRange, 
                                 Length)
-from wtforms.fields.html5 import DateField, IntegerField, DateTimeLocalField
+from wtforms.fields.html5 import IntegerField, DateTimeLocalField, TimeField
 
 from app import fuso_horario
 from app.locale import (obrigatorio, data_invalida, num_invalido, max_20)
@@ -91,11 +91,11 @@ class EntregaSolicitacaoForm(FlaskForm):
             raise ValidationError(data_invalida)
 
 class TurnoForm(FlaskForm):
-    nome = StringField('Turno',  validators=[
+    nome = StringField('Nome',  validators=[
         DataRequired(message=obrigatorio), 
         Length(max=20, message=max_20)] )
-    hora_inicio = DateTimeLocalField('Data Preferencial', 
-        format='%Y-%m-%dT%H:%M', default=datetime.now().astimezone(fuso_horario))
-    hora_fim = DateTimeLocalField('Data Preferencial', 
-        format='%Y-%m-%dT%H:%M', default=datetime.now().astimezone(fuso_horario))
+    hora_inicio = TimeField('Data de Início', 
+        format='%H:%M', default=datetime.now().astimezone(fuso_horario))
+    hora_fim = TimeField('Data de Fim', 
+        format='%H:%M', default=datetime.now().astimezone(fuso_horario))
     submit = SubmitField('Cadastrar')

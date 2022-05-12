@@ -1,0 +1,20 @@
+<!-- Página com o formulário para inserir uma nova solicitação de sala -->
+{% extends "layout.html" %}
+{% from "formhelper.html" import render_field, render_multiple, render_button %}
+{% block conteudo %}
+<div class="content-section">
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">{{ legend }}</legend>
+            {{ render_field(form.nome) }}
+            {{ render_field(form.hora_inicio) }}
+            {{ render_field(form.hora_fim) }}
+        </fieldset>
+        <div class="form-group">
+            {{ render_button(form.submit) }}
+            <a class="btn btn-outline-secondary" href="{{ url_for('principal.inicio') }}"><i class="fas fa-arrow-left"></i> Voltar</a>
+        </div>
+    </form>
+</div>
+{% endblock conteudo %}

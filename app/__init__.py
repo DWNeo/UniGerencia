@@ -8,28 +8,29 @@ from pytz import timezone
 
 from app.config import Config
 
-# Inicializa o Flask e seus componentes
-app = Flask(__name__)
-app.config.from_object(Config)
 # Importa os componentes do Flask
-db = SQLAlchemy(app)
-bcrypt = Bcrypt(app)
-mail = Mail(app)
-login_manager = LoginManager(app)
+db = SQLAlchemy()
+bcrypt = Bcrypt()
+mail = Mail()
+login_manager = LoginManager()
 
 # Define a tela de login padrão
 login_manager.login_view = 'usuarios.login'
-
 
 # Define o fuso horário a ser considerado no datetime
 # No caso desta aplicação é o horário de São Paulo (UTC-3)
 fuso_horario = timezone('America/Sao_Paulo')
 
 def create_app(config_class=Config):
-    
-    from app import models
-    db.create_all()
+    # Inicializa o Flask e seus componentes
+    app = Flask(__name__)
+    app.config.from_object(Config)
 
+    db.init_app(app)
+    bcrypt.init_app(app)
+    login_manager.init_app(app)
+    mail.init_app(app)
+    
     # Importa as views
     from app.principal.views import principal
     from app.erros.handlers import erros
@@ -51,5 +52,5 @@ def create_app(config_class=Config):
     # Importa o WhiteNoise
     # Permite que arquivos na pasta 'static' funcionem corretamente no Heroku
     app.wsgi_app = WhiteNoise(app.wsgi_app, root='app/static/')
-    
+
     return app

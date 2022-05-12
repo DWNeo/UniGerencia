@@ -384,7 +384,7 @@ def novo_turno():
         db.session.add(turno)
         db.session.commit()
         flash('O turno foi cadastrado com sucesso!', 'success') 
-        return redirect(url_for('principal.inicio', tab=3))
+        return redirect(url_for('principal.inicio', tab=1))
 
     return render_template('solicitacoes/novo_turno.html', 
                            title='Novo Turno',
