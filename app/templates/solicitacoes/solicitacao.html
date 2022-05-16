@@ -1,20 +1,20 @@
 <!-- Página para visualizar um equipamento com mais detalhes -->
 {% extends "layout.html" %}
 {% block conteudo %}
-{% if solicitacao.status != 'Em Atraso' %}
+{% if solicitacao.status.name != 'PENDENTE' %}
 <div class="alert alert-info" role="alert" id="alert-message">
     <button type="button" class="close" data-dismiss="alert">
     <span>&times;</span>
     </button>
-    {% if solicitacao.status == 'Em Aberto' %}
+    {% if solicitacao.status.name == 'ABERTO' %}
     Esta solicitação ainda não foi confirmada.
-    {% elif solicitacao.status == 'Em Espera' %}
+    {% elif solicitacao.status.name == 'SOLICITADO' %}
     Esta solicitação está na lista de espera.
-    {% elif solicitacao.status == 'Confirmada' %}
+    {% elif solicitacao.status.name == 'CONFIRMADO' %}
     Esta solicitação foi confirmada. 
-    {% elif solicitacao.status == 'Cancelada' %}
+    {% elif solicitacao.status.name == 'CANCELADO' %}
     Esta solicitação foi cancelada.
-    {% elif solicitacao.status == 'Finalizada' %}
+    {% elif solicitacao.status.name == 'FECHADO' %}
     Esta solicitação já foi finalizada.
     {% endif %}
 </div>
@@ -29,18 +29,23 @@
 <article class="media content-section">
     <div class="media-body">
         <div class="article-metadata mb-3">
-            <a class="mr-2"><strong>Status:</strong> {{ solicitacao.status }}</a>
+            <a class="mr-2"><strong>Status:</strong> {{ solicitacao.status.value }}</a>
             <a class="mr-2"><strong>Tipo:</strong> {{ solicitacao.tipo }}</a>
             <small class="text-muted"><strong>{{ solicitacao.data_abertura.strftime('%d/%m/%Y %H:%M:%S') }}</strong></small>
         </div>
-        {% if solicitacao.tipo_eqp.nome %}
-            <h5 class="article-content"><strong>Tipo de Equipamento:</strong> {{ solicitacao.tipo_eqp.nome }}</h5>
+        {% if solicitacao.tipo == 'solicitacoes_equipamentos' %}
+            {% if solicitacao.tipo_eqp.nome %}
+                <h5 class="article-content"><strong>Tipo de Equipamento:</strong> {{ solicitacao.tipo_eqp.nome }}</h5>
+            {% endif %}
         {% endif %}
-        {% if solicitacao.qtd_equipamento %}
-            <h5 class="article-content"><strong>Quantidade Solicitada:</strong> {{ solicitacao.qtd_equipamento }}</h5>
+        {% if solicitacao.quantidade %}
+            <h5 class="article-content"><strong>Quantidade Solicitada:</strong> {{ solicitacao.quantidade }}</h5>
         {% endif %}
-        {% if solicitacao.data_preferencial %}
-            <h5 class="article-content"><strong>Data Preferencial:</strong> {{ solicitacao.data_preferencial.strftime('%d/%m/%Y %H:%M:%S') }}</h5>
+        {% if solicitacao.data_inicio_pref %}
+            <h5 class="article-content"><strong>Data Inicio Preferencial:</strong> {{ solicitacao.data_inicio_pref.strftime('%d/%m/%Y') }}</h5>
+        {% endif %}
+        {% if solicitacao.data_fim_pref %}
+            <h5 class="article-content"><strong>Data Fim Preferencial:</strong> {{ solicitacao.data_fim_pref.strftime('%d/%m/%Y') }}</h5>
         {% endif %}
         {% if solicitacao.data_entrega %}
             <h5 class="article-content"><strong>Data de Empréstimo:</strong> {{ solicitacao.data_entrega.strftime('%d/%m/%Y %H:%M:%S') }}</h5>
@@ -56,27 +61,34 @@
         {% endif %}
     </div>
 </article>
-{% if solicitacao.sala %}
-<article class="media content-section">
-    <div class="media-body">
-        <div class="article-metadata mb-3">
-            <a class="mr-2"><strong>Sala Solicitada</strong></a>
+{% if solicitacao.tipo == 'solicitacoes_salas' %}
+
+    {% for sala in solicitacao.salas %}
+    <article class="media content-section">
+        <div class="media-body">
+            <div class="article-metadata mb-3">
+                <a class="mr-2" href="#"><strong>Salas Solicitada: #{{ loop.index }}</strong></a>
+            </div>
+        <h5 class="article-content"><strong>Número:</strong> {{ sala.numero }}</h5>
+        <h5 class="article-content"><strong>Setor:</strong> {{ sala.setor.name }}</h5>
+        <h5 class="article-content"><strong>Qtd. de Alunos:</strong> {{ sala.qtd_aluno }}</h5>
         </div>
-        <h5 class="article-content"><strong>Número:</strong> {{ solicitacao.sala.numero }}</h5>
-        <h5 class="article-content"><strong>Setor:</strong> {{ solicitacao.sala.setor }}</h5>
-        <h5 class="article-content"><strong>Qtd. de Alunos:</strong> {{ solicitacao.sala.qtd_aluno }}</h5>
-    </div>
-</article>
+    </article>
+    {% endfor %}
+    
+
 {% endif %}
-{% for equipamento in solicitacao.equipamentos %}
-<article class="media content-section">
-    <div class="media-body">
-        <div class="article-metadata mb-3">
-            <a class="mr-2" href="#"><strong>Equipamento Solicitado #{{ loop.index }}</strong></a>
+{% if solicitacao.tipo == 'solicitacoes_equipamentos' %}
+    {% for equipamento in solicitacao.equipamentos %}
+    <article class="media content-section">
+        <div class="media-body">
+            <div class="article-metadata mb-3">
+                <a class="mr-2" href="#"><strong>Equipamento Solicitado #{{ loop.index }}</strong></a>
+            </div>
+            <h5 class="article-content"><strong>Patrimônio:</strong> {{ equipamento.patrimonio }}</h5>
+            <h5 class="article-content"><strong>Descrição:</strong> {{ equipamento.descricao }}</h5>
         </div>
-        <h5 class="article-content"><strong>Patrimônio:</strong> {{ equipamento.patrimonio }}</h5>
-        <h5 class="article-content"><strong>Descrição:</strong> {{ equipamento.descricao }}</h5>
-    </div>
-</article>
-{% endfor %}
+    </article>
+    {% endfor %}
+{% endif %}
 {% endblock conteudo %}

@@ -18,13 +18,13 @@
             <!-- Linhas da Tabela -->
             <td class="align-middle">{{ relatorio.id }}</td>
             <td class="align-middle">{{ relatorio.data_abertura.strftime('%d/%m/%Y %H:%M:%S') }}</td>
-            <td class="align-middle">{{ relatorio.tipo }}</td>
+            <td class="align-middle">{{ relatorio.tipo_relatorio.value }}</td>
             <td class="align-middle">{{ relatorio.autor.nome }}</td>
-            <td class="align-middle">{{ relatorio.status }}</td>
+            <td class="align-middle">{{ relatorio.status.value }}</td>
             <td class="align-middle">
                 <!-- Botões de Ação-->
                 <a class="btn-lg btn-outline-info" href="#" data-toggle="modal" data-target="#visualizarRelatorio{{ relatorio.id }}"><i class="fas fa-search"></i></a>
-                {% if relatorio.status == 'Aberto' %}
+                {% if relatorio.status.name == 'ABERTO' %}
                 <a class="btn-lg btn-outline-secondary" href="{{ url_for('salas.atualiza_relatorio', sala_id=sala_id,id=relatorio.id) }}"><i class="fas fa-edit"></i></a>
                 {% endif %}
             </td>

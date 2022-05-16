@@ -4,7 +4,7 @@ from wtforms import (StringField, SubmitField, IntegerField, TextAreaField,
 from wtforms.validators import DataRequired, Length, ValidationError, NumberRange
 
 from app.models import Sala
-from app.locale import obrigatorio, max_20, num_invalido, sala_existente
+from app.locale import obrigatorio, max_20, max_50, num_invalido, sala_existente
 
 # Formulário para cadastro de uma nova sala
 class SalaForm(FlaskForm):
@@ -12,9 +12,8 @@ class SalaForm(FlaskForm):
     numero = StringField('Número', validators=[
         DataRequired(message=obrigatorio), 
         Length(max=20, message=max_20)])
-    setor = StringField('Setor', validators=[
-        DataRequired(message=obrigatorio), 
-        Length(max=20, message=max_20)])
+    setor = SelectField('Setor', validators=[
+        DataRequired(message=obrigatorio)], coerce=int)
     qtd_aluno = IntegerField('Quantidade de Alunos', validators=[
         DataRequired(message=obrigatorio), 
         NumberRange(min=1, max=999, message=num_invalido)])
@@ -29,9 +28,8 @@ class SalaForm(FlaskForm):
 # Formulário para atualização de um sala
 class AtualizaSalaForm(FlaskForm):
     
-    setor = StringField('Setor', validators=[
-        DataRequired(message=obrigatorio), 
-        Length(max=20, message=max_20)])
+    setor = SelectField('Setor', validators=[
+        DataRequired(message=obrigatorio)], coerce=int)
     qtd_aluno = IntegerField('Quantidade de Alunos', validators=[
         DataRequired(message=obrigatorio), 
         NumberRange(min=1, max=999, message=num_invalido)])
@@ -48,7 +46,7 @@ class IndisponibilizaSalaForm(FlaskForm):
 class RelatorioSalaForm(FlaskForm):
 
     tipo = SelectField('Tipo do Relatório', choices=[
-        ('Revisão', 'Revisão'), ('Manutenção', 'Manutenção'), ('Outro', 'Outro')])
+        ('REVISAO', 'Revisão'), ('MANUTENCAO', 'Manutenção'), ('OUTRO', 'Outro')])
     conteudo = TextAreaField('Conteúdo', validators=[
         DataRequired(message=obrigatorio)])
     manutencao = BooleanField('Necessita de Manutenção')
@@ -59,13 +57,17 @@ class RelatorioSalaForm(FlaskForm):
 # Formulário para atualização de um relatório da sala
 class AtualizaRelatorioSalaForm(FlaskForm):
 
-    tipo = SelectField('Tipo do Relatório', choices=[
-        ('Revisão', 'Revisão'), ('Manutenção', 'Manutenção'), ('Outro', 'Outro')])
+    tipo = StringField('Autor', render_kw={'disabled':''})
     conteudo = TextAreaField('Conteúdo', validators=[
         DataRequired(message=obrigatorio)])
-    manutencao = BooleanField('Necessita de Manutenção')
-    reforma = BooleanField('Necessita de Reforma')
+    manutencao = BooleanField('Necessita de Manutenção', render_kw={'disabled':''})
+    reforma = BooleanField('Necessita de Reforma', render_kw={'disabled':''})
     detalhes = TextAreaField('Detalhes Adicionais')
-    status = SelectField('Status', 
-        choices=[('Aberto', 'Aberto'), ('Finalizado', 'Finalizado')])
+    status = BooleanField('Finalizar')
     submit = SubmitField('Atualizar')
+
+class SetorForm(FlaskForm):
+    nome = StringField('Nome', validators=[
+        DataRequired(message=obrigatorio), 
+        Length(max=50, message=max_50)])
+    submit = SubmitField('Cadastrar')

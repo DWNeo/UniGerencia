@@ -17,7 +17,7 @@
                             <small class="text-muted"><strong>{{ sala.data_cadastro.strftime('%d/%m/%Y %H:%M:%S') }}</strong></small>
                         </div>
                         <h4 class="article-title"><strong>Sala:</strong> {{ sala.numero }}</h4>
-                        <p class="article-content"><strong> Setor:</strong> {{ sala.setor }}</p>
+                        <p class="article-content"><strong> Setor:</strong> {{ sala.setor.name }}</p>
                         {% if sala.motivo_indisponibilidade %}
                         <p class="article-content pt-2"><strong>Motivo da Indisponibilidade:</strong> {{ sala.motivo_indisponibilidade }}</p>
                         {% endif %}

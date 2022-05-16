@@ -5,7 +5,7 @@ from flask import (render_template, url_for, flash,
 from flask_login import login_required, current_user
 
 from app import db, fuso_horario
-from app.models import Equipamento, TipoEquipamento, Relatorio, Solicitacao
+from app.models import Equipamento, RelatorioEquipamento, SolicitacaoEquipamento, TipoEquipamento, Relatorio, Solicitacao
 from app.equipamentos.forms import (EquipamentoForm, IndisponibilizaEquipamentoForm,
                                     AtualizaEquipamentoForm, TipoEquipamentoForm,
                                     RelatorioEquipamentoForm, AtualizaRelatorioEquipamentoForm)
@@ -24,8 +24,8 @@ def equipamento(eqp_id):
 
     # Recupera as últimas solicitações associadas ao equipamento
     solicitacoes = Solicitacao.query.filter(
-        Solicitacao.equipamentos.contains(equipamento)).filter_by(
-        ativo=True).order_by(Solicitacao.id.desc()).limit(5)
+        SolicitacaoEquipamento.equipamentos.contains(equipamento)).filter_by(
+        ativo=True).order_by(SolicitacaoEquipamento.id.desc()).limit(5)
 
     # Renderiza o template
     return render_template('equipamentos/equipamento.html', 
@@ -126,13 +126,13 @@ def disponibiliza_equipamento(eqp_id):
         id=eqp_id).filter_by(ativo=True).first_or_404()
     
     # Verifica se o equipamento está indisponível
-    if equipamento.status == 'Disponível':
+    if equipamento.status.name == 'ABERTO':
         flash('Esse equipamento já está disponível.', 'warning')
         return redirect(url_for('principal.inicio', tab=3))
 
     # Altera o registro do equipamento
     equipamento.motivo_indisponibilidade = None
-    equipamento.status = 'Disponível'
+    equipamento.status = 'ABERTO'
     equipamento.data_atualizacao = datetime.now().astimezone(fuso_horario)
 
     # Aumenta a quantidade de equipamentos disponíveis do tipo
@@ -157,13 +157,13 @@ def indisponibiliza_equipamento(eqp_id):
             id=eqp_id).filter_by(ativo=True).first_or_404()
         
         # Verifica se o equipamento está disponível
-        if equipamento.status != 'Disponível':
+        if equipamento.status.name != 'ABERTO':
             flash('Você não pode tornar este equipamento indisponível.', 'warning')
             return redirect(url_for('principal.inicio', tab=3))
 
         # Altera o registro do equipamento
         equipamento.motivo_indisponibilidade = form.motivo.data
-        equipamento.status = 'Indisponível'
+        equipamento.status = 'DESABILITADO'
         equipamento.data_atualizacao = datetime.now().astimezone(fuso_horario)
 
         # Diminui a quantidade de equipamentos disponíveis do tipo
@@ -189,14 +189,14 @@ def exclui_equipamento(eqp_id):
         id=eqp_id).filter_by(ativo=True).first_or_404()
     
     # Impede um equipamento de ser indevidamente excluído
-    if equipamento.status != 'Disponível' and equipamento.status != 'Indisponível':
+    if equipamento.status.name != 'ABERTO' and equipamento.status.name != 'DESABILITADO':
         flash('Não é possível excluir uma equipamento\
                solicitado ou em uso.', 'warning')
         return redirect(url_for('principal.inicio', tab=3))
 
     # Diminui a quantidade de equipamentos disponíveis do tipo
     # caso o status do equipamento esteja contando como um
-    if equipamento.status == 'Disponível':
+    if equipamento.status.name == 'ABERTO':
         tipo_eqp = TipoEquipamento.query.filter_by(
             id=equipamento.tipo_eqp_id).filter_by(ativo=True).first()
         tipo_eqp.qtd_disponivel -= 1
@@ -215,7 +215,7 @@ def relatorios(eqp_id):
     # Recupera os relatórios do equipamento pela ID
     equipamento = Equipamento.query.filter_by(
         id=eqp_id).filter_by(ativo=True).first_or_404()
-    relatorios = Relatorio.query.filter_by(
+    relatorios = RelatorioEquipamento.query.filter_by(
         equipamento_id=equipamento.id).filter_by(ativo=True).all()
 
     return render_template('equipamentos/relatorios.html', 
@@ -231,11 +231,14 @@ def novo_relatorio(eqp_id):
     # Valida o formulário e insere o novo relatório no banco de dados
     form = RelatorioEquipamentoForm()
     if form.validate_on_submit():
-        relatorio = Relatorio(tipo=form.tipo.data, 
-                              conteudo=form.conteudo.data,
+        status = 'ABERTO'
+
+        relatorio = RelatorioEquipamento(conteudo=form.conteudo.data,
                               manutencao=form.manutencao.data, 
                               defeito=form.defeito.data,
                               detalhes=form.detalhes.data,
+                              status = status,
+                              tipo_relatorio=form.tipo.data,
                               usuario_id=current_user.id,
                               equipamento_id=eqp_id)
         db.session.add(relatorio)
@@ -253,28 +256,26 @@ def novo_relatorio(eqp_id):
 @admin_required
 def atualiza_relatorio(eqp_id, id):
     # Recupera o relatório pela ID
-    relatorio = Relatorio.query.filter_by(
+    relatorio = RelatorioEquipamento.query.filter_by(
         id=id).filter_by(ativo=True).first_or_404()
 
     # Impede relatórios finalizados de serem atualizados
-    if relatorio.status == 'Finalizado':
+    if relatorio.status.name == 'FECHADO':
         flash('Este relatório já foi finalizado.', 'success') 
         return redirect(url_for('equipamentos.relatorios', eqp_id=eqp_id))
 
     # Valida o formulário e atualiza o relatório no banco de dados
     form = AtualizaRelatorioEquipamentoForm()
     if form.validate_on_submit():
-        relatorio.tipo = form.tipo.data
         relatorio.conteudo = form.conteudo.data
-        relatorio.manutencao = form.manutencao.data
-        relatorio.defeito = form.defeito.data
         relatorio.detalhes = form.detalhes.data
         relatorio.status = form.status.data
 
         # Atualiza as datas dependendo do status selecionado
         # Status 'Finalizado' -> Data de Finalização
         # Status 'Aberto' -> Data de Atualização
-        if relatorio.status == 'Finalizado':
+        if form.status.data == True:
+            relatorio.status = 'FECHADO'
             relatorio.data_finalizacao = datetime.now().astimezone(fuso_horario)
         else:
             relatorio.data_atualizacao = datetime.now().astimezone(fuso_horario)
@@ -284,12 +285,12 @@ def atualiza_relatorio(eqp_id, id):
         flash('O relatório foi atualizado com sucesso!', 'success') 
         return redirect(url_for('equipamentos.relatorios', eqp_id=eqp_id))
     elif request.method == 'GET':
-        form.tipo.data = relatorio.tipo
+        form.tipo.data = relatorio.tipo_relatorio.value
         form.conteudo.data = relatorio.conteudo
         form.manutencao.data = relatorio.manutencao
         form.defeito.data = relatorio.defeito
         form.detalhes.data = relatorio.detalhes
-        form.status.data = relatorio.status
+        form.status.data = False
 
     return render_template('equipamentos/atualizar_relatorio.html', 
                            title='Atualizar Relatório', eqp_id=eqp_id,

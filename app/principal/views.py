@@ -4,6 +4,7 @@ from flask import render_template, request, flash, Blueprint
 from flask_login import login_required, current_user
 
 from app import db, fuso_horario
+from app import models
 from app.models import Post, Equipamento, Sala, Usuario, Solicitacao
 from app.usuarios.utils import admin_required, envia_email_atraso
 from app.solicitacoes.forms import EntregaSolicitacaoForm
@@ -30,17 +31,18 @@ def inicio():
     # Verifica se há solicitações em uso atrasadas 
     # e atualiza o status das que estão
     for solicitacao in solicitacoes:
-        if solicitacao.status == 'EMUSO':
+        if solicitacao.status.name == 'EMUSO':
             # Compara o horário atual com o previsto para devolução
             if (datetime.now().astimezone(fuso_horario) > 
                 solicitacao.data_devolucao.astimezone(fuso_horario)):
                 # Troca o status dos registros associados
                 solicitacao.status = 'PENDENTE'
-                if solicitacao.equipamentos:
+                if solicitacao.tipo == 'solicitacoes_equipamentos':
                     for equipamento in solicitacao.equipamentos:
                         equipamento.status = 'PENDENTE'
-                if solicitacao.sala:
-                    solicitacao.sala.status = 'PENDENTE'
+                if solicitacao.tipo == 'solicitacoes_salas':
+                    for sala in solicitacao.salas:
+                        sala.status = 'PENDENTE'
                 db.session.commit()
                 envia_email_atraso(solicitacao)
 
@@ -49,7 +51,7 @@ def inicio():
                     flash('Você possui uma solicitação atrasada.', 'warning')
 
                 # Exibe uma mensagem de alerta para o admin
-                if current_user.admin == True:
+                if current_user.tipo.name == 'ADMIN':
                     flash('Existe uma nova solicitação em atraso.', 'warning')
 
     # Importa o formulário para entrega de solicitações
@@ -62,8 +64,6 @@ def inicio():
 
 
 @principal.route("/criar_db", methods=['GET'])
-@login_required
-@admin_required
 def criar_db():
     # Cria as tabelas no banco conforme as classes no models caso não existam
     db.create_all()

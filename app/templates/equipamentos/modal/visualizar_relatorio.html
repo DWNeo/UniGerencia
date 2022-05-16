@@ -12,8 +12,8 @@
                 <article class="media content-section">
                     <div class="media-body">
                         <div class="article-metadata">
-                            <a class="mr-2" href="#"><strong>Status:</strong> {{ relatorio.status }}</a>
-                            <a class="mr-2" href="#"><strong>Tipo:</strong> {{ relatorio.tipo }}</a>
+                            <a class="mr-2" href="#"><strong>Status:</strong> {{ relatorio.status.value }}</a>
+                            <a class="mr-2" href="#"><strong>Tipo:</strong> {{ relatorio.tipo_relatorio.value }}</a>
                             <small class="text-muted"><strong>{{ relatorio.data_abertura.strftime('%d/%m/%Y %H:%M:%S') }}</strong></small>
                         </div>
                         {% if relatorio.descricao %}

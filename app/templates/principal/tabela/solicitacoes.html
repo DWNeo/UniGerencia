@@ -16,19 +16,19 @@
     <!-- Cria uma nova linha pra cada registro de solicitação ativa -->
     {% for solicitacao in solicitacoes %}
     <!-- Exibe os registros somente para o autor ou para os admins-->
-    {% if current_user == solicitacao.autor or current_user.admin == True %}
+    {% if current_user == solicitacao.autor or current_user.tipo.name == 'ADMIN' %}
         <!-- Muda a cor da linha e texto de acordo com o status -->
-        {% if solicitacao.status == 'Em Aberto' %}
+        {% if solicitacao.status.name == 'ABERTO' %}
             <tr class="table-secondary">
-        {% elif solicitacao.status == 'Em Atraso' %}
+        {% elif solicitacao.status.name == 'PENDETE' %}
             <tr class="table-danger">
-        {% elif solicitacao.status == 'Em Espera' %}
+        {% elif solicitacao.status.name == 'SOLICITASO' %}
             <tr class="table-warning">
-        {% elif solicitacao.status == 'Confirmada' %}
+        {% elif solicitacao.status.name == 'CONFIRMADO' %}
             <tr class="table-success">
-        {% elif solicitacao.status == 'Em Uso' %}
+        {% elif solicitacao.status.name == 'EMUSO' %}
             <tr class="table-info">
-        {% elif solicitacao.status == 'Cancelada' or solicitacao.status == 'Finalizada' %}
+        {% elif solicitacao.status.name == 'CANSELADO' or solicitacao.status.name == 'FINALIZADO' %}
             <tr class="text-secondary">
         {% else %}
             <tr>
@@ -37,30 +37,30 @@
             <td class="align-middle">{{ solicitacao.id }}</td>
             <td class="align-middle">{{ solicitacao.data_abertura.strftime('%d/%m/%Y %H:%M:%S') }}</td>
             <td class="align-middle">{{ solicitacao.tipo }}</td>
-            <td class="align-middle">{{ solicitacao.turno }}</td>
+            <td class="align-middle">{{ solicitacao.turno.name }}</td>
             <td class="align-middle">{{ solicitacao.autor.nome }}</td>
-            <td class="align-middle">{{ solicitacao.status }}</td>
+            <td class="align-middle">{{ solicitacao.status.value }}</td>
             <td class="align-middle">
                 <!-- Botões de Ação-->
                 <!-- A visibilidade varia com o status e usuário -->
                 <a class="btn-lg btn-outline-info" href="#" data-toggle="modal" data-target="#visualizarSolicitacao{{ solicitacao.id }}"><i class="fas fa-search"></i></a> 
-                {% if current_user.admin == True %}
-                    {% if solicitacao.status == 'Em Aberto' or solicitacao.status == 'Em Espera' %}
-                        <a class="btn-lg btn-outline-success" href="{{ url_for('solicitacoes.confirma_solicitacao', solicitacao_id=solicitacao.id) }}"><i class="fas fa-check-square"></i></a>
+                {% if current_user.tipo.name == 'ADMIN' %}
+                    {% if solicitacao.status.name == 'ABERTO' or solicitacao.status.name == 'SOLICITADO' %}
+                        <a class="btn-lg btn-outline-success" href="{{url_for('solicitacoes.confirma_solicitacao', solicitacao_id=solicitacao.id)}}"><i class="fas fa-check-square"></i></a>
                     {% endif %}
-                    {% if solicitacao.status == 'Confirmada' %}
+                    {% if solicitacao.status.name == 'CONFIRMADO' %}
                         <a class="btn-lg btn-outline-primary" href="#" data-toggle="modal" data-target="#entregarSolicitacao{{ solicitacao.id }}"><i class="fas fa-upload"></i></a>
                     {% endif %}
-                    {% if solicitacao.status == 'Em Uso' or solicitacao.status == 'Em Atraso' %}
+                    {% if solicitacao.status.name == 'EMUSO' or solicitacao.status.name == 'PENDETE' %}
                         <a class="btn-lg btn-outline-primary" href="#" data-toggle="modal" data-target="#receberSolicitacao{{ solicitacao.id }}"><i class="fas fa-download"></i></a>
                     {% endif %}
                 {% endif %}
-                {% if current_user == solicitacao.autor or current_user.admin == True %}
-                    {% if solicitacao.status == 'Em Aberto' or solicitacao.status == 'Confirmada' %}
+                {% if current_user == solicitacao.autor or current_user.tipo.name == 'ADMIN' %}
+                    {% if solicitacao.status.name == 'ABERTO' or solicitacao.status.name == 'CONFIRMADO' %}
                         <a class="btn-lg btn-outline-warning" href="#" data-toggle="modal" data-target="#cancelarSolicitacao{{ solicitacao.id }}"><i class="fas fa-window-close"></i></a>
                     {% endif %}
                 {% endif %}
-                {% if current_user.admin == True %}
+                {% if current_user.tipo.name == 'ADMIN' %}
                     <a class="btn-lg btn-outline-danger" href="#" data-toggle="modal" data-target="#excluirSolicitacao{{ solicitacao.id }}"><i class="fas fa-trash"></i></a>
                 {% endif %}
             </td>

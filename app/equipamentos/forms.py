@@ -58,7 +58,7 @@ class IndisponibilizaEquipamentoForm(FlaskForm):
 class RelatorioEquipamentoForm(FlaskForm):
 
     tipo = SelectField('Tipo do Relatório', choices=[
-        ('Revisão', 'Revisão'), ('Manutenção', 'Manutenção'), ('Outro', 'Outro')])
+        ('REVISAO', 'Revisão'), ('MANUTENCAO', 'Manutenção'), ('OUTRO', 'Outro')])
     conteudo = TextAreaField('Conteúdo', validators=[
         DataRequired(message=obrigatorio)])
     manutencao = BooleanField('Necessita de Manutenção')
@@ -69,13 +69,11 @@ class RelatorioEquipamentoForm(FlaskForm):
 # Formulário para atualização de um relatório do equipamento
 class AtualizaRelatorioEquipamentoForm(FlaskForm):
 
-    tipo = SelectField('Tipo do Relatório', choices=[
-        ('Revisão', 'Revisão'), ('Manutenção', 'Manutenção'), ('Outro', 'Outro')])
+    tipo = StringField('Autor', render_kw={'disabled':''})
     conteudo = TextAreaField('Descrição', validators=[
         DataRequired(message=obrigatorio)])
-    manutencao = BooleanField('Necessita de Manutenção')
-    defeito = BooleanField('Com Defeito')
+    manutencao = BooleanField('Necessita de Manutenção', render_kw={'disabled':''})
+    defeito = BooleanField('Com Defeito', render_kw={'disabled':''})
     detalhes = TextAreaField('Detalhes Adicionais')
-    status = SelectField('Status', 
-        choices=[('Aberto', 'Aberto'), ('Finalizado', 'Finalizado')])
+    status = BooleanField('Finalizar')
     submit = SubmitField('Atualizar')

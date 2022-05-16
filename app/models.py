@@ -80,6 +80,7 @@ class Post(db.Model):
 class Status(enum.Enum):
     ABERTO = 'Aberto'
     SOLICITADO = 'Solicitado' 
+    CONFIRMADO = 'Confirmado'
     EMUSO = 'Em Uso'
     FECHADO = 'Fechado'
     CANCELADO = 'Cancelado'
@@ -92,8 +93,14 @@ class Turno(db.Model):
     __table_args__ = {'extend_existing': True}
 
     id = db.Column(db.Integer, primary_key=True)
-    data_inicio = db.Column(db.DateTime, nullable=False)
-    data_fim = db.Column(db.DateTime, nullable=False)
+    name = db.Column(db.String(20), unique=True, nullable=False)
+    data_inicio = db.Column(db.Time, nullable=False)
+    data_fim = db.Column(db.Time, nullable=False)
+    ativo = db.Column(db.Boolean, nullable=False, default=True)
+
+    solicitacoes = db.relationship('Solicitacao', back_populates='turno')
+    def __repr__(self):
+        return f"{self.name} - Hora Inicio: {self.data_inicio} - Hora Fim: {self.data_fim}"
 
 class Solicitacao(db.Model):
     __tablename__ = 'solicitacoes'
@@ -103,8 +110,8 @@ class Solicitacao(db.Model):
     status = db.Column(db.Enum(Status), default=Status.ABERTO.name)
     data_abertura = db.Column(db.DateTime, nullable=False, 
                               default=datetime.now().astimezone(fuso_horario))
-    data_inicio_pref = db.Column(db.DateTime, nullable=False)
-    data_fim_pref = db.Column(db.DateTime, nullable=False)
+    data_inicio_pref = db.Column(db.Date, nullable=False)
+    data_fim_pref = db.Column(db.Date, nullable=False)
     data_retirada = db.Column(db.DateTime, nullable=True)
     data_devolucao = db.Column(db.DateTime, nullable=True)
     data_cancelamento = db.Column(db.DateTime, nullable=True)
@@ -114,6 +121,7 @@ class Solicitacao(db.Model):
     ativo = db.Column(db.Boolean, nullable=False, default=True)
     tipo = db.Column(db.String(20), nullable=False)
 
+    turno = db.relationship('Turno', back_populates='solicitacoes')
     # Uma solicitação está associada a um usuário e um tipo de equipamento
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), 
                            nullable=False)
@@ -142,6 +150,8 @@ class SolicitacaoSala(Solicitacao):
     
     id = db.Column(db.Integer, db.ForeignKey('solicitacoes.id'), primary_key=True)
 
+    setor_id = db.Column(db.Integer, db.ForeignKey('setores.id'), nullable=False)
+    setor = db.relationship('Setor', back_populates='solicitacoes')
     # Uma solicitação está associada a múltiplos equipamentos ou uma sala
     salas = db.relationship('Sala', secondary= solicitacao_s, 
                                     back_populates='solicitacoes')
@@ -149,13 +159,27 @@ class SolicitacaoSala(Solicitacao):
         'polymorphic_identity': 'solicitacoes_salas',
     }
 
+class Setor(db.Model):
+    __tablename__ = 'setores'
+    __table_args__ = {'extend_existing': True}
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), unique=True, nullable=False)
+    qtd_disponivel = db.Column(db.Integer, nullable=False, default=0)
+    ativo = db.Column(db.Boolean, nullable=False, default=True)
+
+
+    solicitacoes = db.relationship('SolicitacaoSala', back_populates='setor')    
+    salas = db.relationship('Sala', back_populates='setor')
+    def __repr__(self):
+        return f"{self.name} - Quantidade Disponível: {self.qtd_disponivel}"
+
 class Sala(db.Model):
     __tablename__ = 'salas'
     __table_args__ = {'extend_existing': True}
     
     id = db.Column(db.Integer, primary_key=True)
-    numero = db.Column(db.String(20), unique=True, nullable=False)
-    setor = db.Column(db.String(20), nullable=False)
+    numero = db.Column(db.String(20), nullable=False)
     qtd_aluno = db.Column(db.Integer, nullable=False)
     data_cadastro = db.Column(db.DateTime, nullable=False, 
                               default=datetime.now().astimezone(fuso_horario))
@@ -164,13 +188,16 @@ class Sala(db.Model):
     motivo_indisponibilidade = db.Column(db.Text, nullable=True)
     ativo = db.Column(db.Boolean, nullable=False, default=True)
     
+
+    setor_id = db.Column(db.Integer, db.ForeignKey('setores.id'), nullable=False)
     # Uma sala faz parte de diferentes solicitações e relatórios
     solicitacoes = db.relationship('SolicitacaoSala', secondary=solicitacao_s, 
                                    back_populates='salas')
     relatorios = db.relationship('RelatorioSala', back_populates='sala')
-    
+    setor = db.relationship('Setor', back_populates='salas')  
+
     def __repr__(self):
-        return f"{self.numero} - {self.setor} - Alunos: {self.qtd_aluno} - {self.status}"
+        return f"{self.numero} - {self.setor.name} - Alunos: {self.qtd_aluno} - {self.status.value}"
 
 # Tabelas que associam as solicitações aos equipamentos
 solicitacao_e = db.Table('solicitacao_e',
@@ -243,6 +270,10 @@ class TipoEquipamento(db.Model):
     def __repr__(self):
         return f"{self.nome} - Qtd. Disponível: {self.qtd_disponivel}"
 
+class TipoRelatorio(enum.Enum):
+    REVISAO = "Revisão"
+    MANUTENCAO = "Manutenção"
+    OUTRO = "Outro"
 
 class Relatorio(db.Model):
     __tablename__ = 'relatorios'
@@ -250,6 +281,7 @@ class Relatorio(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     
+    tipo_relatorio = db.Column(db.Enum(TipoRelatorio))
     conteudo = db.Column(db.Text, nullable=False)
     manutencao = db.Column(db.Boolean, nullable=False, default=False)
     detalhes = db.Column(db.Text, nullable=False)

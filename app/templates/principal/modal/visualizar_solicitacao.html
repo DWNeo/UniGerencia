@@ -12,27 +12,43 @@
                 <article class="media content-section">
                     <div class="media-body">
                         <div class="article-metadata">
-                            <a class="mr-2"><strong>Status:</strong> {{ solicitacao.status }}</a>
+                            <a class="mr-2"><strong>Status:</strong> {{ solicitacao.status.value }}</a>
                             <a class="mr-2"><strong>Tipo:</strong> {{ solicitacao.tipo }}</a>
                             <small class="text-muted"><strong>{{ solicitacao.data_abertura.strftime('%d/%m/%Y %H:%M:%S') }}</strong></small>
                         </div>
-                        {% if solicitacao.sala %}
-                        <h6 class="article-title"><strong>Sala:</strong> {{ solicitacao.sala.numero }} - {{ solicitacao.sala.setor }}</h6>
+                        {% if solicitacao.tipo == 'solicitacoes_salas' %}
+                            {% if solicitacao.setor %}
+                                <h6 class="article-title"><strong>Setor: </strong>{{ solicitacao.setor.name }}</h6>
+                            {% endif %}
+                            {% if solicitacao.salas %}
+                                <h6 class="article-title"><strong>Salas Solicitadas:</strong></h6>
+                                {% for sala in solicitacao.salas %}
+                                    <h6 class="article-title"><strong>-</strong> {{ sala.numero }} </h6>  
+                                {% endfor %}
+                            {% endif %}
                         {% endif %}
-                        {% if solicitacao.tipo_eqp.nome %}
+                        {% if solicitacao.tipo == 'solicitacoes_equipamentos' %}
                         <h6 class="article-content"><strong>Tipo de Equipamento:</strong> {{ solicitacao.tipo_eqp.nome }}</h6>
                         {% endif %}
-                        {% if solicitacao.qtd_equipamento %}
-                        <h6 class="article-content"><strong>Quantidade Solicitada:</strong> {{ solicitacao.qtd_equipamento }}</h6>
+                        {% if solicitacao.quantodade %}
+                        <h6 class="article-content"><strong>Quantidade Solicitada:</strong> {{ solicitacao.quantodade }}</h6>
                         {% endif %}
-                        {% if solicitacao.equipamentos %}
+                        {% if solicitacao.tipo == 'solicitacoes_equipamentos' %}
+                            {% if solicitacao.equipamentos %}
                             <h6 class="article-title"><strong>Equipamentos Solicitados:</strong></h6>
-                            {% for equipamento in solicitacao.equipamentos %}
-                            <h6 class="article-title"><strong>-</strong> {{ equipamento }}</h6>
-                            {% endfor %}
+                                {% for equipamento in solicitacao.equipamentos %}
+                                    <h6 class="article-title"><strong>-</strong> {{ equipamento }}</h6>
+                                {% endfor %}
+                            {% endif %}
                         {% endif %}
-                        {% if solicitacao.data_preferencial %}
-                        <h6 class="article-content pt-2"><strong>Data Preferencial:</strong> {{ solicitacao.data_preferencial.strftime('%d/%m/%Y %H:%M:%S') }}</h6>
+                        {% if solicitacao.turno %}
+                        <h6 class="article-content pt-2"><strong>Turno:</strong> {{ solicitacao.turno }}</h6>
+                        {% endif %}
+                        {% if solicitacao.data_inicio_pref %}
+                        <h6 class="article-content pt-2"><strong>Data Preferencial:</strong> {{ solicitacao.data_inicio_pref.strftime('%d/%m/%y') }}</h6>
+                        {% endif %}
+                        {% if solicitacao.data_fim_pref %}
+                        <h6 class="article-content pt-2"><strong>Data Preferencial:</strong> {{ solicitacao.data_fim_pref.strftime('%d/%m/%y') }}</h6>
                         {% endif %}
                         {% if solicitacao.data_entrega %}
                         <h6 class="article-content"><strong>Data de Empréstimo:</strong> {{ solicitacao.data_entrega.strftime('%d/%m/%Y %H:%M:%S') }}</h6>
