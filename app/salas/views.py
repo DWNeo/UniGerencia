@@ -5,7 +5,7 @@ from flask import (render_template, url_for, flash, abort,
 from flask_login import login_required, current_user
 
 from app import db, fuso_horario
-from app.models import RelatorioSala, Sala, Relatorio, Solicitacao, Setor
+from app.models import RelatorioSala, Sala, Relatorio, Solicitacao, Setor, SolicitacaoSala
 from app.salas.forms import (SalaForm, AtualizaSalaForm, IndisponibilizaSalaForm,
                              RelatorioSalaForm, AtualizaRelatorioSalaForm, SetorForm)
 from app.usuarios.utils import admin_required
@@ -22,9 +22,9 @@ def sala(sala_id):
         id=sala_id).filter_by(ativo=True).first_or_404()
 
     # Recupera as últimas solicitações associadas a sala
-    solicitacoes = Solicitacao.query.filter_by(
-        sala_id=sala.id).filter_by(ativo=True).order_by(
-        Solicitacao.id.desc()).limit(5)
+    solicitacoes = Solicitacao.query.filter(
+        SolicitacaoSala.salas.contains(sala)).filter_by(ativo=True).order_by(
+        SolicitacaoSala.id.desc()).limit(5)
 
     # Renderiza o template
     return render_template('salas/sala.html', 

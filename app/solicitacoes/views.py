@@ -52,12 +52,12 @@ def nova_solicitacao_equipamento():
     if form.validate_on_submit():
         tipo_eqp = TipoEquipamento.query.filter_by(
             id=form.tipo_equipamento.data).filter_by(ativo=True).first() 
-        solicitacao = Solicitacao.query.filter_by(
-            status = 'ABERTO').filter_by(tipo='solicitacoes_equipamentos').filter_by(
+        solicitacao = SolicitacaoEquipamento.query.filter_by(
+            status = 'ABERTO').filter_by(
                 turno_id = form.turno.data).filter_by(ativo=True)
         # Verifica se há equipamentos disponíveis para a quantidade solicitada
         # Retona a operação caso não haja equipamentos o suficiente
-        if form.qtd_preferencia.data >= tipo_eqp.qtd_disponivel:
+        if form.qtd_preferencia.data > tipo_eqp.qtd_disponivel:
             flash('A quantidade solicitada de equipamentos excede a disponível.\
                    Por favor, insira um valor menor.', 'warning')
             return redirect(url_for('principal.inicio'))
@@ -98,9 +98,9 @@ def nova_solicitacao_sala():
     form = SolicitacaoSalaForm()
     setores = Setor.query.filter_by(
         ativo=True).all()
-    lista_setores = [(setor.id, setor.name) for setor in setores]
+    lista_setores = [(setor.id, setor) for setor in setores]
     turnos = Turno.query.filter_by(ativo=True).all()
-    lista_turnos = [(turno.id, turno.name) for turno in turnos]
+    lista_turnos = [(turno.id, turno) for turno in turnos]
     if lista_setores and lista_turnos:
         form.setor.choices = lista_setores
         form.turno.choices = lista_turnos
@@ -111,8 +111,8 @@ def nova_solicitacao_sala():
     if form.validate_on_submit():
         setores = Setor.query.filter_by(
             id=form.setor.data).filter_by(ativo=True).first()
-        solicitacao = Solicitacao.query.filter_by(turno_id = form.turno.data).filter_by(
-                status = 'ABERTO').filter_by(tipo='solicitacoes_salas').filter_by(ativo=True).first()
+        solicitacao = SolicitacaoSala.query.filter_by(turno_id = form.turno.data).filter_by(
+                status = 'ABERTO').filter_by(ativo=True).first()
         # Verifica se a sala solicitada está disponível
         # Muda o status da solicitação de acordo com o resultado
         if setores.qtd_disponivel == 0:
