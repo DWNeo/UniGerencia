@@ -19,6 +19,7 @@
     <!-- CSS do Select2 -->
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/select2.min.css') }}"/>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/select2-bootstrap4.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/select2-bootstrap.min.css') }}">
 
     <!-- CSS do Font Awesome -->
     <link rel="stylesheet" type="text/css" href="https://pro.fontawesome.com/releases/v5.15.0/css/all.css">
@@ -95,7 +96,7 @@
             </div>
         </div>
         <div class="row align-items-center justify-content-center">
-            <div class="col-md-7 align-self-center">
+            <div class="col-md-6 align-self-center">
             <!-- Bloco de erros e das outras páginas de conteúdo -->
             {% block erro %}{% endblock %}
             {% block conteudo %}{% endblock %}
@@ -160,7 +161,8 @@
         // Configuração dos campos que o usam o Select2
         // Os campos de seleção de sala/equipamento em solicitações fazem uso dele
         $('#salas').select2({
-            placeholder: "Salas disponíveis",
+            placeholder: "Salas Disponíveis",
+            theme: "bootstrap",
             allowClear: false,
             "language": {
                 "noResults": function(){
@@ -170,7 +172,8 @@
             "width": '100%'
         });
         $('#equipamentos').select2({
-            placeholder: "Equipamentos disponíveis",
+            placeholder: "Equipamentos Disponíveis",
+            theme: "bootstrap",
             allowClear: false,
             "language": {
                 "noResults": function(){
