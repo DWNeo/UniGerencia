@@ -7,7 +7,7 @@ from flask_login import current_user, login_required
 
 from app import db, fuso_horario
 from app.models import Post, Usuario
-from app.posts.forms import PostForm, PostAdminForm, AtualizaPostForm, AtualizaPostAdminForm
+from app.posts.forms import PostForm, PostAdminForm, AtualizaPostForm
 
 posts = Blueprint('posts', __name__)
 
