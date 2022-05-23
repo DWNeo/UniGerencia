@@ -26,7 +26,7 @@ def solicitacao(solicitacao_id):
         id=solicitacao_id).filter_by(ativo=True).first_or_404()
 
     # Permite acesso somente ao autor da solicitação ou a um admin
-    if solicitacao.autor != current_user and current_user.admin == False:
+    if solicitacao.autor != current_user and current_user.tipo.name == 'ADMIN':
         abort(403)
 
     # Renderiza o template

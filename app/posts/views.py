@@ -19,7 +19,7 @@ def post(post_id):
         id=post_id).filter_by(ativo=True).first_or_404()
 
     # Permite acesso somente ao autor do post ou a um admin
-    if post.autor != current_user and current_user.admin == False:
+    if post.autor != current_user and current_user.tipo.name == 'ADMIN':
         abort(403)
 
     # Renderiza o template
@@ -54,7 +54,7 @@ def atualiza_post(post_id):
 
     # Impede o acesso a página de todos os usuários que 
     # não sejam o autor do post ou um admin
-    if post.autor != current_user and current_user.admin == False:
+    if post.autor != current_user and current_user.tipo.name == 'ADMIN':
         abort(403)
     
     # Valida o formulário enviado e atualiza o registro
@@ -82,7 +82,7 @@ def exclui_post(post_id):
     # todos os usuários que não sejam o autor ou um admin
     post = Post.query.filter_by(
         id=post_id).filter_by(ativo=True).first_or_404()
-    if post.autor != current_user and current_user.admin == False:
+    if post.autor != current_user and current_user.tipo.name == 'ADMIN':
         abort(403)
 
     # Desativa o registro do post
