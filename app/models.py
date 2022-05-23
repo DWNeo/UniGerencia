@@ -100,7 +100,7 @@ class Turno(db.Model):
 
     solicitacoes = db.relationship('Solicitacao', back_populates='turno')
     def __repr__(self):
-        return f"{self.name} - Hora Inicio: {self.data_inicio} - Hora Fim: {self.data_fim}"
+        return f"{self.name} - Hora Início: {self.data_inicio} - Hora Fim: {self.data_fim}"
 
 class Solicitacao(db.Model):
     __tablename__ = 'solicitacoes'

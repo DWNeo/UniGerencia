@@ -14,7 +14,7 @@
     <!-- Cria uma nova linha pra cada registro de post ativo -->
     {% for post in posts %}
     <!-- Exibe os registros somente para o autor ou para os admins-->
-    {% if current_user == post.autor or current_user.admin == True %}
+    {% if current_user == post.autor or current_user.tipo.name == 'ADMIN' %}
         <tr>
             <!-- Linhas da Tabela -->
             <td class="align-middle">{{ post.id }}</td>

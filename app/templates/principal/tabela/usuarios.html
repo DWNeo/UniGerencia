@@ -14,6 +14,7 @@
     <tbody>
     <!-- Cria uma nova linha pra cada registro de usuário ativo -->
     {% for usuario in usuarios %}
+    <!-- Muda a cor das linhas com registros de admins -->
     {% if usuario.tipo.name == 'ADMIN' %}
         <tr class="table-success">
     {% else %}
@@ -24,13 +25,7 @@
         <td class="align-middle">{{ usuario.nome }}</td>
         <td class="align-middle">{{ usuario.identificacao }}</td>
         <td class="align-middle">{{ usuario.email }}</td>
-        <!-- Muda a cor das linhas com registros de admins -->
-        {% if usuario.tipo.name == 'ADMIN' %}
-            <td class="align-middle"> {{usuario.tipo.value}} </td>
-        {% endif %}
-        {% if usuario.tipo.name != 'ADMIN' %}
-            <td class="align-middle"> {{usuario.tipo.value}} </td>
-        {% endif %}
+        <td class="align-middle"> {{usuario.tipo.value}} </td>
         <td class="align-middle">
             <!-- Botões de Ação-->
             <a class="btn-lg btn-outline-info" href="#" data-toggle="modal" data-target="#visualizarUsuario{{ usuario.id }}"><i class="fas fa-search"></i></a>

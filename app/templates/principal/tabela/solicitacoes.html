@@ -20,15 +20,15 @@
         <!-- Muda a cor da linha e texto de acordo com o status -->
         {% if solicitacao.status.name == 'ABERTO' %}
             <tr class="table-secondary">
-        {% elif solicitacao.status.name == 'PENDETE' %}
+        {% elif solicitacao.status.name == 'PENDENTE' %}
             <tr class="table-danger">
-        {% elif solicitacao.status.name == 'SOLICITASO' %}
+        {% elif solicitacao.status.name == 'SOLICITADO' %}
             <tr class="table-warning">
         {% elif solicitacao.status.name == 'CONFIRMADO' %}
             <tr class="table-success">
         {% elif solicitacao.status.name == 'EMUSO' %}
             <tr class="table-info">
-        {% elif solicitacao.status.name == 'CANSELADO' or solicitacao.status.name == 'FINALIZADO' %}
+        {% elif solicitacao.status.name == 'CANCELADO' or solicitacao.status.name == 'FECHADO' %}
             <tr class="text-secondary">
         {% else %}
             <tr>
@@ -51,7 +51,7 @@
                     {% if solicitacao.status.name == 'CONFIRMADO' %}
                         <a class="btn-lg btn-outline-primary" href="#" data-toggle="modal" data-target="#entregarSolicitacao{{ solicitacao.id }}"><i class="fas fa-upload"></i></a>
                     {% endif %}
-                    {% if solicitacao.status.name == 'EMUSO' or solicitacao.status.name == 'PENDETE' %}
+                    {% if solicitacao.status.name == 'EMUSO' or solicitacao.status.name == 'PENDENTE' %}
                         <a class="btn-lg btn-outline-primary" href="#" data-toggle="modal" data-target="#receberSolicitacao{{ solicitacao.id }}"><i class="fas fa-download"></i></a>
                     {% endif %}
                 {% endif %}
