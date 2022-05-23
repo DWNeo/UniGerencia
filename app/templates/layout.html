@@ -159,22 +159,22 @@
 
         // Configuração dos campos que o usam o Select2
         // Os campos de seleção de sala/equipamento em solicitações fazem uso dele
-        $('#sala').select2({
+        $('#salas').select2({
+            placeholder: "Salas disponíveis",
             allowClear: false,
-            theme: "bootstrap4",
             "language": {
                 "noResults": function(){
-                    return "Nenhum resultado encontrado";
+                    return "Nenhuma sala encontrada";
                 }
             },
             "width": '100%'
         });
         $('#equipamentos').select2({
             placeholder: "Equipamentos disponíveis",
-            allowClear: true,
+            allowClear: false,
             "language": {
                 "noResults": function(){
-                    return "Nenhum resultado encontrado";
+                    return "Nenhum equipamento encontrado";
                 }
             },
             "width": '100%'

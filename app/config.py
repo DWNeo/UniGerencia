@@ -1,5 +1,3 @@
-import os
-
 # Define variáveis de ambiente importantes
 class Config:
     DEBUG = True
@@ -18,3 +16,4 @@ class Config:
     MAIL_USE_TLS = True
     MAIL_USERNAME = 'unigerencia.app@gmail.com'
     MAIL_PASSWORD = 'qjsnhwzykzkjfsjj'
+    
