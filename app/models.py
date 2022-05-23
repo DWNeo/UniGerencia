@@ -197,7 +197,7 @@ class Sala(db.Model):
     setor = db.relationship('Setor', back_populates='salas')  
 
     def __repr__(self):
-        return f"{self.numero} - {self.setor.name} - Alunos: {self.qtd_aluno} - {self.status.value}"
+        return f"{self.numero} - {self.setor.name} - Qtde. Alunos: {self.qtd_aluno}"
 
 # Tabelas que associam as solicitações aos equipamentos
 solicitacao_e = db.Table('solicitacao_e',

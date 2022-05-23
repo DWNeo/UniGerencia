@@ -8,9 +8,7 @@ from wtforms.validators import (DataRequired, InputRequired,
 from wtforms.fields.html5 import IntegerField, DateTimeLocalField, TimeField, DateField
 
 from app import fuso_horario
-from app.locale import (obrigatorio, data_invalida, num_invalido, max_20)
-from app.locale import (obrigatorio, max_20, max_50, 
-                        patrimonio_existente, eqp_nome_existente)
+from app.locale import (obrigatorio, data_invalida, num_invalido, max_20, max_50)
 
 
 class SolicitacaoEquipamentoForm(FlaskForm):
@@ -26,9 +24,9 @@ class SolicitacaoEquipamentoForm(FlaskForm):
     descricao = StringField('Descrição', validators=[
         DataRequired(message=obrigatorio), 
         Length(max=50, message=max_50)])
-    data_inicio_pref = DateField('Data Preferencial', 
+    data_inicio_pref = DateField('Data de Início Preferencial', 
         format='%Y-%m-%d', default=datetime.today())
-    data_fim_pref = DateField('Data Preferencial', 
+    data_fim_pref = DateField('Data de Fim Preferencial', 
         format='%Y-%m-%d', default=datetime.today())
     submit = SubmitField('Solicitar')
 
@@ -51,9 +49,9 @@ class SolicitacaoSalaForm(FlaskForm):
     descricao = StringField('Descrição', validators=[
         DataRequired(message=obrigatorio), 
         Length(max=50, message=max_50)])
-    data_inicio_pref = DateField('Data Preferencial', 
+    data_inicio_pref = DateField('Data de Início Preferencial', 
         format='%Y-%m-%d', default=datetime.today())
-    data_fim_pref = DateField('Data Preferencial', 
+    data_fim_pref = DateField('Data de Fim Preferencial', 
         format='%Y-%m-%d', default=datetime.today())
     submit = SubmitField('Solicitar')
 
@@ -79,9 +77,9 @@ class ConfirmaSolicitacaoEquipamentoForm(FlaskForm):
     equipamentos = SelectMultipleField('Equipamentos', 
         validators=[DataRequired(obrigatorio)], 
         render_kw={'multiple':'multiple'}, coerce=int)
-    data_inicio_pref = StringField('Data Inicio Preferencial', 
+    data_inicio_pref = StringField('Data de Início Preferencial', 
         render_kw={'disabled':''})
-    data_fim_pref = StringField('Data Fim Preferencial', 
+    data_fim_pref = StringField('Data de Fim Preferencial', 
         render_kw={'disabled':''})
     submit = SubmitField('Confirmar')
 
@@ -100,9 +98,9 @@ class ConfirmaSolicitacaoSalaForm(FlaskForm):
     salas = SelectMultipleField('Salas', 
         validators=[DataRequired(obrigatorio)], 
         render_kw={'multiple':'multiple'}, coerce=int)
-    data_inicio_pref = StringField('Data Inicio Preferencial', 
+    data_inicio_pref = StringField('Data de Início Preferencial', 
         render_kw={'disabled':''})
-    data_fim_pref = StringField('Data Fim Preferencial', 
+    data_fim_pref = StringField('Data de Fim Preferencial', 
         render_kw={'disabled':''})
     submit = SubmitField('Confirmar')
 
@@ -114,7 +112,6 @@ class EntregaSolicitacaoForm(FlaskForm):
 
     def validate_data_devolucao(self, data_devolucao):
         if data_devolucao.data < datetime.now():
-            print('TESTE VALIDATE')
             raise ValidationError(data_invalida)
 
 class TurnoForm(FlaskForm):
@@ -126,3 +123,7 @@ class TurnoForm(FlaskForm):
     hora_fim = TimeField('Data de Fim', 
         format='%H:%M', default=datetime.now().astimezone(fuso_horario))
     submit = SubmitField('Cadastrar')
+    
+    def validate_hora_fim(self, hora_inicio, hora_fim):
+        if hora_fim.data < hora_inicio.data:
+            raise ValidationError(data_invalida)

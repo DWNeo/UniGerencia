@@ -36,7 +36,12 @@
             <!-- Linhas da Tabela -->
             <td class="align-middle">{{ solicitacao.id }}</td>
             <td class="align-middle">{{ solicitacao.data_abertura.strftime('%d/%m/%Y %H:%M:%S') }}</td>
-            <td class="align-middle">{{ solicitacao.tipo }}</td>
+            <!-- Nome do Tipo de Solicitação (Equipamento/Sala) -->
+            {% if solicitacao.tipo == 'solicitacoes_equipamentos' %}
+                <td class="align-middle">Equipamento</td>
+            {% elif solicitacao.tipo == 'solicitacoes_salas'%}
+                <td class="align-middle">Sala</td>
+            {% endif %}
             <td class="align-middle">{{ solicitacao.turno.name }}</td>
             <td class="align-middle">{{ solicitacao.autor.nome }}</td>
             <td class="align-middle">{{ solicitacao.status.value }}</td>

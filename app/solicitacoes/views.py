@@ -56,7 +56,7 @@ def nova_solicitacao_equipamento():
             status = 'ABERTO').filter_by(
                 turno_id = form.turno.data).filter_by(ativo=True)
         # Verifica se há equipamentos disponíveis para a quantidade solicitada
-        # Retona a operação caso não haja equipamentos o suficiente
+        # Retorna a operação caso não haja equipamentos o suficiente
         if form.qtd_preferencia.data > tipo_eqp.qtd_disponivel:
             flash('A quantidade solicitada de equipamentos excede a disponível.\
                    Por favor, insira um valor menor.', 'warning')
