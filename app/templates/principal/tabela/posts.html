@@ -6,6 +6,7 @@
         <th class="align-middle">#</th>
         <th class="align-middle">Data de Postagem</th>
         <th class="align-middle">Título</th>
+        <th class="align-middle">Destinatário</th>
         <th class="align-middle">Autor</th>
         <th class="align-middle">Ações</th>
     </tr>
@@ -14,17 +15,22 @@
     <!-- Cria uma nova linha pra cada registro de post ativo -->
     {% for post in posts %}
     <!-- Exibe os registros somente para o autor ou para os admins-->
-    {% if current_user == post.autor or current_user.tipo.name == 'ADMIN' %}
+    {% if current_user == post.autor or current_user == post.destinatario or current_user.tipo.name == 'ADMIN' %}
         <tr>
             <!-- Linhas da Tabela -->
             <td class="align-middle">{{ post.id }}</td>
             <td class="align-middle">{{ post.data_postado.strftime('%d/%m/%Y\n%H:%M:%S') }}</td>
             <td class="align-middle">{{ post.titulo }}</td>
+            {% if post.destinatario %}
+                <td class="align-middle">{{ post.destinatario.nome }}</td>
+            {% else %}
+                <td class="align-middle">Administradores</td>
+            {% endif %}
             <td class="align-middle">{{ post.autor.nome }}</td>
             <td class="align-middle">
                 <!-- Botões de Ação-->
                 <a class="btn-lg btn-outline-info" href="#" data-toggle="modal" data-target="#visualizarPost{{ post.id }}" alt="Visualizar"><i class="fas fa-search"></i></a>
-                {% if current_user == post.autor or current_user.admin == True %}
+                {% if current_user == post.autor or current_user.tipo.name == 'ADMIN' %}
                     <a class="btn-lg btn-outline-secondary" href="{{ url_for('posts.atualiza_post', post_id=post.id) }}"><i class="fas fa-edit"></i></a>
                     <a class="btn-lg btn-outline-danger" href="#" data-toggle="modal" data-target="#excluirPost{{ post.id }}"><i class="fas fa-trash"></i></a>
                 {% endif %}

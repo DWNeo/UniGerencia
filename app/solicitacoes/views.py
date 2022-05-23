@@ -26,7 +26,7 @@ def solicitacao(solicitacao_id):
         id=solicitacao_id).filter_by(ativo=True).first_or_404()
 
     # Permite acesso somente ao autor da solicitação ou a um admin
-    if solicitacao.autor != current_user and current_user.tipo.name == 'ADMIN':
+    if solicitacao.autor != current_user and current_user.tipo.name != 'ADMIN':
         abort(403)
 
     # Renderiza o template
@@ -96,11 +96,17 @@ def nova_solicitacao_sala():
     # Preenche o campo de seleção de salas
     # Retorna o usuário pra tela inicial se não houver salas cadastradas
     form = SolicitacaoSalaForm()
+    
+    # Recupera lista de setores do banco
     setores = Setor.query.filter_by(
         ativo=True).all()
     lista_setores = [(setor.id, setor) for setor in setores]
+    
+    # Recupera lista de turnos do banco
     turnos = Turno.query.filter_by(ativo=True).all()
     lista_turnos = [(turno.id, turno) for turno in turnos]
+    
+    # Preenche as listas de seleção
     if lista_setores and lista_turnos:
         form.setor.choices = lista_setores
         form.turno.choices = lista_turnos
@@ -352,7 +358,7 @@ def cancela_solicitacao(solicitacao_id):
         id=solicitacao_id).filter_by(ativo=True).first_or_404()
 
     # Permite acesso somente ao autor da solicitação ou a um admin
-    if solicitacao.autor != current_user and current_user.tipo.name == 'ADMIN':
+    if solicitacao.autor != current_user and current_user.tipo.name != 'ADMIN':
         abort(403)
 
     # Verifica o status da solicitação para permitir seu cancelamento
@@ -413,6 +419,7 @@ def exclui_solicitacao(solicitacao_id):
     flash('A solicitação foi excluída com sucesso!', 'success')
     return redirect(url_for('principal.inicio'))
 
+
 @solicitacoes.route("/novo_turno", methods=['GET', 'POST'])
 @login_required
 @admin_required
@@ -421,10 +428,9 @@ def novo_turno():
     # novo registro de turno no banco de dados
     form = TurnoForm()
     if form.validate_on_submit():
-        nome = form.nome.data
-        data_inicio = form.hora_inicio.data
-        data_fim =  form.hora_fim.data 
-        turno = Turno(name=nome, data_inicio=data_inicio, data_fim=data_fim)
+        turno = Turno(name=form.nome.data, 
+                      data_inicio=form.data_inicio.data, 
+                      data_fim=form.data_fim.data)
         
         db.session.add(turno)
         db.session.commit()
@@ -434,3 +440,4 @@ def novo_turno():
     return render_template('solicitacoes/novo_turno.html', 
                            title='Novo Turno',
                            legend='Novo Turno', form=form)
+    

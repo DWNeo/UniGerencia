@@ -36,7 +36,10 @@ class Usuario(db.Model, UserMixin):
                               default='default.jpg')
     
     # Um usuário pode estar associado a múltiplas mensagens e solicitações
-    posts = db.relationship('Post', backref='autor', lazy=True)
+    posts = db.relationship('Post', backref='autor', 
+                            foreign_keys='Post.usuario_id', lazy=True)
+    recipiente = db.relationship('Post', backref='destinatario', 
+                                 foreign_keys='Post.destinatario_id', lazy=True)
     solicitacoes = db.relationship('Solicitacao', backref='autor', lazy=True)
     relatorios = db.relationship('Relatorio', backref='autor', lazy=True)
 
@@ -70,9 +73,11 @@ class Post(db.Model):
     conteudo = db.Column(db.Text, nullable=False)
     ativo = db.Column(db.Boolean, nullable=False, default=True)
 
-    # Uma mensagem tem somente um usuário como autor
+    # Uma mensagem tem somente um usuário como autor e um destinatário
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), 
                            nullable=False)
+    destinatario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), 
+                                nullable=True)
 
     def __repr__(self):
         return f"Post: {self.titulo} ({self.data_postado})"

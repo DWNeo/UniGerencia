@@ -75,7 +75,7 @@ class ConfirmaSolicitacaoEquipamentoForm(FlaskForm):
     qtd_disponivel = StringField('Quantidade Disponível', 
         render_kw={'disabled':''})
     equipamentos = SelectMultipleField('Equipamentos', 
-        validators=[DataRequired(obrigatorio)], 
+        validators=[DataRequired(message=obrigatorio)], 
         render_kw={'multiple':'multiple'}, coerce=int)
     data_inicio_pref = StringField('Data de Início Preferencial', 
         render_kw={'disabled':''})
@@ -96,13 +96,14 @@ class ConfirmaSolicitacaoSalaForm(FlaskForm):
     qtd_disponivel = StringField('Quantidade Disponível', 
         render_kw={'disabled':''})
     salas = SelectMultipleField('Salas', 
-        validators=[DataRequired(obrigatorio)], 
+        validators=[DataRequired(message=obrigatorio)], 
         render_kw={'multiple':'multiple'}, coerce=int)
     data_inicio_pref = StringField('Data de Início Preferencial', 
         render_kw={'disabled':''})
     data_fim_pref = StringField('Data de Fim Preferencial', 
         render_kw={'disabled':''})
     submit = SubmitField('Confirmar')
+
 
 class EntregaSolicitacaoForm(FlaskForm):
 
@@ -113,6 +114,7 @@ class EntregaSolicitacaoForm(FlaskForm):
     def validate_data_devolucao(self, data_devolucao):
         if data_devolucao.data < datetime.now():
             raise ValidationError(data_invalida)
+
 
 class TurnoForm(FlaskForm):
     nome = StringField('Nome',  validators=[
@@ -127,3 +129,4 @@ class TurnoForm(FlaskForm):
     def validate_hora_fim(self, hora_inicio, hora_fim):
         if hora_fim.data < hora_inicio.data:
             raise ValidationError(data_invalida)
+        

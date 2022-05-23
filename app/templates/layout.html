@@ -18,7 +18,6 @@
 
     <!-- CSS do Select2 -->
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/select2.min.css') }}"/>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/select2-bootstrap4.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/select2-bootstrap.min.css') }}">
 
     <!-- CSS do Font Awesome -->
@@ -71,7 +70,7 @@
         <!-- Mensagens de Alerta -->
         <!-- Mensagens retornadas pelas funções flash são exibidas aqui -->
         <div class="row justify-content-center">
-            <div class="col-md-7">
+            <div class="col-md-6">
             {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}

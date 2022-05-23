@@ -10,6 +10,19 @@ class PostForm(FlaskForm):
     
     titulo = StringField('Título', validators=[
         DataRequired(message=obrigatorio)])
+    destinatario = StringField('Destinatário', 
+        render_kw={'disabled':''})
+    conteudo = TextAreaField('Conteúdo', validators=[
+        DataRequired(message=obrigatorio)])
+    
+    submit = SubmitField('Postar')
+    
+class PostAdminForm(FlaskForm):
+    
+    titulo = StringField('Título', validators=[
+        DataRequired(message=obrigatorio)])
+    destinatario = SelectField('Destinatário', validators=[
+        DataRequired(message=obrigatorio)], coerce=int)
     conteudo = TextAreaField('Conteúdo', validators=[
         DataRequired(message=obrigatorio)])
     
@@ -20,7 +33,10 @@ class AtualizaPostForm(FlaskForm):
     
     titulo = StringField('Título', validators=[
         DataRequired(message=obrigatorio)])
+    destinatario = StringField('Destinatário', 
+        render_kw={'disabled':''})
     conteudo = TextAreaField('Conteúdo', validators=[
         DataRequired(message=obrigatorio)])
     
     submit = SubmitField('Postar')
+    

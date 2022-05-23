@@ -1,3 +1,4 @@
+from asyncio.windows_events import NULL
 from datetime import datetime
 
 from flask import (render_template, url_for, flash,
@@ -5,8 +6,8 @@ from flask import (render_template, url_for, flash,
 from flask_login import current_user, login_required
 
 from app import db, fuso_horario
-from app.models import Post
-from app.posts.forms import PostForm, AtualizaPostForm
+from app.models import Post, Usuario
+from app.posts.forms import PostForm, PostAdminForm, AtualizaPostForm, AtualizaPostAdminForm
 
 posts = Blueprint('posts', __name__)
 
@@ -19,7 +20,7 @@ def post(post_id):
         id=post_id).filter_by(ativo=True).first_or_404()
 
     # Permite acesso somente ao autor do post ou a um admin
-    if post.autor != current_user and current_user.tipo.name == 'ADMIN':
+    if post.autor != current_user and current_user.tipo.name != 'ADMIN':
         abort(403)
 
     # Renderiza o template
@@ -29,13 +30,31 @@ def post(post_id):
 @posts.route("/novo", methods=['GET', 'POST'])
 @login_required
 def novo_post():
-    # Valida os dados do formulário enviado e insere um 
-    # novo registro de post no banco de dados
-    form = PostForm()
+    # Preenche a lista de seleção de destinatário
+    # Administradores podem escolher também o destinatário
+    if current_user.tipo.name == 'ADMIN':
+        form = PostAdminForm()
+        usuarios = Usuario.query.filter_by(ativo=True).all()
+        lista_usuarios=[(usuario.id, usuario) for usuario in usuarios]
+        form.destinatario.choices = lista_usuarios
+    else:  
+        form = PostForm()
+        form.destinatario.data = 'Administradores'
+    
     if form.validate_on_submit():
-        post = Post(titulo=form.titulo.data, 
-                    conteudo=form.conteudo.data,
-                    autor=current_user)
+        if current_user.tipo.name == 'ADMIN':
+            usuario_id = form.destinatario.data
+            usuario = Usuario.query.filter_by(
+            id=usuario_id).filter_by(ativo=True).first_or_404()
+        
+            post = Post(titulo=form.titulo.data, 
+                        destinatario=usuario,
+                        conteudo=form.conteudo.data,
+                        autor=current_user)
+        else:
+            post = Post(titulo=form.titulo.data, 
+                        conteudo=form.conteudo.data,
+                        autor=current_user)    
         db.session.add(post)
         db.session.commit()
         flash('Sua mensagem foi postada com sucesso!', 'success')
@@ -51,12 +70,13 @@ def atualiza_post(post_id):
     # Recupera o post pela ID e retorna erro 404 caso não encontre
     post = Post.query.filter_by(
         id=post_id).filter_by(ativo=True).first_or_404()
+    print(post.destinatario)
 
     # Impede o acesso a página de todos os usuários que 
     # não sejam o autor do post ou um admin
-    if post.autor != current_user and current_user.tipo.name == 'ADMIN':
+    if post.autor != current_user and current_user.tipo.name != 'ADMIN':
         abort(403)
-    
+        
     # Valida o formulário enviado e atualiza o registro
     # do post no banco de dados de acordo com ele
     form = AtualizaPostForm()
@@ -64,10 +84,15 @@ def atualiza_post(post_id):
         post.titulo = form.titulo.data
         post.conteudo = form.conteudo.data
         post.data_atualizacao = datetime.now().astimezone(fuso_horario)
+        
         db.session.commit()
         flash('Sua mensagem foi atualizada com sucesso!', 'success')
         return redirect(url_for('principal.inicio', tab=2))
     elif request.method == 'GET':
+        if post.destinatario == None:
+            form.destinatario.data = 'Administradores'
+        else:
+            form.destinatario.data = post.destinatario
         form.titulo.data = post.titulo
         form.conteudo.data = post.conteudo
 
@@ -82,7 +107,7 @@ def exclui_post(post_id):
     # todos os usuários que não sejam o autor ou um admin
     post = Post.query.filter_by(
         id=post_id).filter_by(ativo=True).first_or_404()
-    if post.autor != current_user and current_user.tipo.name == 'ADMIN':
+    if post.autor != current_user and current_user.tipo.name != 'ADMIN':
         abort(403)
 
     # Desativa o registro do post
