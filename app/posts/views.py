@@ -1,4 +1,3 @@
-from asyncio.windows_events import NULL
 from datetime import datetime
 
 from flask import (render_template, url_for, flash,
