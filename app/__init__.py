@@ -50,7 +50,7 @@ def create_app(config_class=Config):
     app.register_blueprint(solicitacoes, url_prefix='/solicitacoes')
 
     # Importa o WhiteNoise
-    # Permite que arquivos na pasta 'static' funcionem corretamente no Heroku
-    app.wsgi_app = WhiteNoise(app.wsgi_app, root='app/static/')
+    # Permite que arquivos na pasta 'static' sejam servidos corretamente
+    app.wsgi_app = WhiteNoise(app.wsgi_app, root='app/static/', prefix='assets/')
 
     return app
