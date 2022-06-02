@@ -8,14 +8,14 @@ from app import db, fuso_horario
 from app.models import RelatorioSala, Sala, Relatorio, Solicitacao, Setor, SolicitacaoSala
 from app.salas.forms import (SalaForm, AtualizaSalaForm, IndisponibilizaSalaForm,
                              RelatorioSalaForm, AtualizaRelatorioSalaForm, SetorForm)
-from app.usuarios.utils import admin_required
+from app.usuarios.utils import prof_required, admin_required
 
 salas = Blueprint('salas', __name__)
 
 
 @salas.route("/<int:sala_id>")
 @login_required
-@admin_required
+@prof_required
 def sala(sala_id):
     # Recupera a sala pela ID
     sala = Sala.query.filter_by(

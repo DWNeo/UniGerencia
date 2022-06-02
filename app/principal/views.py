@@ -4,7 +4,6 @@ from flask import render_template, request, flash, Blueprint
 from flask_login import login_required, current_user
 
 from app import db, fuso_horario
-from app import models
 from app.models import Post, Equipamento, Sala, Usuario, Solicitacao
 from app.usuarios.utils import admin_required, envia_email_atraso
 from app.solicitacoes.forms import EntregaSolicitacaoForm
@@ -26,7 +25,7 @@ def inicio():
     posts = Post.query.filter_by(ativo=True).all()
     equipamentos = Equipamento.query.filter_by(ativo=True).all()
     salas = Sala.query.filter_by(ativo=True).all()
-    usuarios = Usuario.query.filter_by(ativo=True).all()
+    usuarios = Usuario.recupera_todos()
     
     # Verifica se há solicitações em uso atrasadas 
     # e atualiza o status das que estão

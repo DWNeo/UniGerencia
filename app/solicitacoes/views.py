@@ -13,7 +13,7 @@ from app.solicitacoes.forms import (SolicitacaoEquipamentoForm, TurnoForm,
                                     ConfirmaSolicitacaoEquipamentoForm,
                                     ConfirmaSolicitacaoSalaForm)
                                  
-from app.usuarios.utils import admin_required
+from app.usuarios.utils import prof_required, admin_required
 
 solicitacoes = Blueprint('solicitacoes', __name__)
 
@@ -98,6 +98,7 @@ def nova_solicitacao_equipamento():
 
 @solicitacoes.route("/nova/sala", methods=['GET', 'POST'])
 @login_required
+@prof_required
 def nova_solicitacao_sala():
     # Preenche o campo de seleção de salas
     # Retorna o usuário pra tela inicial se não houver salas cadastradas

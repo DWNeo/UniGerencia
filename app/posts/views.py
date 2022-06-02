@@ -33,7 +33,7 @@ def novo_post():
     # Administradores podem escolher também o destinatário
     if current_user.tipo.name == 'ADMIN':
         form = PostAdminForm()
-        usuarios = Usuario.query.filter_by(ativo=True).all()
+        usuarios = Usuario.recupera_todos()
         lista_usuarios=[(usuario.id, usuario) for usuario in usuarios]
         form.destinatario.choices = lista_usuarios
     else:  
@@ -43,8 +43,7 @@ def novo_post():
     if form.validate_on_submit():
         if current_user.tipo.name == 'ADMIN':
             usuario_id = form.destinatario.data
-            usuario = Usuario.query.filter_by(
-            id=usuario_id).filter_by(ativo=True).first_or_404()
+            usuario = Usuario.recupera_id(usuario_id)
         
             post = Post(titulo=form.titulo.data, 
                         destinatario=usuario,

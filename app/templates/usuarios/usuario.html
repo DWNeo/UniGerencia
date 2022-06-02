@@ -28,7 +28,7 @@
             <a class="mr-2" href="{{ url_for('solicitacoes.solicitacao', solicitacao_id=solicitacao.id )}}"><strong>Solicitação #{{ solicitacao.id }}</strong></a>
         </div>
         <h5 class="article-content"><strong>Tipo:</strong> {{ solicitacao.tipo }}</h5>
-        <h5 class="article-content"><strong>Status:</strong> {{ solicitacao.status }}</h5>
+        <h5 class="article-content"><strong>Status:</strong> {{ solicitacao.status.value }}</h5>
     </div>
 </article>
 {% endfor %}

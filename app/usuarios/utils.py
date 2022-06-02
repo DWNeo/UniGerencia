@@ -17,11 +17,20 @@ def admin_required(f):
         if current_user.tipo.name == 'ADMIN':
             return f(*args, **kwargs)
         else:
-            flash('Você não tem autorização para acessar esta página.',
-                  'danger')
+            flash('Você não tem autorização para acessar esta página.', 'danger')
         return redirect(url_for('principal.inicio'))
     return wrap 
 
+# Define um decorator para verificar se o usuário atual é um professor
+def prof_required(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if current_user.tipo.name == 'PROF' or current_user.tipo.name == 'ADMIN':
+            return f(*args, **kwargs)
+        else:
+            flash('Você não tem autorização para acessar esta página.', 'danger')
+        return redirect(url_for('principal.inicio'))
+    return wrap 
 
 # Redimensiona e salva as imagens de perfil na pasta definida
 def salva_imagem(form_picture):
