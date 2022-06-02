@@ -6,11 +6,7 @@
     <div class="media-body">
         <div class="article-metadata">
             <a class="mr-2"><strong>Email:</strong> {{ usuario.email }}</a>
-            {% if usuario.tipo.name == 'ADMIN' %}
-                <a class="mr-2"><strong>Admin:</strong> Sim</a>
-            {% else %}
-                <a class="mr-2"><strong>Admin:</strong> Não</a>
-            {% endif %}
+            <a class="mr-2"><strong>Tipo:</strong> {{ usuario.tipo.value }}</a>
         </div>
         <h4 class="article-title"><strong>Nome:</strong> {{ usuario.nome }}</h4>
         <h5 class="article-content"><strong>Identificação:</strong> {{ usuario.identificacao }}</h5>

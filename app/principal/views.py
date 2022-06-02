@@ -37,10 +37,10 @@ def inicio():
                 solicitacao.data_devolucao.astimezone(fuso_horario)):
                 # Troca o status dos registros associados
                 solicitacao.status = 'PENDENTE'
-                if solicitacao.tipo == 'solicitacoes_equipamentos':
+                if solicitacao.tipo == 'Equipamento':
                     for equipamento in solicitacao.equipamentos:
                         equipamento.status = 'PENDENTE'
-                if solicitacao.tipo == 'solicitacoes_salas':
+                if solicitacao.tipo == 'Sala':
                     for sala in solicitacao.salas:
                         sala.status = 'PENDENTE'
                 db.session.commit()

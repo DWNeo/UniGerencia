@@ -39,15 +39,20 @@ def solicitacao(solicitacao_id):
 def nova_solicitacao_equipamento():
     # Preenche o campo de seleção de tipos de equipamento
     form = SolicitacaoEquipamentoForm()
-    tipos_equipamento = TipoEquipamento.query.filter_by(
-        ativo=True).all()
+    
+    # Recupera lista de turnos e tipos de equipamento do banco
+    tipos_equipamento = TipoEquipamento.query.filter_by(ativo=True).all()
     lista_tipos=[(tipo.id, tipo) for tipo in tipos_equipamento]
-
     turnos = Turno.query.filter_by(ativo=True).all()
     lista_turnos = [(turno.id, turno) for turno in turnos]
+    
+    # Preenche as listas de seleção
     if lista_tipos and lista_turnos:
         form.tipo_equipamento.choices = lista_tipos
         form.turno.choices = lista_turnos
+    else:
+        flash('Não há tipos ou turnos cadastrados para solicitar equipamentos.', 'warning')
+        return redirect(url_for('principal.inicio'))
 
     if form.validate_on_submit():
         tipo_eqp = TipoEquipamento.query.filter_by(
@@ -55,6 +60,7 @@ def nova_solicitacao_equipamento():
         solicitacao = SolicitacaoEquipamento.query.filter_by(
             status = 'ABERTO').filter_by(
                 turno_id = form.turno.data).filter_by(ativo=True)
+            
         # Verifica se há equipamentos disponíveis para a quantidade solicitada
         # Retorna a operação caso não haja equipamentos o suficiente
         if form.qtd_preferencia.data > tipo_eqp.qtd_disponivel:
@@ -111,7 +117,7 @@ def nova_solicitacao_sala():
         form.setor.choices = lista_setores
         form.turno.choices = lista_turnos
     else:
-        flash('Não há setores, ou turnos, cadastrados para solicitar salas.', 'warning')
+        flash('Não há setores ou turnos cadastrados para solicitar salas.', 'warning')
         return redirect(url_for('principal.inicio'))
 
     if form.validate_on_submit():
@@ -119,10 +125,11 @@ def nova_solicitacao_sala():
             id=form.setor.data).filter_by(ativo=True).first()
         solicitacao = SolicitacaoSala.query.filter_by(turno_id = form.turno.data).filter_by(
                 status = 'ABERTO').filter_by(ativo=True).first()
+        
         # Verifica se a sala solicitada está disponível
         # Muda o status da solicitação de acordo com o resultado
         if setores.qtd_disponivel == 0:
-            flash('Não há salas liberadas neste setor para solicitar salas.', 'warning')
+            flash('Não há salas disponíveis neste setor para solicitar.', 'warning')
             return redirect(url_for('principal.inicio'))
 
         if setores.qtd_disponivel >= form.qtd_preferencia.data and solicitacao == None:
@@ -132,15 +139,16 @@ def nova_solicitacao_sala():
             flash('Você foi colocado na lista de espera pois a sala\
                   escolhida não está disponível.', 'warning')
             status = 'SOLICITADO'
+            
         # Insere a nova solicitação no banco de dados
-        solicitacao = SolicitacaoSala( turno_id=form.turno.data,
-                                  usuario_id=current_user.id,
-                                  descricao = form.descricao.data,
-                                  quantidade = form.qtd_preferencia.data,
-                                  setor_id=form.setor.data,
-                                  data_inicio_pref=form.data_inicio_pref.data,
-                                  data_fim_pref = form.data_fim_pref.data,
-                                  status=status)
+        solicitacao = SolicitacaoSala(turno_id=form.turno.data,
+                                      usuario_id=current_user.id,
+                                      descricao=form.descricao.data,
+                                      quantidade=form.qtd_preferencia.data,
+                                      setor_id=form.setor.data,
+                                      data_inicio_pref=form.data_inicio_pref.data,
+                                      data_fim_pref=form.data_fim_pref.data,
+                                      status=status)
         db.session.add(solicitacao)
         db.session.commit()
         return redirect(url_for('principal.inicio'))
@@ -158,7 +166,7 @@ def confirma_solicitacao(solicitacao_id):
         ativo=True).filter_by(id=solicitacao_id).first_or_404()
     
     # Se a solicitação for do tipo 'Sala'...
-    if solicitacao.tipo == 'solicitacoes_salas':
+    if solicitacao.tipo == 'Sala':
         # Em caso de envio de formulário (POST)
         form = ConfirmaSolicitacaoSalaForm()
         salas = Sala.query.filter_by(setor_id=solicitacao.setor.id).filter_by(
@@ -213,7 +221,7 @@ def confirma_solicitacao(solicitacao_id):
                                solicitacao=solicitacao)
     
     # Se a solicitação for do tipo 'Equipamento'...
-    elif solicitacao.tipo == 'solicitacoes_equipamentos':
+    elif solicitacao.tipo == 'Equipamento':
         # Preenche o campo de seleção de equipamentos disponíveis
         # Retorna o usuário pra tela inicial se não houver nenhum
         form = ConfirmaSolicitacaoEquipamentoForm()
@@ -299,10 +307,10 @@ def entrega_solicitacao(solicitacao_id):
         solicitacao.data_devolucao = form.data_devolucao.data
         
         # Altera o status da sala/equipamentos associados para 'Em Uso'
-        if solicitacao.tipo == 'solicitacoes_equipamentos':
+        if solicitacao.tipo == 'Equipamento':
             for equipamento in solicitacao.equipamentos:
                 equipamento.status = 'EMUSO'
-        if solicitacao.tipo == 'solicitacoes_salas':
+        if solicitacao.tipo == 'Sala':
             for sala in solicitacao.salas: 
                 sala.status = 'EMUSO'
 
@@ -330,7 +338,7 @@ def recebe_solicitacao(solicitacao_id):
         return redirect(url_for('principal.inicio'))
     
     # Atualiza o status dos equipamentos recebidos para 'Disponível'
-    if solicitacao.tipo == 'solicitacoes_equipamentos':
+    if solicitacao.tipo == 'Equipamento':
         for equipamento in solicitacao.equipamentos:
             equipamento.status = 'ABERTO'
         solicitacao.tipo_eqp.qtd_disponivel += len(solicitacao.equipamentos)
@@ -338,7 +346,7 @@ def recebe_solicitacao(solicitacao_id):
     # Atualiza o status da sala recebida para 'Disponível'
     # Além disso, verifica se há alguma solicitação em espera da mesma
     # sala e atualiza o status da primeira realizada, caso exista
-    if solicitacao.tipo == 'solicitacoes_salas':
+    if solicitacao.tipo == 'Sala':
         for sala in solicitacao.salas:
             sala.status = 'ABERTO'
         solicitacao.setor.qtd_disponivel += len(solicitacao.salas)
@@ -371,13 +379,13 @@ def cancela_solicitacao(solicitacao_id):
     if solicitacao.status.name != 'ABERTO' and solicitacao.status.name != 'SOLICITADO':
         # Altera o status da sala/equipamentos associados a solicitação de volta
         # para 'Disponível' e adiciona a quantidade de equipamentos disponíveis
-        if solicitacao.tipo == 'solicitacoes_equipamentos':
+        if solicitacao.tipo == 'Equipamento':
             if solicitacao.tipo_eqp:
                 solicitacao.tipo_eqp.qtd_disponivel += len(solicitacao.equipamentos)
             if solicitacao.equipamentos:
                 for equipamento in solicitacao.equipamentos:
                     equipamento.status = 'ABERTO'
-        if solicitacao.tipo == 'solicitacoes_salas':
+        if solicitacao.tipo == 'Sala':
             if solicitacao.setor:
                 solicitacao.setor.qtd_disponivel += len(solicitacao.salas) 
             if solicitacao.salas:
@@ -411,8 +419,9 @@ def exclui_solicitacao(solicitacao_id):
         if solicitacao.equipamentos:
             for equipamento in solicitacao.equipamentos:
                 equipamento.status = 'ABERTO'
-        if solicitacao.sala: 
-            solicitacao.sala.status = 'ABERTO'
+        if solicitacao.salas:
+            for sala in solicitacao.salas:
+                sala.status = 'ABERTO'
 
     solicitacao.ativo = False
     db.session.commit()
@@ -435,7 +444,7 @@ def novo_turno():
         db.session.add(turno)
         db.session.commit()
         flash('O turno foi cadastrado com sucesso!', 'success') 
-        return redirect(url_for('principal.inicio', tab=1))
+        return redirect(url_for('principal.inicio'))
 
     return render_template('solicitacoes/novo_turno.html', 
                            title='Novo Turno',

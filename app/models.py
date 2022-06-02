@@ -161,7 +161,7 @@ class SolicitacaoSala(Solicitacao):
     salas = db.relationship('Sala', secondary= solicitacao_s, 
                                     back_populates='solicitacoes')
     __mapper_args__ = {
-        'polymorphic_identity': 'solicitacoes_salas',
+        'polymorphic_identity': 'Sala',
     }
 
 class Setor(db.Model):
@@ -225,7 +225,7 @@ class SolicitacaoEquipamento(Solicitacao):
     tipo_eqp = db.relationship('TipoEquipamento', back_populates='solicitacoes')
 
     __mapper_args__ = {
-        'polymorphic_identity': 'solicitacoes_equipamentos'
+        'polymorphic_identity': 'Equipamento'
     }
 
 

@@ -14,6 +14,11 @@
                     <div class="media-body">
                         <div class="article-metadata">
                             <a class="mr-2" href="{{ url_for('usuarios.posts_usuario', usuario_id=post.autor.id) }}"><strong>Autor:</strong> {{ post.autor.nome }}</a>
+                            {% if post.destinatario %}
+                            <a class="mr-2" href="{{ url_for('usuarios.posts_usuario', usuario_id=post.destinatario.id) }}"><strong>Destinatário:</strong> {{ post.destinatario.nome }}</a>
+                            {% else %}
+                            <a class="mr-2" href="#"><strong>Destinatário:</strong> Administradores</a>
+                            {% endif %}
                             <small class="text-muted"><strong>{{ post.data_postado.strftime('%d/%m/%Y %H:%M:%S') }}</strong></small>
                         </div>
                         <h4 class="article-title"><strong>{{ post.titulo }}</strong></h4>
