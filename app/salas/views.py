@@ -42,11 +42,11 @@ def novo_setor():
         setor = Setor(name=form.nome.data)
         db.session.add(setor)
         db.session.commit()
-        flash('O Setor foi cadastrada com sucesso!', 'success')
+        flash('O Setor foi cadastrado com sucesso!', 'success')
         return redirect(url_for('principal.inicio', tab=4))
 
     return render_template('salas/novo_setor.html', title='Novo Setor',
-                           form=form, legend='Nova Setor')
+                           form=form, legend='Novo Setor')
 
 
 @salas.route("/nova", methods=['GET', 'POST'])
