@@ -6,7 +6,12 @@
     <div class="media-body">
         <div class="article-metadata mb-2">
             <a class="mr-2" href="{{ url_for('usuarios.posts_usuario', usuario_id=post.autor.id) }}"><strong>Autor: </strong>{{ post.autor.nome }}</a>
-            <small class="text-muted"><strong>Data de Postagem: </strong>{{ post.data_postado.strftime('%Y-%m-%d') }}</small>
+            {% if post.destinatario %}
+            <a class="mr-2" href="{{ url_for('usuarios.posts_usuario', usuario_id=post.destinatario.id) }}"><strong>Destinatário: </strong>{{ post.destinatario.nome }}</a>
+            {% else %}
+            <a class="mr-2" href="#"><strong>Destinatário: </strong>Administradores</a>
+            {% endif %}
+            <small class="text-muted"><strong>Data: </strong>{{ post.data_postado.strftime('%Y-%m-%d') }}</small>
         </div>
         <h2 class="article-title"><strong>{{ post.titulo }}</strong></h2>
         <p class="article-content">{{ post.conteudo }}</p>

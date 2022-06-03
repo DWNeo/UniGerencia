@@ -13,11 +13,11 @@
                     <img class="rounded-circle article-img" src="{{ url_for('static', filename='img_perfil/' + usuario.imagem_perfil) }}">
                     <div class="media-body">
                         <div class="article-metadata">
-                            <a class="mr-2"><strong>Email:</strong> {{ usuario.email }}</a>
+                            <a class="mr-2"><strong>Tipo de Usuário:</strong> {{ usuario.tipo.value }}</a>
                         </div> 
                         <h4 class="article-title"><strong>Nome:</strong> {{ usuario.nome }}</h4>
-                        <p class="article-content"><strong>Identificação:</strong> {{ usuario.identificacao }}</p>
-                        <p class="article-content"><strong>Tipo Usuário:</strong> {{ usuario.tipo.value }}</p>
+                        <h6 class="article-content"><strong>Identificação:</strong> {{ usuario.identificacao }}</h66>
+                        <h6 class="article-content"><strong>Email:</strong> {{ usuario.email }}</h6>
                     </div>
                 </article>
             </div>

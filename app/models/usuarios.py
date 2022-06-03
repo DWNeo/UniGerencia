@@ -31,6 +31,7 @@ class Usuario(db.Model, UserMixin):
     senha = db.Column(db.String(60), nullable=False)
     data_cadastro = db.Column(db.DateTime, nullable=False, 
                               default=datetime.now().astimezone(fuso_horario))
+    data_atualizacao = db.Column(db.DateTime, nullable=True)
     tipo = db.Column(db.Enum(TipoUsuario), nullable=False)
     ativo = db.Column(db.Boolean, nullable=False, default=True)
     imagem_perfil = db.Column(db.String(20), nullable=False, 
@@ -67,6 +68,10 @@ class Usuario(db.Model, UserMixin):
     def recupera_id(usuario_id):
         return Usuario.query.filter_by(id=usuario_id).filter_by(ativo=True).first_or_404()
     
+    # Recupera o usuário pelo Identificação
+    def recupera_identificacao(usuario_idf):
+        return Usuario.query.filter_by(email=usuario_idf).filter_by(ativo=True).first()
+    
     # Recupera o usuário pelo Email
     def recupera_email(usuario_email):
         return Usuario.query.filter_by(email=usuario_email).filter_by(ativo=True).first()
@@ -79,54 +84,31 @@ class Usuario(db.Model, UserMixin):
         else:
             return False
     
-    # Insere um novo usuário no banco de dados (Tela de Registro)
-    def registra(form):
-        # Gera o hash da senha do novo usuário
-        hash_senha = bcrypt.generate_password_hash(form.senha.data).decode('utf-8')
-        
-        # Insere novo usuário no banco de dados
-        usuario = Usuario(nome=form.nome.data, 
-                          identificacao=form.identificacao.data,
-                          email=form.email.data, 
-                          senha=hash_senha,
-                          tipo=form.tipo.data)
-        db.session.add(usuario)
-        db.session.commit()
-    
-    # Insere um novo usuário no banco de dados (Admin)
-    def insere(form):
+    # Cria um novo usuário para ser inserido
+    def cria(form):
         # Realiza o tratamento da imagem de perfil enviada
         if form.imagem.data:
             arquivo_imagem = salva_imagem(form.imagem.data)
             imagem_perfil = arquivo_imagem
         else:
             imagem_perfil = None
-        
-        # Insere novo usuário no banco de dados
+            
+        # Gera o hash da senha do novo usuário
         hash_senha = bcrypt.generate_password_hash(form.senha.data).decode('utf-8')
+        
+        # Cria um usuário conforme dados recebidos do formulário
         usuario = Usuario(nome=form.nome.data, 
                           identificacao=form.identificacao.data,
                           email=form.email.data, 
                           senha=hash_senha,
-                          imagem_perfil=imagem_perfil, 
+                          imagem_perfil=imagem_perfil,
                           tipo=form.tipo.data)
+        
+        return usuario
+        
+    # Insere um novo usuário no banco de dados
+    def insere(usuario):
         db.session.add(usuario)
-        db.session.commit()
-    
-    # Atualiza o perfil do usuário atual no banco de dados
-    def perfil(form):
-        # Realiza o tratamento da imagem enviada
-        if form.imagem.data:
-            arquivo_imagem = salva_imagem(form.imagem.data)
-            current_user.imagem_perfil = arquivo_imagem
-            
-        # Atualiza dados do usuário no banco de dados  
-        hash_senha = bcrypt.generate_password_hash(form.senha.data).decode('utf-8')
-        current_user.senha = hash_senha
-        current_user.nome = form.nome.data
-        current_user.identificacao = form.identificacao.data
-        current_user.email = form.email.data
-        current_user.data_atualizacao = datetime.now().astimezone(fuso_horario)
         db.session.commit()
     
     # Atualiza um usuário existente específico no banco de dados
@@ -135,19 +117,26 @@ class Usuario(db.Model, UserMixin):
         if form.imagem.data:
             arquivo_imagem = salva_imagem(form.imagem.data)
             usuario.imagem_perfil = arquivo_imagem
+        
+        # Atualiza o tipo de usuário, se for necessário
+        try:
+            usuario.tipo = form.tipo.data
+        except:
+            print(usuario.tipo)
             
         # Atualiza dados do usuário no banco de dados  
         hash_senha = bcrypt.generate_password_hash(form.senha.data).decode('utf-8')
         usuario.senha = hash_senha
         usuario.nome = form.nome.data
-        usuario.tipo = form.tipo.data
+        current_user.identificacao = form.identificacao.data
+        current_user.email = form.email.data
         usuario.data_atualizacao = datetime.now().astimezone(fuso_horario)
         db.session.commit()
        
     # Redefine a senha de um usuário existente
-    def nova_senha(usuario, form):
+    def nova_senha(usuario, senha):
         # Gera um novo hash com base na nova senha
-        hash_senha = bcrypt.generate_password_hash(form.senha.data).decode('utf-8')
+        hash_senha = bcrypt.generate_password_hash(senha).decode('utf-8')
         usuario.senha = hash_senha
         usuario.data_atualizacao = datetime.now().astimezone(fuso_horario)
         db.session.commit()

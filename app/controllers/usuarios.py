@@ -39,7 +39,8 @@ def registrar():
     # novo registro de usuário no banco de dados
     form = RegistraForm()
     if form.validate_on_submit():
-        Usuario.registra(form)
+        usuario = Usuario.cria(form)
+        Usuario.insere(usuario)
         flash('Sua conta foi registrada com sucesso!\
               Você já pode realizar o login.', 'success')
         return redirect(url_for('usuarios.login'))
@@ -91,7 +92,7 @@ def perfil():
     # o registro do usuário atual no banco de dados
     form = AtualizaPerfilForm()
     if form.validate_on_submit():
-        Usuario.perfil(form)
+        Usuario.atualiza(current_user, form)
         flash('Sua conta foi atualizada com sucesso!', 'success')
         return redirect(url_for('usuarios.perfil'))  
     elif request.method == 'GET':
@@ -109,6 +110,7 @@ def perfil():
 
 @usuarios.route("/<int:usuario_id>/posts", methods=['GET'])
 @login_required
+@admin_required
 def posts_usuario(usuario_id):
     # Recebe o argumento que define qual os posts que serão
     # recuperados e exibidos na página
@@ -211,7 +213,7 @@ def redefinir_token(token):
 
     form = NovaSenhaForm()
     if form.validate_on_submit():
-        Usuario.nova_senha(usuario, form)
+        Usuario.nova_senha(usuario, form.senha.data)
         flash('Sua senha foi atualizada com sucesso!\
               Você já pode realizar login usando ela.', 'success')
         return redirect(url_for('usuarios.login'))
