@@ -104,7 +104,7 @@
     </main>
 
     <!-- JavaScript do jQuery, Pooper.js e Bootstrap JS -->
-    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.slim.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/popper_old.min.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap4.min.js') }}"></script>
 
@@ -116,110 +116,7 @@
     <!-- JavaScript do Select2 -->
     <script type="text/javascript" src="{{ url_for('static', filename='js/select2.min.js') }}"></script>
 
-    <!-- Configuração de scripts para funcionalidades importantes -->
-    <script>
-    $(document).ready(function() {
-        // Configuração da duração das mensagens de alerta
-        // Permite que a mensagem se feche sozinha após um determinado tempo
-        setTimeout(function() {
-            $(".alert-dismissable").alert('close');
-        }, 5000);  // 5 Segundos
-
-        // Configuração do DataTables
-        // Todas as tabelas da página inicial fazem uso dessa configuração
-        var table = $('table.display').DataTable({
-            responsive: true,
-            colReorder: true,
-            lengthChange: true,
-            fixedHeader: true,
-            select: true,
-            dom: 'Bfrtip',
-            buttons: [
-                {
-                    extend: 'excelHtml5',
-                    text: 'Excel',
-                    autoFilter: true
-                },
-                {
-                    extend: 'csvHtml5',
-                    text: 'CSV'
-                },
-                {
-                    extend: 'pdfHtml5',
-                    orientation: 'portrait',
-                    pageSize: 'A4',
-                    text: 'PDF'
-                },
-                {
-                    extend: 'print',
-                    text: 'Imprimir'
-                },
-                {
-                    extend: 'colvis',
-                    text: 'Colunas'
-                }, 
-            ],
-            // Quantidade de registros a exibir
-            "lengthMenu": [[25, 50, 75, 100], [25, 50, 75, 100]],
-            // Ordenação dos registros
-            "order": [[ 0, "desc" ]],
-            // Localização dos textos
-            "language": {
-                "emptyTable": "Nenhum registro encontrado",
-                "info": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
-                "infoEmpty": "Mostrando 0 até 0 de 0 registros",
-                "infoFiltered": "(Filtrados de _MAX_ registros)",
-                "infoThousands": ".",
-                "loadingRecords": "Carregando...",
-                "processing": "Processando...",
-                "zeroRecords": "Nenhum registro encontrado",
-                "search": "Pesquisar",
-                "lengthMenu": "Exibir _MENU_ resultados por página",
-                "decimal": ",",
-                "thousands": ".",
-                "paginate": {
-                    "next": "Próximo",
-                    "previous": "Anterior",
-                    "first": "Primeiro",
-                    "last": "Último"
-                },
-                select: {
-                    rows: {
-                        _: "%d linhas selecionadas",
-                        0: "Clique em uma linha para selecionar",
-                        1: "1 linha selecionada"
-                    }
-                }
-            }
-        });
-        table.buttons().container()
-        .appendTo( $('.col-md-6:eq(0)', table.table().container()) );
-
-        // Configuração dos campos que o usam o Select2
-        // Os campos de seleção de sala/equipamento em solicitações fazem uso dele
-        $('#salas').select2({
-            placeholder: "Salas Disponíveis",
-            theme: "bootstrap",
-            allowClear: false,
-            "language": {
-                "noResults": function(){
-                    return "Nenhuma sala encontrada";
-                }
-            },
-            "width": '100%'
-        });
-        $('#equipamentos').select2({
-            placeholder: "Equipamentos Disponíveis",
-            theme: "bootstrap",
-            allowClear: false,
-            "language": {
-                "noResults": function(){
-                    return "Nenhum equipamento encontrado";
-                }
-            },
-            "width": '100%'
-        });
-    } );
-    </script>
+    <!-- Configuração de JavaScript para funcionalidades importantes -->
+    {% include 'script.html' %}
 </body>
 </html>

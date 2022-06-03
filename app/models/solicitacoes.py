@@ -60,8 +60,7 @@ class Solicitacao(db.Model):
         solicitacao.ativo = False
         db.session.commit()
     
-    @property
-    def serialized(self):
+    def to_dict(self):
         return {
             'id': self.id,
             'status': self.status.name,
