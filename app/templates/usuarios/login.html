@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% from "formhelper.html" import render_field, render_button %}
-{% block conteudo %}
+{% block usuario %}
 <div class="content-section">
     <form method="POST" action="">
         {{ form.hidden_tag() }}
@@ -26,4 +26,4 @@
         Ainda não tem uma conta? <a class="ml-2" href="{{ url_for('usuarios.registrar') }}">Registre-se</a>
     </small>
 </div>
-{% endblock conteudo %}
+{% endblock usuario %}

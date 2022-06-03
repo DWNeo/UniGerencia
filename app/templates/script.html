@@ -9,7 +9,8 @@
         // Configuração do DataTables
         // Todas as tabelas da página inicial fazem uso dessa configuração
         var table = $('table.display').DataTable({
-            //ajax: '/api/solicitacoes',
+            /* Recebimento de dados via API
+            ajax: '/api/solicitacoes',
             columns: [
                 {data: 'id'},
                 {data: 'data_abertura'},
@@ -18,7 +19,8 @@
                 {data: 'usuario_id'},
                 {data: 'status'},
                 {data: 'descricao'}
-            ],
+            ], 
+            */
             // Propriedades da tabela
             responsive: true,
             colReorder: true,

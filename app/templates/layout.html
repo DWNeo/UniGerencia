@@ -70,7 +70,7 @@
         <!-- Mensagens de Alerta -->
         <!-- Mensagens retornadas pelas funções flash são exibidas aqui -->
         <div class="row justify-content-lg-center">
-            <div class="col-md-5">
+            <div class="col-lg-3">
             {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
@@ -99,6 +99,12 @@
             <!-- Bloco de erros e das outras páginas de conteúdo -->
             {% block erro %}{% endblock %}
             {% block conteudo %}{% endblock %}
+            </div>
+        </div>
+        <div class="row justify-content-lg-center">
+            <div class="col-lg-3 align-self-lg-center">
+            <!-- Bloco da tela de login e de registro -->
+            {% block usuario %}{% endblock %}
             </div>
         </div>
     </main>
