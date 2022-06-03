@@ -77,3 +77,4 @@ class AtualizaRelatorioEquipamentoForm(FlaskForm):
     detalhes = TextAreaField('Detalhes Adicionais')
     status = BooleanField('Finalizar')
     submit = SubmitField('Atualizar')
+    

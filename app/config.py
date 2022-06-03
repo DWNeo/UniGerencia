@@ -1,12 +1,15 @@
 # Define variáveis de ambiente importantes
 class Config:
-    DEBUG = True
     # Chave criptográfica de sessão do Flask
     SECRET_KEY = 'aj5mUuYnFw3Gy/bL2TYpCXjQGRGbuEgq6I5gBE1ZXjI='
+    SALT = 'UniGerência'
+    
+    # Tempo para expirar os tokens (1800 = 30 minutos)
+    MAX_AGE = 1800 
 
     # Variáveis do SQLAlchemy
     # Configura acesso ao banco de dados
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///site.db'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///storage.db'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # Variáveis do Mail

@@ -71,3 +71,4 @@ class SetorForm(FlaskForm):
         DataRequired(message=obrigatorio), 
         Length(max=50, message=max_50)])
     submit = SubmitField('Cadastrar')
+    

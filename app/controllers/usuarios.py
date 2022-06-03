@@ -3,12 +3,12 @@ from datetime import datetime
 from flask import render_template, url_for, flash, redirect, request, Blueprint
 from flask_login import current_user, logout_user, login_required
 
-from app.models import Usuario, Post, Solicitacao
-from app.usuarios.forms import (RegistraForm, LoginForm, AtualizaPerfilForm, 
+from app.models import Post, Solicitacao, Usuario
+from app.forms.usuarios import (RegistraForm, LoginForm, AtualizaPerfilForm, 
                                 RedefineSenhaForm, NovaSenhaForm,
                                 AdminRegistraForm, AdminAtualizaPerfilForm)
                                  
-from app.usuarios.utils import (envia_email_redefinicao, admin_required)
+from app.utils import (envia_email_redefinicao, admin_required)
 
 usuarios = Blueprint('usuarios', __name__)
 
@@ -188,7 +188,7 @@ def redefinir_senha():
         # email do usuário utilizando uma função auxilar
         envia_email_redefinicao(usuario)
         flash('Um email foi enviado com instruções de como\
-              proceder com a redifinição da senha.', 'info')
+              proceder com a redefinição da senha.', 'info')
         return redirect(url_for('usuarios.login'))
 
     return render_template('usuarios/redefinir_senha.html', 

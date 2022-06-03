@@ -159,3 +159,4 @@ class NovaSenhaForm(FlaskForm):
         DataRequired(message=obrigatorio), 
         EqualTo('senha', message=senha_diferente)])
     submit = SubmitField('Redefinir Senha')
+    

@@ -4,8 +4,7 @@ from app import login_manager
 login_manager.login_message_category = 'info'
 login_manager.needs_refresh_message_category = 'info'
 login_manager.login_message = ('É necessário realizar login para acessar '
-                               'essa página. Acesse a página "Sobre" para '
-                               'ver as contas de teste')
+                               'essa página.')
 login_manager.needs_refresh_message = 'É necessário realizar login novamente.'
 
 # Personaliza as mensagens de erros de validação de formulário

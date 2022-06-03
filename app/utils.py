@@ -9,7 +9,6 @@ from flask_login import current_user
 
 from app import mail
 
-
 # Define um decorator para verificar se o usuário atual é um administrador
 def admin_required(f):
     @wraps(f)
@@ -48,17 +47,27 @@ def salva_imagem(form_picture):
 
     return picture_fn
 
-
 # Envia o email de redefinição de senha com o token gerado
-def envia_email_redefinicao(user):
-    token = user.obtem_token_redefinicao()
+def envia_email_redefinicao(usuario):
+    token = usuario.obtem_token_redefinicao()
     msg = Message('UniGerência: Pedido de Redefinição de Senha',
                   sender='unigerencia.app@gmail.com',
-                  recipients=[user.email])
+                  recipients=[usuario.email])
     msg.body = f'''Para redefinir a sua senha, visite o seguinte link:
 {url_for('usuarios.redefinir_token', token=token, _external=True)}
 
+O link será válido por 30 minutos.
 Se você não fez esse pedido, então apenas ignore este email e nenhuma alteração será feita.
+'''
+    mail.send(msg)
+
+# Envia o email de aviso para um usuário com solicitações confirmadas
+def envia_email_confirmacao(solicitacao):
+    msg = Message('UniGerência: Aviso de Solicitação Confirmada',
+                  sender='unigerencia.app@gmail.com',
+                  recipients=[solicitacao.autor.email])
+    msg.body = f'''Você possui uma solicitação confirmada:
+{url_for('solicitacoes.solicitacao', solicitacao_id=solicitacao.id, _external=True)}
 '''
     mail.send(msg)
 
@@ -71,6 +80,7 @@ def envia_email_atraso(solicitacao):
 {url_for('solicitacoes.solicitacao', solicitacao_id=solicitacao.id, _external=True)}
 
 Por favor, regularize sua situação assim que possível.
-Se você já está regularizado, então ignore este email.
+Se você já estiver regularizado, então apenas ignore este email.
 '''
     mail.send(msg)
+    

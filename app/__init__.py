@@ -31,15 +31,15 @@ def create_app(config_class=Config):
     login_manager.init_app(app)
     mail.init_app(app)
     
-    # Importa as views
-    from app.principal.views import principal
-    from app.erros.handlers import erros
-    from app.usuarios.views import usuarios
-    from app.posts.views import posts
-    from app.equipamentos.views import equipamentos
-    from app.salas.views import salas
-    from app.solicitacoes.views import solicitacoes
-
+    # Importa os controllers
+    from app.controllers.principal import principal
+    from app.controllers.erros import erros
+    from app.controllers.usuarios import usuarios
+    from app.controllers.posts import posts
+    from app.controllers.equipamentos import equipamentos
+    from app.controllers.salas import salas
+    from app.controllers.solicitacoes import solicitacoes
+    
     # Registra as blueprints
     app.register_blueprint(principal, url_prefix='/')
     app.register_blueprint(erros, url_prefix='/erros')

@@ -5,11 +5,12 @@ from flask import (render_template, url_for, flash,
 from flask_login import login_required, current_user
 
 from app import db, fuso_horario
-from app.models import Equipamento, RelatorioEquipamento, SolicitacaoEquipamento, TipoEquipamento, Relatorio, Solicitacao
-from app.equipamentos.forms import (EquipamentoForm, IndisponibilizaEquipamentoForm,
+from app.models import (Equipamento, RelatorioEquipamento, SolicitacaoEquipamento, 
+                        TipoEquipamento, Solicitacao)
+from app.forms.equipamentos import (EquipamentoForm, IndisponibilizaEquipamentoForm,
                                     AtualizaEquipamentoForm, TipoEquipamentoForm,
                                     RelatorioEquipamentoForm, AtualizaRelatorioEquipamentoForm)
-from app.usuarios.utils import admin_required
+from app.utils import admin_required
 
 equipamentos = Blueprint('equipamentos', __name__)
 
@@ -295,3 +296,4 @@ def atualiza_relatorio(eqp_id, id):
     return render_template('equipamentos/atualizar_relatorio.html', 
                            title='Atualizar Relatório', eqp_id=eqp_id,
                            legend='Atualizar Relatório', form=form)
+    

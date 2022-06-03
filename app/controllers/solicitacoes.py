@@ -7,13 +7,14 @@ from flask import (render_template, url_for, flash,
 from flask_login import current_user, login_required
 
 from app import db, fuso_horario
-from app.models import Solicitacao, Equipamento, Sala, SolicitacaoEquipamento, SolicitacaoSala, TipoEquipamento, Turno, Setor
-from app.solicitacoes.forms import (SolicitacaoEquipamentoForm, TurnoForm,
+from app.models import (Solicitacao, Equipamento, Sala, SolicitacaoEquipamento, 
+                        SolicitacaoSala, TipoEquipamento, Turno, Setor)
+from app.forms.solicitacoes import (SolicitacaoEquipamentoForm, TurnoForm,
                                     SolicitacaoSalaForm, EntregaSolicitacaoForm,
                                     ConfirmaSolicitacaoEquipamentoForm,
                                     ConfirmaSolicitacaoSalaForm)
                                  
-from app.usuarios.utils import prof_required, admin_required
+from app.utils import envia_email_confirmacao, prof_required, admin_required
 
 solicitacoes = Blueprint('solicitacoes', __name__)
 
@@ -199,6 +200,7 @@ def confirma_solicitacao(solicitacao_id):
             solicitacao.setor.qtd_disponivel -= len(solicitacao.salas)
             solicitacao.status = 'CONFIRMADO'
             db.session.commit()
+            envia_email_confirmacao(solicitacao)
             flash('A solicitação foi confirmada com sucesso!', 'success')
             return redirect(url_for('principal.inicio'))
 
@@ -265,6 +267,7 @@ def confirma_solicitacao(solicitacao_id):
             solicitacao.tipo_eqp.qtd_disponivel -= len(solicitacao.equipamentos)
             solicitacao.status = 'CONFIRMADO'
             db.session.commit()
+            envia_email_confirmacao(solicitacao)
             flash('A solicitação foi confirmada com sucesso!', 'success')
             return redirect(url_for('principal.inicio'))
 

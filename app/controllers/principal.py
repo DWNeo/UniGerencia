@@ -4,9 +4,9 @@ from flask import render_template, request, flash, Blueprint
 from flask_login import login_required, current_user
 
 from app import db, fuso_horario
-from app.models import Post, Equipamento, Sala, Usuario, Solicitacao
-from app.usuarios.utils import admin_required, envia_email_atraso
-from app.solicitacoes.forms import EntregaSolicitacaoForm
+from app.models import Post, Equipamento, Sala, Solicitacao, Usuario
+from app.utils import envia_email_atraso
+from app.forms.solicitacoes import EntregaSolicitacaoForm
 
 principal = Blueprint('principal', __name__)
 

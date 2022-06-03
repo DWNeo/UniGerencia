@@ -6,9 +6,9 @@ from flask_login import login_required, current_user
 
 from app import db, fuso_horario
 from app.models import RelatorioSala, Sala, Relatorio, Solicitacao, Setor, SolicitacaoSala
-from app.salas.forms import (SalaForm, AtualizaSalaForm, IndisponibilizaSalaForm,
+from app.forms.salas import (SalaForm, AtualizaSalaForm, IndisponibilizaSalaForm,
                              RelatorioSalaForm, AtualizaRelatorioSalaForm, SetorForm)
-from app.usuarios.utils import prof_required, admin_required
+from app.utils import prof_required, admin_required
 
 salas = Blueprint('salas', __name__)
 
@@ -278,3 +278,4 @@ def atualiza_relatorio(sala_id, id):
     return render_template('salas/atualizar_relatorio.html', 
                            title='Atualizar Relatório', sala_id=sala_id,
                            legend='Atualizar Relatório', form=form)
+    
