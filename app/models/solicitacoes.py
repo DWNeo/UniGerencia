@@ -20,8 +20,8 @@ class Solicitacao(db.Model):
     data_finalizacao = db.Column(db.DateTime, nullable=True)
     quantidade = db.Column(db.Integer, nullable=False, default=0)
     descricao = db.Column(db.String(20), nullable=False)
-    ativo = db.Column(db.Boolean, nullable=False, default=True)
     tipo = db.Column(db.String(20), nullable=False)
+    ativo = db.Column(db.Boolean, nullable=False, default=True)
 
     # Uma solicitação está associada a um usuário e um turno
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), 
@@ -34,12 +34,17 @@ class Solicitacao(db.Model):
     # Recupera todas as solicitações presentes no banco de dados
     def recupera_todas():
         return Solicitacao.query.filter_by(ativo=True).all()
+    
+    # Recupera a solicitação pela ID e retorna erro 404 caso contrário
+    def recupera_id(sol_id):
+        return Solicitacao.query.filter_by(id=sol_id).filter_by(ativo=True).first_or_404()
         
     # Recupera as últimas solicitações de um usuário específico
     def recupera_autor_limite(usuario, limite):
         return Solicitacao.query.filter_by(autor=usuario).filter_by(
             ativo=True).order_by(Solicitacao.id.desc()).limit(limite)
 
+    # Atualiza o status de um solicitação para 'Pendente'
     def atualiza_status_pendente(solicitacao):
         solicitacao.status = 'PENDENTE'
         if solicitacao.tipo == 'Equipamento':
@@ -49,7 +54,29 @@ class Solicitacao(db.Model):
             for sala in solicitacao.salas:
                 sala.status = 'PENDENTE'     
         db.session.commit()
+        
+    # Desativa o registro de uma solicitação no banco de dados
+    def exclui(solicitacao):
+        solicitacao.ativo = False
+        db.session.commit()
     
+    @property
+    def serialized(self):
+        return {
+            'id': self.id,
+            'status': self.status.name,
+            'data_abertura': self.data_abertura,
+            'data_inicio_pref': self.data_inicio_pref,
+            'data_fim_pref': self.data_fim_pref,
+            'data_retirada': self.data_retirada,
+            'data_devolucao': self.data_devolucao,
+            'data_cancelamento': self.data_cancelamento,
+            'data_finalizacao': self.data_finalizacao,
+            'quantidade': self.quantidade,
+            'descricao': self.descricao,
+            'tipo': self.tipo
+        }
+        
     __mapper_args__ = {
         'polymorphic_identity': 'solicitacoes',
         'polymorphic_on': tipo

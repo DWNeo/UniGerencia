@@ -32,6 +32,7 @@ def create_app(config_class=Config):
     mail.init_app(app)
     
     # Importa os controllers
+    from app.controllers.api import api
     from app.controllers.principal import principal
     from app.controllers.erros import erros
     from app.controllers.usuarios import usuarios
@@ -42,6 +43,7 @@ def create_app(config_class=Config):
     
     # Registra as blueprints
     app.register_blueprint(principal, url_prefix='/')
+    app.register_blueprint(api, url_prefix='/api')
     app.register_blueprint(erros, url_prefix='/erros')
     app.register_blueprint(usuarios, url_prefix='/usuarios')
     app.register_blueprint(posts, url_prefix='/posts')

@@ -10,11 +10,11 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
 
     <!-- CSS Principal e do Bootstrap -->
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap4.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
 
     <!-- CSS do DataTables -->
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/jszip-2.5.0/dt-1.11.3/b-2.0.1/b-colvis-2.0.1/b-html5-2.0.1/b-print-2.0.1/cr-1.5.5/fh-3.2.0/r-2.2.9/rr-1.2.8/sp-1.4.0/sl-1.3.3/datatables.min.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.12.1/b-2.2.3/b-colvis-2.2.3/b-html5-2.2.3/b-print-2.2.3/cr-1.5.6/date-1.1.2/fh-3.2.3/r-2.3.0/rg-1.2.0/rr-1.2.8/sc-2.0.6/sp-2.0.1/sl-1.4.0/datatables.min.css"/>
 
     <!-- CSS do Select2 -->
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/select2.min.css') }}"/>
@@ -105,13 +105,13 @@
 
     <!-- JavaScript do jQuery, Pooper.js e Bootstrap JS -->
     <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.slim.min.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/popper_old.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap4.min.js') }}"></script>
 
     <!-- JavaScript do DataTables -->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
-    <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/jszip-2.5.0/dt-1.11.3/b-2.0.1/b-colvis-2.0.1/b-html5-2.0.1/b-print-2.0.1/cr-1.5.5/fh-3.2.0/r-2.2.9/rr-1.2.8/sp-1.4.0/sl-1.3.3/datatables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.12.1/b-2.2.3/b-colvis-2.2.3/b-html5-2.2.3/b-print-2.2.3/cr-1.5.6/date-1.1.2/fh-3.2.3/r-2.3.0/rg-1.2.0/rr-1.2.8/sc-2.0.6/sp-2.0.1/sl-1.4.0/datatables.min.js"></script>
     
     <!-- JavaScript do Select2 -->
     <script type="text/javascript" src="{{ url_for('static', filename='js/select2.min.js') }}"></script>
@@ -127,11 +127,40 @@
 
         // Configuração do DataTables
         // Todas as tabelas da página inicial fazem uso dessa configuração
-        $('table.display').DataTable({
+        var table = $('table.display').DataTable({
             responsive: true,
             colReorder: true,
+            lengthChange: true,
+            fixedHeader: true,
+            select: true,
+            dom: 'Bfrtip',
+            buttons: [
+                {
+                    extend: 'excelHtml5',
+                    text: 'Excel',
+                    autoFilter: true
+                },
+                {
+                    extend: 'csvHtml5',
+                    text: 'CSV'
+                },
+                {
+                    extend: 'pdfHtml5',
+                    orientation: 'portrait',
+                    pageSize: 'A4',
+                    text: 'PDF'
+                },
+                {
+                    extend: 'print',
+                    text: 'Imprimir'
+                },
+                {
+                    extend: 'colvis',
+                    text: 'Colunas'
+                }, 
+            ],
             // Quantidade de registros a exibir
-            "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+            "lengthMenu": [[25, 50, 75, 100], [25, 50, 75, 100]],
             // Ordenação dos registros
             "order": [[ 0, "desc" ]],
             // Localização dos textos
@@ -154,8 +183,17 @@
                     "first": "Primeiro",
                     "last": "Último"
                 },
+                select: {
+                    rows: {
+                        _: "%d linhas selecionadas",
+                        0: "Clique em uma linha para selecionar",
+                        1: "1 linha selecionada"
+                    }
+                }
             }
         });
+        table.buttons().container()
+        .appendTo( $('.col-md-6:eq(0)', table.table().container()) );
 
         // Configuração dos campos que o usam o Select2
         // Os campos de seleção de sala/equipamento em solicitações fazem uso dele

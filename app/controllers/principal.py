@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from flask import render_template, request, flash, Blueprint
+from flask import jsonify, render_template, request, flash, Blueprint
 from flask_login import login_required, current_user
 
 from app import db, fuso_horario
@@ -36,15 +36,6 @@ def inicio():
                 solicitacao.data_devolucao.astimezone(fuso_horario)):
                 # Troca o status dos registros associados
                 Solicitacao.atualiza_status_pendente(solicitacao)
-                '''
-                solicitacao.status = 'PENDENTE'
-                if solicitacao.tipo == 'Equipamento':
-                    for equipamento in solicitacao.equipamentos:
-                        equipamento.status = 'PENDENTE'
-                if solicitacao.tipo == 'Sala':
-                    for sala in solicitacao.salas:
-                        sala.status = 'PENDENTE'
-                db.session.commit()'''
                 envia_email_atraso(solicitacao)
 
                 # Exibe uma mensagem de alerta para o usuário com atraso
