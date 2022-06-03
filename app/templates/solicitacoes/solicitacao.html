@@ -51,7 +51,7 @@
             <h5 class="article-content"><strong>Data de Empréstimo:</strong> {{ solicitacao.data_entrega.strftime('%d/%m/%Y %H:%M:%S') }}</h5>
         {% endif %}
         {% if solicitacao.data_devolucao %}
-            <h5 class="article-content"><strong>Data de Devolução:</strong> {{ solicitacao.data_devolucao.strftime('%d/%m/%Y %H:%M:%S') }}</h5>
+            <h5 class="article-content"><strong>Data de Devolução Prevista:</strong> {{ solicitacao.data_devolucao.strftime('%d/%m/%Y %H:%M:%S') }}</h5>
         {% endif %}
         {% if solicitacao.data_cancelamento %}
             <h5 class="article-content"><strong>Data de Cancelamento:</strong> {{ solicitacao.data_cancelamento.strftime('%d/%m/%Y %H:%M:%S') }}</h5>

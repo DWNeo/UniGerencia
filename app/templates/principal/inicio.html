@@ -41,43 +41,33 @@
   <!-- Conteúdo de Cada Aba da Navegação -->
   <div class="tab-content flex-md-row" id="nav-tabContent">
     <div class="tab-pane fade {% if tab == 1 %}show active{% endif %}" id="pills-1" role="tabpanel">
-      <div class="row">
-        <div class="col-md-12">
-          <!-- Tabela de Solicitações-->
-          {% include 'principal/tabela/solicitacoes.html' %}
-        </div>
+      <div class="table-responsive">
+        <!-- Tabela de Solicitações-->
+        {% include 'principal/tabela/solicitacoes.html' %}
       </div>
     </div>
     <div class="tab-pane fade {% if tab == 2 %}show active{% endif %}" id="pills-2" role="tabpanel">
-      <div class="row">
-        <div class="col-md-12">
-          <!-- Tabela de Posts-->
-          {% include 'principal/tabela/posts.html' %}
-        </div>
+      <div class="table-responsive">
+        <!-- Tabela de Posts-->
+        {% include 'principal/tabela/posts.html' %}
       </div>
     </div>
     <div class="tab-pane fade {% if tab == 3 %}show active{% endif %}" id="pills-3" role="tabpanel">
-      <div class="row">
-        <div class="col-md-12">
-          <!-- Tabela de Equipamentos-->
-          {% include 'principal/tabela/equipamentos.html' %}
-        </div>
+      <div class="table-responsive">
+        <!-- Tabela de Equipamentos-->
+        {% include 'principal/tabela/equipamentos.html' %}
       </div>
     </div>
     <div class="tab-pane fade {% if tab == 4 %}show active{% endif %}" id="pills-4" role="tabpanel">
-      <div class="row">
-        <div class="col-md-12">
-          <!-- Tabela de Salas-->
-          {% include 'principal/tabela/salas.html' %}
-        </div>
+      <div class="table-responsive">
+        <!-- Tabela de Salas-->
+        {% include 'principal/tabela/salas.html' %}
       </div>
     </div>
     <div class="tab-pane fade {% if tab == 5 %}show active{% endif %}" id="pills-5" role="tabpanel">
-      <div class="row">
-        <div class="col-md-12">
-          <!-- Tabela de Usuários-->
-          {% include 'principal/tabela/usuarios.html' %}
-        </div>
+      <div class="table-responsive">
+        <!-- Tabela de Usuários-->
+        {% include 'principal/tabela/usuarios.html' %}
       </div>
     </div> 
   </div>

@@ -6,7 +6,7 @@ class Status(enum.Enum):
     SOLICITADO = 'Solicitado' 
     CONFIRMADO = 'Confirmado'
     EMUSO = 'Em Uso'
-    FECHADO = 'Fechado'
+    FECHADO = 'Finalizado'
     CANCELADO = 'Cancelado'
     PENDENTE = 'Pendente'
     EMMANUTENCAO = 'Em Manutenção'

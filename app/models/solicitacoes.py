@@ -31,18 +31,32 @@ class Solicitacao(db.Model):
     
     turno = db.relationship('Turno', back_populates='solicitacoes')
 
+    # Recupera todas as solicitações presentes no banco de dados
+    def recupera_todas():
+        return Solicitacao.query.filter_by(ativo=True).all()
+        
     # Recupera as últimas solicitações de um usuário específico
     def recupera_autor_limite(usuario, limite):
         return Solicitacao.query.filter_by(autor=usuario).filter_by(
             ativo=True).order_by(Solicitacao.id.desc()).limit(limite)
 
+    def atualiza_status_pendente(solicitacao):
+        solicitacao.status = 'PENDENTE'
+        if solicitacao.tipo == 'Equipamento':
+            for equipamento in solicitacao.equipamentos:
+                equipamento.status = 'PENDENTE'
+        if solicitacao.tipo == 'Sala':
+            for sala in solicitacao.salas:
+                sala.status = 'PENDENTE'     
+        db.session.commit()
+    
     __mapper_args__ = {
         'polymorphic_identity': 'solicitacoes',
         'polymorphic_on': tipo
     }
 
     def __repr__(self):
-        return f"Solicitação #{self.id} - {self.tipo} - {self.status}"
+        return f"Solicitação #{self.id} - {self.tipo} - {self.status.value}"
  
 # Tabela que associa as solicitações às salas
 solicitacao_s = db.Table('solicitacao_s',
@@ -110,5 +124,5 @@ class Turno(db.Model):
     solicitacoes = db.relationship('Solicitacao', back_populates='turno')
     
     def __repr__(self):
-        return f"{self.name} - Hora Início: {self.data_inicio} - Hora Fim: {self.data_fim}"
+        return f"{self.name} - Início: {self.data_inicio} - Fim: {self.data_fim}"
     

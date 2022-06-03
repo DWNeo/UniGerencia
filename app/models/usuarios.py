@@ -60,7 +60,7 @@ class Usuario(db.Model, UserMixin):
             return None
         return Usuario.query.get(usuario_id)
     
-    # Recupera todos os usuários inseridos no banco de dados
+    # Recupera todos os usuários presentes no banco de dados
     def recupera_todos():
         return Usuario.query.filter_by(ativo=True).all()
     

@@ -69,7 +69,7 @@
     <main role="main" class="container-fluid">
         <!-- Mensagens de Alerta -->
         <!-- Mensagens retornadas pelas funções flash são exibidas aqui -->
-        <div class="row justify-content-md-center">
+        <div class="row justify-content-lg-center">
             <div class="col-md-5">
             {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
@@ -87,15 +87,15 @@
         </div>
         <!-- Blocos de Conteúdo -->
         <!-- Os outros templates são renderizados aqui -->
-        <div class="row justify-content-md-center">
-            <div class="col-md-10 align-self-md-center">
+        <div class="row justify-content-lg-center">
+            <div class="col-lg-10 align-self-lg-center">
             <!-- Bloco da página inicial e de páginas mais detalhadas -->
             {% block inicio %}{% endblock %}
             {% block detalhes %}{% endblock %}
             </div>
         </div>
-        <div class="row justify-content-md-center">
-            <div class="col-md-5 align-self-sm-center">
+        <div class="row justify-content-lg-center">
+            <div class="col-lg-5 align-self-lg-center">
             <!-- Bloco de erros e das outras páginas de conteúdo -->
             {% block erro %}{% endblock %}
             {% block conteudo %}{% endblock %}

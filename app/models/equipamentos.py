@@ -30,6 +30,10 @@ class Equipamento(db.Model):
                                    back_populates='equipamentos')
     relatorios = db.relationship('RelatorioEquipamento', back_populates='equipamento')
    
+    # Recupera todas os equipamentos presentes no banco de dados
+    def recupera_todos():
+        return Equipamento.query.filter_by(ativo=True).all()
+        
     def __repr__(self):
         return f"{self.patrimonio} - {self.descricao}"
 

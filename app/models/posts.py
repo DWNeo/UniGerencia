@@ -21,6 +21,10 @@ class Post(db.Model):
     destinatario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), 
                                 nullable=True)
     
+    # Recupera todas as mensagens presentes no banco de dados
+    def recupera_todos():
+        return Post.query.filter_by(ativo=True).all()
+        
     # Recupera as mensagens de um autor de forma paginada
     def recupera_autor_paginado(usuario, pagina, num):
         return Post.query.filter_by(autor=usuario).order_by(

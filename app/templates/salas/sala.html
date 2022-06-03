@@ -1,16 +1,16 @@
 <!-- Página para visualizar uma sala com mais detalhes -->
 {% extends "layout.html" %}
 {% block conteudo %}
-{% if sala.status != 'Em Atraso' %}
+{% if sala.status.name != 'PENDENTE' %}
 <div class="alert alert-info" role="alert" id="alert-message">
     <button type="button" class="close" data-dismiss="alert">
     <span>&times;</span>
     </button>
-    {% if sala.status == 'Disponível' %}
+    {% if sala.status.name == 'ABERTO' %}
     Esta sala está disponível para ser solicitada.
-    {% elif sala.status == 'Em Uso' %}
+    {% elif sala.status.name == 'EMUSO' %}
     Esta sala está em uso.
-    {% elif sala.status == 'Indisponível' %}
+    {% elif sala.status.name == 'DESABILITADO' or sala.status.name == 'EMMANUTENCAO' %}
     Esta sala está indisponível para ser solicitada.
     {% endif %}
 </div>

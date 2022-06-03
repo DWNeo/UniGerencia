@@ -28,6 +28,10 @@ class Sala(db.Model):
     relatorios = db.relationship('RelatorioSala', back_populates='sala')
     setor = db.relationship('Setor', back_populates='salas')  
 
+    # Recupera todas as salas presentes no banco de dados
+    def recupera_todas():
+        return Sala.query.filter_by(ativo=True).all()
+        
     def __repr__(self):
         return f"{self.numero} - {self.setor.name} - Qtde. Alunos: {self.qtd_aluno}"
 

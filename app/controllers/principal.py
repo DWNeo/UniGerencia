@@ -17,14 +17,14 @@ def inicio():
     # Recebe o argumento sobre qual qual é a aba do menu de navegação
     # que estará ativa quando a página for aberta (padrão = 1)
     tab = request.args.get('tab', 1, type=int)
-
+    
     # Recupera os registros ativos de cada tabela do banco de dados
     # A paginação pode ser necessária caso haja uma expectativa
     # de número de dados grandes o suficiente
-    solicitacoes = Solicitacao.query.filter_by(ativo=True).all()
-    posts = Post.query.filter_by(ativo=True).all()
-    equipamentos = Equipamento.query.filter_by(ativo=True).all()
-    salas = Sala.query.filter_by(ativo=True).all()
+    solicitacoes = Solicitacao.recupera_todas()
+    posts = Post.recupera_todos()
+    equipamentos = Equipamento.recupera_todos()
+    salas = Sala.recupera_todas()
     usuarios = Usuario.recupera_todos()
     
     # Verifica se há solicitações em uso atrasadas 
@@ -35,6 +35,8 @@ def inicio():
             if (datetime.now().astimezone(fuso_horario) > 
                 solicitacao.data_devolucao.astimezone(fuso_horario)):
                 # Troca o status dos registros associados
+                Solicitacao.atualiza_status_pendente(solicitacao)
+                '''
                 solicitacao.status = 'PENDENTE'
                 if solicitacao.tipo == 'Equipamento':
                     for equipamento in solicitacao.equipamentos:
@@ -42,7 +44,7 @@ def inicio():
                 if solicitacao.tipo == 'Sala':
                     for sala in solicitacao.salas:
                         sala.status = 'PENDENTE'
-                db.session.commit()
+                db.session.commit()'''
                 envia_email_atraso(solicitacao)
 
                 # Exibe uma mensagem de alerta para o usuário com atraso
@@ -56,7 +58,8 @@ def inicio():
     # Importa o formulário para entrega de solicitações
     # Necessário em um modal presente na tabela de solicitações
     form = EntregaSolicitacaoForm()
-    # Renderiza o template
+    
+    # Renderiza a página principal
     return render_template('principal/inicio.html', tab=tab, form=form,
                            posts=posts, equipamentos=equipamentos, salas=salas, 
                            usuarios=usuarios, solicitacoes=solicitacoes)

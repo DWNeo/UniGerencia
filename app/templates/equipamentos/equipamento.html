@@ -1,16 +1,16 @@
 <!-- Página para visualizar um equipamento com mais detalhes -->
 {% extends "layout.html" %}
 {% block conteudo %}
-{% if equipamento.status != 'Em Atraso' %}
+{% if equipamento.status.name != 'PENDENTE' %}
 <div class="alert alert-info" role="alert" id="alert-message">
     <button type="button" class="close" data-dismiss="alert">
     <span>&times;</span>
     </button>
-    {% if equipamento.status == 'Disponível' %}
+    {% if equipamento.status.name == 'ABERTO' %}
     Este equipamento está disponível para ser solicitado.
-    {% elif equipamento.status == 'Em Uso' %}
+    {% elif equipamento.status.name == 'EMUSO' %}
     Este equipamento está em uso.
-    {% elif equipamento.status == 'Indisponível' %}
+    {% elif equipamento.status.name == 'DESABILITADO' or equipamento.status.name == 'EMMANUTENCAO' %}
     Este equipamento está indisponível para ser solicitado.
     {% endif %}
 </div>

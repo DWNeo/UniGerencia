@@ -107,6 +107,10 @@ class ConfirmaSolicitacaoSalaForm(FlaskForm):
 
 class EntregaSolicitacaoForm(FlaskForm):
 
+    data_inicio_pref = StringField('Data de Início Preferencial', 
+        render_kw={'disabled':''})
+    data_fim_pref = StringField('Data de Fim Preferencial', 
+        render_kw={'disabled':''})
     data_devolucao = DateTimeLocalField('Data de Devolução', 
         format='%Y-%m-%dT%H:%M', default=datetime.now().astimezone(fuso_horario))
     submit = SubmitField('Confirmar')

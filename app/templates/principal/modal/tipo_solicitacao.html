@@ -11,7 +11,11 @@
             <div class="modal-body text-center">
                 <p class="">Deseja realizar uma solicitação de qual tipo?</p>
                 <a type="button" class="btn btn-outline-success" href="{{ url_for('solicitacoes.nova_solicitacao_equipamento') }}">Equipamento</a>
+                {% if current_user.tipo.name == 'ALUNO' %}
+                <a type="button" class="btn btn-outline-secondary" disabled>Sala</a>
+                {% else %}
                 <a type="button" class="btn btn-outline-success" href="{{ url_for('solicitacoes.nova_solicitacao_sala') }}">Sala</a>
+                {% endif %}
             </div>
         </div>
     </div>
