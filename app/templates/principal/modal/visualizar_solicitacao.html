@@ -13,7 +13,11 @@
                     <div class="media-body">
                         <div class="article-metadata">
                             <a class="mr-2"><strong>Status:</strong> {{ solicitacao.status.value }}</a>
-                            <a class="mr-2"><strong>Tipo:</strong> {{ solicitacao.tipo }}</a>
+                            {% if solicitacao.tipo == 'EQUIPAMENTO' %}
+                            <a class="mr-2"><strong>Tipo:</strong> Equipamento</a>
+                            {% elif solicitacao.tipo == 'SALA' %}
+                            <a class="mr-2"><strong>Tipo:</strong> Sala</a>
+                            {% endif %}
                             <small class="text-muted"><strong>{{ solicitacao.data_abertura.strftime('%d/%m/%Y %H:%M:%S') }}</strong></small>
                         </div>
                         {% if solicitacao.tipo == 'solicitacoes_salas' %}
@@ -27,22 +31,22 @@
                                 {% endfor %}
                             {% endif %}
                         {% endif %}
-                        {% if solicitacao.tipo == 'solicitacoes_equipamentos' %}
+                        {% if solicitacao.tipo == 'EQUIPAMENTO' %}
                         <h6 class="article-content"><strong>Tipo de Equipamento:</strong> {{ solicitacao.tipo_eqp.nome }}</h6>
                         {% endif %}
                         {% if solicitacao.quantodade %}
                         <h6 class="article-content"><strong>Quantidade Solicitada:</strong> {{ solicitacao.quantidade }}</h6>
                         {% endif %}
-                        {% if solicitacao.tipo == 'solicitacoes_equipamentos' %}
+                        {% if solicitacao.tipo == 'EQUIPAMENTO' %}
                             {% if solicitacao.equipamentos %}
                             <h6 class="article-title"><strong>Equipamentos Solicitados:</strong></h6>
                                 {% for equipamento in solicitacao.equipamentos %}
-                                    <h6 class="article-title"><strong>-</strong> {{ equipamento }}</h6>
+                                    <h6 class="article-title"><strong>{{loop.index}}.</strong> {{ equipamento }}</h6>
                                 {% endfor %}
                             {% endif %}
                         {% endif %}
                         {% if solicitacao.turno %}
-                        <h6 class="article-content"><strong>Turno:</strong> {{ solicitacao.turno.name }}</h6>
+                        <h6 class="article-content pt-2"><strong>Turno:</strong> {{ solicitacao.turno.name }}</h6>
                         {% endif %}
                         {% if solicitacao.data_inicio_pref %}
                         <h6 class="article-content"><strong>Data de Início Preferencial:</strong> {{ solicitacao.data_inicio_pref.strftime('%d/%m/%y') }}</h6>

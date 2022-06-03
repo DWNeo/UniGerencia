@@ -27,7 +27,11 @@
         <div class="article-metadata mb-3">
             <a class="mr-2" href="{{ url_for('solicitacoes.solicitacao', solicitacao_id=solicitacao.id )}}"><strong>Solicitação #{{ solicitacao.id }}</strong></a>
         </div>
-        <h5 class="article-content"><strong>Tipo:</strong> {{ solicitacao.tipo }}</h5>
+        {% if solicitacao.tipo == 'EQUIPAMENTO' %}
+        <h5 class="article-content"><strong>Tipo:</strong> Equipamento</h5>
+        {% elif solicitacao.tipo == 'SALA' %}
+        <h5 class="article-content"><strong>Tipo:</strong> Sala</h5>
+        {% endif %}
         <h5 class="article-content"><strong>Status:</strong> {{ solicitacao.status.value }}</h5>
     </div>
 </article>

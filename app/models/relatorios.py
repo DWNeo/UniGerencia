@@ -33,7 +33,7 @@ class Relatorio(db.Model):
                            nullable=False)
     tipo = db.Column(db.String(50)) # discriminador
     __mapper_args__ = {
-        'polymorphic_identity': 'relatorios',
+        'polymorphic_identity': 'RELATORIO',
         'polymorphic_on': tipo
     }
 
@@ -45,7 +45,7 @@ class RelatorioSala(Relatorio):
     reforma = db.Column(db.Boolean, nullable=False, default=False)
 
     __mapper_args__ = {
-        'polymorphic_identity': 'relatorios_sala'
+        'polymorphic_identity': 'SALA'
     }
 
     # Um relatório está associado a um sala
@@ -71,7 +71,7 @@ class RelatorioEquipamento(Relatorio):
     equipamento = db.relationship('Equipamento', back_populates='relatorios')
 
     __mapper_args__ = {
-        'polymorphic_identity': 'relatorios_equipamento'
+        'polymorphic_identity': 'EQUIPAMENTO'
     }
     
     def __repr__(self):

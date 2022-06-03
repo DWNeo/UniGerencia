@@ -168,7 +168,7 @@ def confirma_solicitacao(solicitacao_id):
         ativo=True).filter_by(id=solicitacao_id).first_or_404()
     
     # Se a solicitação for do tipo 'Sala'...
-    if solicitacao.tipo == 'Sala':
+    if solicitacao.tipo == 'SALA':
         # Em caso de envio de formulário (POST)
         form = ConfirmaSolicitacaoSalaForm()
         salas = Sala.query.filter_by(setor_id=solicitacao.setor.id).filter_by(
@@ -224,7 +224,7 @@ def confirma_solicitacao(solicitacao_id):
                                solicitacao=solicitacao)
     
     # Se a solicitação for do tipo 'Equipamento'...
-    elif solicitacao.tipo == 'Equipamento':
+    elif solicitacao.tipo == 'EQUIPAMENTO':
         # Preenche o campo de seleção de equipamentos disponíveis
         # Retorna o usuário pra tela inicial se não houver nenhum
         form = ConfirmaSolicitacaoEquipamentoForm()
@@ -311,10 +311,10 @@ def entrega_solicitacao(solicitacao_id):
         solicitacao.data_devolucao = form.data_devolucao.data
         
         # Altera o status da sala/equipamentos associados para 'Em Uso'
-        if solicitacao.tipo == 'Equipamento':
+        if solicitacao.tipo == 'EQUIPAMENTO':
             for equipamento in solicitacao.equipamentos:
                 equipamento.status = 'EMUSO'
-        if solicitacao.tipo == 'Sala':
+        if solicitacao.tipo == 'SALA':
             for sala in solicitacao.salas: 
                 sala.status = 'EMUSO'
 
@@ -342,7 +342,7 @@ def recebe_solicitacao(solicitacao_id):
         return redirect(url_for('principal.inicio'))
     
     # Atualiza o status dos equipamentos recebidos para 'Disponível'
-    if solicitacao.tipo == 'Equipamento':
+    if solicitacao.tipo == 'EQUIPAMENTO':
         for equipamento in solicitacao.equipamentos:
             equipamento.status = 'ABERTO'
         solicitacao.tipo_eqp.qtd_disponivel += len(solicitacao.equipamentos)
@@ -350,7 +350,7 @@ def recebe_solicitacao(solicitacao_id):
     # Atualiza o status da sala recebida para 'Disponível'
     # Além disso, verifica se há alguma solicitação em espera da mesma
     # sala e atualiza o status da primeira realizada, caso exista
-    if solicitacao.tipo == 'Sala':
+    if solicitacao.tipo == 'SALA':
         for sala in solicitacao.salas:
             sala.status = 'ABERTO'
         solicitacao.setor.qtd_disponivel += len(solicitacao.salas)
@@ -383,13 +383,13 @@ def cancela_solicitacao(solicitacao_id):
     if solicitacao.status.name != 'ABERTO' and solicitacao.status.name != 'SOLICITADO':
         # Altera o status da sala/equipamentos associados a solicitação de volta
         # para 'Disponível' e adiciona a quantidade de equipamentos disponíveis
-        if solicitacao.tipo == 'Equipamento':
+        if solicitacao.tipo == 'EQUIPAMENTO':
             if solicitacao.tipo_eqp:
                 solicitacao.tipo_eqp.qtd_disponivel += len(solicitacao.equipamentos)
             if solicitacao.equipamentos:
                 for equipamento in solicitacao.equipamentos:
                     equipamento.status = 'ABERTO'
-        if solicitacao.tipo == 'Sala':
+        if solicitacao.tipo == 'SALA':
             if solicitacao.setor:
                 solicitacao.setor.qtd_disponivel += len(solicitacao.salas) 
             if solicitacao.salas:

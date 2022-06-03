@@ -30,7 +30,11 @@
     <div class="media-body">
         <div class="article-metadata mb-3">
             <a class="mr-2"><strong>Status:</strong> {{ solicitacao.status.value }}</a>
-            <a class="mr-2"><strong>Tipo:</strong> {{ solicitacao.tipo }}</a>
+            {% if solicitacao.tipo == 'EQUIPAMENTO' %}
+            <a class="mr-2"><strong>Tipo:</strong> Equipamento</a>
+            {% elif solicitacao.tipo == 'SALA' %}
+            <a class="mr-2"><strong>Tipo:</strong> Sala</a>
+            {% endif %}
             <small class="text-muted"><strong>{{ solicitacao.data_abertura.strftime('%d/%m/%Y %H:%M:%S') }}</strong></small>
         </div>
         {% if solicitacao.tipo == 'solicitacoes_equipamentos' %}

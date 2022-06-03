@@ -74,11 +74,13 @@ class Solicitacao(db.Model):
             'data_finalizacao': self.data_finalizacao,
             'quantidade': self.quantidade,
             'descricao': self.descricao,
-            'tipo': self.tipo
+            'tipo': self.tipo,
+            'usuario_id': self.usuario_id,
+            'turno_id': self.turno_id
         }
         
     __mapper_args__ = {
-        'polymorphic_identity': 'solicitacoes',
+        'polymorphic_identity': 'SOLICITACAO',
         'polymorphic_on': tipo
     }
 
@@ -115,7 +117,7 @@ class SolicitacaoSala(Solicitacao):
                                     back_populates='solicitacoes')
     
     __mapper_args__ = {
-        'polymorphic_identity': 'Sala',
+        'polymorphic_identity': 'SALA',
     }
 
 # Classe específica para as solicitações de equipamentos
@@ -133,7 +135,7 @@ class SolicitacaoEquipamento(Solicitacao):
     tipo_eqp = db.relationship('TipoEquipamento', back_populates='solicitacoes')
 
     __mapper_args__ = {
-        'polymorphic_identity': 'Equipamento'
+        'polymorphic_identity': 'EQUIPAMENTO'
     }
 
 # Classe para os turnos possíveis para solicitações
