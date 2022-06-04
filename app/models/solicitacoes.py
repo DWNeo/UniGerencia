@@ -32,7 +32,7 @@ class Solicitacao(db.Model):
     turno = db.relationship('Turno', back_populates='solicitacoes')
 
     # Recupera todas as solicitações presentes no banco de dados
-    def recupera_todas():
+    def recupera_tudo():
         return Solicitacao.query.filter_by(ativo=True).all()
     
     # Recupera a solicitação pela ID e retorna erro 404 caso contrário

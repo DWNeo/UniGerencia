@@ -21,11 +21,11 @@ def inicio():
     # Recupera os registros ativos de cada tabela do banco de dados
     # A paginação pode ser necessária caso haja uma expectativa
     # de número de dados grandes o suficiente
-    solicitacoes = Solicitacao.recupera_todas()
-    posts = Post.recupera_todos()
-    equipamentos = Equipamento.recupera_todos()
-    salas = Sala.recupera_todas()
-    usuarios = Usuario.recupera_todos()
+    solicitacoes = Solicitacao.recupera_tudo()
+    posts = Post.recupera_tudo()
+    equipamentos = Equipamento.recupera_tudo()
+    salas = Sala.recupera_tudo()
+    usuarios = Usuario.recupera_tudo()
     
     # Verifica se há solicitações em uso atrasadas 
     # e atualiza o status das que estão
@@ -37,11 +37,9 @@ def inicio():
                 # Troca o status dos registros associados
                 Solicitacao.atualiza_status_pendente(solicitacao)
                 envia_email_atraso(solicitacao)
-                
                 # Exibe uma mensagem de alerta para o usuário com atraso
                 if current_user == solicitacao.autor:
-                    flash('Você possui uma solicitação atrasada.', 'warning')
-                    
+                    flash('Você possui uma solicitação atrasada.', 'warning')  
                 # Exibe uma mensagem de alerta para o admin
                 if Usuario.verifica_admin(current_user):
                     flash('Existe uma nova solicitação em atraso.', 'warning')

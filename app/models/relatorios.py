@@ -82,7 +82,7 @@ class RelatorioEquipamento(Relatorio):
             id=relatorio_id).filter_by(ativo=True).first_or_404()
         
     # Recupera todas os relatórios de um equipamento
-    def recupera_todos_eqp(eqp_id):
+    def recupera_tudo_eqp(eqp_id):
         return RelatorioEquipamento.query.filter_by(
             equipamento_id=eqp_id).filter_by(ativo=True).all()
         
@@ -93,7 +93,7 @@ class RelatorioEquipamento(Relatorio):
         else:
             return False
     
-    # Cria um novo equipamento para ser inserido
+    # Cria um novo relatório de equipamento para ser inserido
     def cria(eqp_id, form):
         if form.finalizar.data == True:
             status = 'FECHADO'

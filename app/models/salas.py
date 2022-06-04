@@ -29,7 +29,7 @@ class Sala(db.Model):
     setor = db.relationship('Setor', back_populates='salas')  
 
     # Recupera todas as salas presentes no banco de dados
-    def recupera_todas():
+    def recupera_tudo():
         return Sala.query.filter_by(ativo=True).all()
         
     def __repr__(self):

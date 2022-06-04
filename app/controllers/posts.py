@@ -25,7 +25,7 @@ def novo_post():
     # Administradores podem escolher também o destinatário
     if Usuario.verifica_admin(current_user):
         form = PostAdminForm()
-        usuarios = Usuario.recupera_todos()
+        usuarios = Usuario.recupera_tudo()
         lista_usuarios = [(usuario.id, usuario) for usuario in usuarios]
         form.destinatario.choices = lista_usuarios
     else:  

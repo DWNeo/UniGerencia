@@ -24,7 +24,7 @@ class Post(db.Model):
                                 nullable=True)
     
     # Recupera todas as mensagens presentes no banco de dados
-    def recupera_todos():
+    def recupera_tudo():
         return Post.query.filter_by(ativo=True).all()
     
     # Recupera o post pela ID e retorna erro 404 caso contrário

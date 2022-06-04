@@ -41,7 +41,7 @@ def novo_equipamento():
     # Preenche a lista de seleção de tipos de equipamento 
     # de acordo com o retornado pelo banco de dados
     form = EquipamentoForm()
-    tipos_eqp = TipoEquipamento.recupera_todos()
+    tipos_eqp = TipoEquipamento.recupera_tudo()
     lista_tipos=[(tipo.id, tipo.nome) for tipo in tipos_eqp]
     if lista_tipos:
         form.tipo_eqp.choices = lista_tipos
@@ -167,7 +167,7 @@ def exclui_equipamento(eqp_id):
 @admin_required
 def relatorios(eqp_id):
     # Recupera todos os relatórios do equipamento
-    relatorios = RelatorioEquipamento.recupera_todos_eqp(eqp_id)
+    relatorios = RelatorioEquipamento.recupera_tudo_eqp(eqp_id)
 
     return render_template('equipamentos/relatorios.html', 
                            title='Relatórios do Equipamento',

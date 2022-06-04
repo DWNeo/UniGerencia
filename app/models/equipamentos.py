@@ -31,7 +31,7 @@ class Equipamento(db.Model):
     relatorios = db.relationship('RelatorioEquipamento', back_populates='equipamento')
         
     # Recupera todas os equipamentos presentes no banco de dados
-    def recupera_todos():
+    def recupera_tudo():
         return Equipamento.query.filter_by(ativo=True).all()
     
     # Recupera o equipamento pela ID e retorna erro 404 caso contrário
@@ -109,19 +109,24 @@ class TipoEquipamento(db.Model):
     equipamentos = db.relationship('Equipamento', back_populates='tipo_eqp')
     solicitacoes = db.relationship('SolicitacaoEquipamento', back_populates='tipo_eqp')
 
-    def recupera_todos():
+    # Recupera todas os tipos de equipamento presentes no banco de dados
+    def recupera_tudo():
         return TipoEquipamento.query.filter_by(ativo=True).all()
     
+    # Recupera o tipo pela ID e retorna erro 404 caso contrário
     def recupera_id(tipo_eqp_id):
         return TipoEquipamento.query.filter_by(id=tipo_eqp_id).filter_by(ativo=True).first_or_404()
     
+    # Cria um novo tipo para ser inserido
     def cria(form):
         return TipoEquipamento(nome=form.nome.data)
     
+    # Insere um novo tipo no banco de dados
     def insere(tipo_eqp):
         db.session.add(tipo_eqp)
         db.session.commit()
     
+    # Atualiza a quantidade de equipamentos disponíveis de um tipo
     def atualiza_qtd(tipo_eqp, qtd):
         tipo_eqp.qtd_disponivel += qtd
         db.session.commit()
