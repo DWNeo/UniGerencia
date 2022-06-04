@@ -3,6 +3,7 @@
     <thead>
     <!-- Colunas da Tabela -->
     <tr class="bg-primary text-light">
+        <th class="align-middle"></th>
         <th class="align-middle">#</th>
         <th class="align-middle">Data de Abertura</th>
         <th class="align-middle">Tipo</th>
@@ -16,6 +17,7 @@
         {% for relatorio in relatorios %}
         <tr>
             <!-- Linhas da Tabela -->
+            <td class="align-middle"></td>
             <td class="align-middle">{{ relatorio.id }}</td>
             <td class="align-middle">{{ relatorio.data_abertura.strftime('%d/%m/%Y %H:%M:%S') }}</td>
             <td class="align-middle">{{ relatorio.tipo_relatorio.value }}</td>
@@ -25,7 +27,7 @@
                 <!-- Botões de Ação-->
                 <a class="btn-lg btn-outline-info" href="#" data-toggle="modal" data-target="#visualizarRelatorio{{ relatorio.id }}"><i class="fas fa-search"></i></a>
                 {% if relatorio.status.name == 'ABERTO' %}
-                <a class="btn-lg btn-outline-secondary" href="{{ url_for('equipamentos.atualiza_relatorio', eqp_id=eqp_id,id=relatorio.id) }}"><i class="fas fa-edit"></i></a>
+                <a class="btn-lg btn-outline-secondary" href="{{ url_for('equipamentos.atualiza_relatorio', eqp_id=eqp_id,relatorio_id=relatorio.id) }}"><i class="fas fa-edit"></i></a>
                 {% endif %}
             </td>
         </tr>  

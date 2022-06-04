@@ -61,20 +61,21 @@ class RelatorioEquipamentoForm(FlaskForm):
         ('REVISAO', 'Revisão'), ('MANUTENCAO', 'Manutenção'), ('OUTRO', 'Outro')])
     conteudo = TextAreaField('Conteúdo', validators=[
         DataRequired(message=obrigatorio)])
-    manutencao = BooleanField('Necessita de Manutenção')
-    defeito = BooleanField('Com Defeito')
+    manutencao = BooleanField('Necessita de Manutenção?')
+    defeito = BooleanField('Com Defeito?')
     detalhes = TextAreaField('Detalhes Adicionais')
+    finalizar = BooleanField('Finalizar')
     submit = SubmitField('Cadastrar')
 
 # Formulário para atualização de um relatório do equipamento
 class AtualizaRelatorioEquipamentoForm(FlaskForm):
 
     tipo = StringField('Autor', render_kw={'disabled':''})
-    conteudo = TextAreaField('Descrição', validators=[
+    conteudo = TextAreaField('Conteúdo', validators=[
         DataRequired(message=obrigatorio)])
-    manutencao = BooleanField('Necessita de Manutenção', render_kw={'disabled':''})
-    defeito = BooleanField('Com Defeito', render_kw={'disabled':''})
+    manutencao = BooleanField('Necessita de Manutenção?', render_kw={'disabled':''})
+    defeito = BooleanField('Com Defeito?', render_kw={'disabled':''})
     detalhes = TextAreaField('Detalhes Adicionais')
-    status = BooleanField('Finalizar')
+    finalizar = BooleanField('Finalizar')
     submit = SubmitField('Atualizar')
     

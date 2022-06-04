@@ -38,10 +38,8 @@ def solicitacao(solicitacao_id):
 @solicitacoes.route("/nova/equipamento", methods=['GET', 'POST'])
 @login_required
 def nova_solicitacao_equipamento():
-    # Preenche o campo de seleção de tipos de equipamento
-    form = SolicitacaoEquipamentoForm()
-    
     # Recupera lista de turnos e tipos de equipamento do banco
+    form = SolicitacaoEquipamentoForm()
     tipos_equipamento = TipoEquipamento.query.filter_by(ativo=True).all()
     lista_tipos=[(tipo.id, tipo) for tipo in tipos_equipamento]
     turnos = Turno.query.filter_by(ativo=True).all()
@@ -262,6 +260,8 @@ def confirma_solicitacao(solicitacao_id):
                        é diferente da solicitada.', 'warning')
                 return redirect(url_for('principal.inicio'))
 
+            for equip in lista_equips:
+                equip.status = 'CONFIRMADO'
 
             # Atualiza a quantidade de equipamentos disponíveis
             solicitacao.tipo_eqp.qtd_disponivel -= len(solicitacao.equipamentos)

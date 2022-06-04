@@ -26,9 +26,9 @@
         {% elif solicitacao.status.name == 'SOLICITADO' %}
             <tr class="table-warning font-weight-bold">
         {% elif solicitacao.status.name == 'CONFIRMADO' %}
-            <tr class="table-success">
+            <tr class="table-success font-weight-bold">
         {% elif solicitacao.status.name == 'EMUSO' %}
-            <tr class="table-info">
+            <tr class="table-info font-weight-bold">
         {% elif solicitacao.status.name == 'CANCELADO' or solicitacao.status.name == 'FECHADO' %}
             <tr class="text-secondary">
         {% else %}

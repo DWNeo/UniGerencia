@@ -3,6 +3,7 @@
     <thead>
     <!-- Colunas da Tabela -->
     <tr class="bg-primary text-light">
+        <th class="align-middle"></th>
         <th class="align-middle">#</th>
         <th class="align-middle">Data de Abertura</th>
         <th class="align-middle">Tipo</th>
@@ -16,6 +17,7 @@
         {% for relatorio in relatorios %}
         <tr>
             <!-- Linhas da Tabela -->
+            <td class="align-middle"></td>
             <td class="align-middle">{{ relatorio.id }}</td>
             <td class="align-middle">{{ relatorio.data_abertura.strftime('%d/%m/%Y %H:%M:%S') }}</td>
             <td class="align-middle">{{ relatorio.tipo_relatorio.value }}</td>
