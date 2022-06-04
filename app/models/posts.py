@@ -35,7 +35,14 @@ class Post(db.Model):
     def recupera_autor_paginado(usuario, pagina, num):
         return Post.query.filter_by(autor=usuario).order_by(
             Post.data_postado.desc()).paginate(page=pagina, per_page=num)
-        
+    
+    # Verifica se um usuário é o autor de uma mensagem (ou um admin)
+    def verifica_autor(post, usuario):
+        if post.autor == usuario or usuario.tipo.name == 'ADMIN':
+            return True
+        else:
+            return False
+            
     # Cria uma nova mensagem para ser inserida
     def cria(destinatario, form):
         return Post(titulo=form.titulo.data, 

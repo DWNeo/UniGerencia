@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from flask import render_template, url_for, flash, redirect, request, Blueprint
 from flask_login import current_user, logout_user, login_required
 
@@ -17,13 +15,10 @@ usuarios = Blueprint('usuarios', __name__)
 @login_required
 @admin_required
 def usuario(usuario_id):
-    # Recupera a sala pela ID
-    usuario = Usuario.recupera_id(usuario_id)
-
     # Recupera as 5 últimas solicitações associadas ao usuário
+    usuario = Usuario.recupera_id(usuario_id)
     solicitacoes = Solicitacao.recupera_autor_limite(usuario, 5)
 
-    # Renderiza o template
     return render_template('usuarios/usuario.html', 
                            title=usuario, usuario=usuario,
                            solicitacoes=solicitacoes)
@@ -44,8 +39,7 @@ def registrar():
         flash('Sua conta foi registrada com sucesso!\
               Você já pode realizar o login.', 'success')
         return redirect(url_for('usuarios.login'))
-    
-    # Renderiza o template
+
     return render_template('usuarios/registrar.html', 
                            title='Registre-se', form=form)
 
@@ -59,11 +53,9 @@ def login():
      # Valida os dados do formulário
     form = LoginForm()
     if form.validate_on_submit():
-        # Recupera o usuário de acordo com o email inserido no formulário
-        usuario = Usuario.recupera_email(form.email.data)
-
         # Verifica se o email e o hash da senha inserida estão ambos
         # corretos e só então realiza o login do usuário
+        usuario = Usuario.recupera_email(form.email.data)
         if Usuario.login(usuario, form):
             # Após o login, redireciona o usuário para a última página acessada
             prox_pagina = request.args.get('next')
@@ -115,7 +107,6 @@ def posts_usuario(usuario_id):
     # Recebe o argumento que define qual os posts que serão
     # recuperados e exibidos na página
     pagina = request.args.get('pagina', 1, type=int)
-
     # Recupera e realiza a paginação dos posts de que o usuário é autor
     # Os posts recuperados depende do argumento acima
     usuario = Usuario.recupera_id(usuario_id)
@@ -130,6 +121,7 @@ def posts_usuario(usuario_id):
 def novo_usuario():
     form = AdminRegistraForm()
     if form.validate_on_submit():
+        # Insere novo usuário após validação do formulário
         Usuario.insere(form)
         flash('A conta foi registrada com sucesso!.', 'success')
         return redirect(url_for('principal.inicio', tab=5))
@@ -141,9 +133,9 @@ def novo_usuario():
 @login_required
 @admin_required
 def atualiza_usuario(usuario_id):
-    usuario = Usuario.recupera_id(usuario_id)
     # Valida os dados do formulário enviado e atualiza
     # o registro do usuário especificado no banco de dados
+    usuario = Usuario.recupera_id(usuario_id) 
     form = AdminAtualizaPerfilForm()
     if form.validate_on_submit():
         Usuario.atualiza(usuario, form)
@@ -164,13 +156,12 @@ def atualiza_usuario(usuario_id):
 @login_required
 @admin_required
 def exclui_usuario(usuario_id):
-    usuario = Usuario.recupera_id(usuario_id)
-
     # Impede o usuário de excluir a própria conta
+    usuario = Usuario.recupera_id(usuario_id)
     if current_user.id == usuario.id:
         flash('Não é possível excluir a própria conta!', 'danger')
         return redirect(url_for('principal.inicio', tab=5))
-
+    
     # Desativa o registro do usuário especificado
     Usuario.exclui(usuario)
     flash('O usuário foi excluído com sucesso!', 'success')
@@ -185,9 +176,9 @@ def redefinir_senha():
 
     form = RedefineSenhaForm()
     if form.validate_on_submit():
-        usuario = Usuario.recupera_email(form.email.data)
         # Envia uma mensagem de refinição de senha para o 
         # email do usuário utilizando uma função auxilar
+        usuario = Usuario.recupera_email(form.email.data)
         envia_email_redefinicao(usuario)
         flash('Um email foi enviado com instruções de como\
               proceder com a redefinição da senha.', 'info')
@@ -204,7 +195,7 @@ def redefinir_token(token):
         return redirect(url_for('principal.inicio'))
 
     # Verifica se o token inserido pelo usuário é válido
-    # A verificação é realiza com base no token gerado pela
+    # A verificação é realizada com base no token gerado pela
     # função 'obtem_token_redefinicao' da classe Usuario
     usuario = Usuario.verifica_token_redefinicao(token)
     if usuario is None:

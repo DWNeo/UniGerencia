@@ -70,12 +70,19 @@ class Usuario(db.Model, UserMixin):
     
     # Recupera o usuário pelo Identificação
     def recupera_identificacao(usuario_idf):
-        return Usuario.query.filter_by(email=usuario_idf).filter_by(ativo=True).first()
+        return Usuario.query.filter_by(identificacao=usuario_idf).filter_by(ativo=True).first()
     
     # Recupera o usuário pelo Email
     def recupera_email(usuario_email):
         return Usuario.query.filter_by(email=usuario_email).filter_by(ativo=True).first()
     
+    # Verifica se um usuário é administrador ou não
+    def verifica_admin(usuario):
+        if usuario.tipo.name == 'ADMIN':
+            return True
+        else:
+            return False
+        
     # Verifica a senha inserida e realiza login do usuário
     def login(usuario, form):
         if usuario and bcrypt.check_password_hash(usuario.senha, form.senha.data):

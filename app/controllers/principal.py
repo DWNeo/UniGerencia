@@ -37,13 +37,13 @@ def inicio():
                 # Troca o status dos registros associados
                 Solicitacao.atualiza_status_pendente(solicitacao)
                 envia_email_atraso(solicitacao)
-
+                
                 # Exibe uma mensagem de alerta para o usuário com atraso
                 if current_user == solicitacao.autor:
                     flash('Você possui uma solicitação atrasada.', 'warning')
-
+                    
                 # Exibe uma mensagem de alerta para o admin
-                if current_user.tipo.name == 'ADMIN':
+                if Usuario.verifica_admin(current_user):
                     flash('Existe uma nova solicitação em atraso.', 'warning')
 
     # Importa o formulário para entrega de solicitações
@@ -61,7 +61,6 @@ def criar_db():
     # Cria as tabelas no banco conforme as classes no models caso não existam
     db.create_all()
     db.session.commit()
-    
     return 'Tabelas no banco criadas com sucesso!'
 
 

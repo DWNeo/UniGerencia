@@ -1,10 +1,6 @@
-from datetime import datetime
-
-from flask import (render_template, url_for, flash,
-                   redirect, request, abort, Blueprint)
+from flask import render_template, url_for, flash, redirect, request, abort, Blueprint
 from flask_login import current_user, login_required
 
-from app import db, fuso_horario
 from app.models import Post, Usuario
 from app.forms.posts import PostForm, PostAdminForm, AtualizaPostForm
 
@@ -14,14 +10,11 @@ posts = Blueprint('posts', __name__)
 @posts.route("/<int:post_id>")
 @login_required
 def post(post_id):
-    # Recupera o post pela ID
-    post = Post.recupera_id(post_id)
-
     # Permite acesso somente ao autor do post ou a um admin
-    if post.autor != current_user and current_user.tipo.name != 'ADMIN':
+    post = Post.recupera_id(post_id)
+    if not Post.verifica_autor(post, current_user):
         abort(403)
-
-    # Renderiza o template
+        
     return render_template('posts/post.html', title=post.titulo, post=post)
 
 
@@ -30,7 +23,7 @@ def post(post_id):
 def novo_post():
     # Preenche a lista de seleção de destinatário
     # Administradores podem escolher também o destinatário
-    if current_user.tipo.name == 'ADMIN':
+    if Usuario.verifica_admin(current_user):
         form = PostAdminForm()
         usuarios = Usuario.recupera_todos()
         lista_usuarios = [(usuario.id, usuario) for usuario in usuarios]
@@ -41,7 +34,7 @@ def novo_post():
     
     if form.validate_on_submit():
         # Cria uma mensagem de acordo com o tipo de usuário
-        if current_user.tipo.name == 'ADMIN':
+        if Usuario.verifica_admin(current_user):
             destinatario_id = form.destinatario.data
             destinatario = Usuario.recupera_id(destinatario_id)
             post = Post.cria(destinatario, form)
@@ -63,7 +56,7 @@ def atualiza_post(post_id):
 
     # Impede o acesso a página de todos os usuários que 
     # não sejam o autor do post ou um admin
-    if post.autor != current_user and current_user.tipo.name != 'ADMIN':
+    if not Post.verifica_autor(post, current_user):
         abort(403)
         
     # Valida o formulário enviado e atualiza o registro
@@ -92,7 +85,7 @@ def exclui_post(post_id):
     # Recupera o post pela ID e impede o acesso a página de 
     # todos os usuários que não sejam o autor ou um admin
     post = Post.recupera_id(post_id)
-    if post.autor != current_user and current_user.tipo.name != 'ADMIN':
+    if not Post.verifica_autor(post, current_user):
         abort(403)
 
     # Desativa o registro do post
