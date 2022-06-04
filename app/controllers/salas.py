@@ -1,7 +1,6 @@
 from datetime import datetime
 
-from flask import (render_template, url_for, flash, abort,
-                   redirect, request, Blueprint)
+from flask import render_template, url_for, flash, redirect, request, Blueprint
 from flask_login import login_required, current_user
 
 from app import db, fuso_horario

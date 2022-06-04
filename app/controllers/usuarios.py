@@ -6,7 +6,7 @@ from app.forms.usuarios import (RegistraForm, LoginForm, AtualizaPerfilForm,
                                 RedefineSenhaForm, NovaSenhaForm,
                                 AdminRegistraForm, AdminAtualizaPerfilForm)
                                  
-from app.utils import (envia_email_redefinicao, admin_required)
+from app.utils import envia_email_redefinicao, admin_required
 
 usuarios = Blueprint('usuarios', __name__)
 

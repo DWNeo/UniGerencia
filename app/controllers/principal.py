@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from flask import jsonify, render_template, request, flash, Blueprint
+from flask import render_template, request, flash, Blueprint
 from flask_login import login_required, current_user
 
 from app import db, fuso_horario

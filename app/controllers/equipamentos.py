@@ -1,16 +1,12 @@
-from datetime import datetime
-
 from flask import (render_template, url_for, flash, 
                    redirect, request, Blueprint)
-from flask_login import login_required, current_user
+from flask_login import login_required
 
-from app import db, fuso_horario
 from app.models import (Equipamento, RelatorioEquipamento, SolicitacaoEquipamento, 
                         TipoEquipamento, Solicitacao)
 from app.forms.equipamentos import (EquipamentoForm, IndisponibilizaEquipamentoForm,
                                     AtualizaEquipamentoForm, TipoEquipamentoForm,
                                     RelatorioEquipamentoForm, AtualizaRelatorioEquipamentoForm)
-from app.models.relatorios import Relatorio
 from app.utils import admin_required
 
 equipamentos = Blueprint('equipamentos', __name__)

@@ -16,13 +16,13 @@
                             <a class="mr-2" href="#"><strong>Tipo:</strong> {{ relatorio.tipo_relatorio.value }}</a>
                             <small class="text-muted"><strong>{{ relatorio.data_abertura.strftime('%d/%m/%Y %H:%M:%S') }}</strong></small>
                         </div>
-                        {% if relatorio.descricao %}
-                        <h6 class="article-content"><strong>Descrição:</strong> {{ relatorio.descricao }}</h6>
+                        {% if relatorio.conteudo %}
+                        <h6 class="article-content pb-2"><strong>Conteúdo:</strong> {{ relatorio.conteudo }}</h6>
                         {% endif %}
                         <h6 class="article-content"><strong>Necessita de Manutenção:</strong> {% if relatorio.manutencao %}Sim{% else %}Não{% endif %}</h6>
                         <h6 class="article-content"><strong>Necessita de Reforma:</strong> {% if relatorio.reforma %}Sim{% else %}Não{% endif %}</h6>
                         {% if relatorio.detalhes %}
-                        <h6 class="article-content"><strong>Detalhes Adicionais:</strong> {{ relatorio.detalhes }}</h6>
+                        <h6 class="article-content pt-2"><strong>Detalhes Adicionais:</strong> {{ relatorio.detalhes }}</h6>
                         {% endif %}
                         {% if relatorio.data_abertura %}
                         <h6 class="article-content pt-2"><strong>Data de Abertura:</strong> {{ relatorio.data_abertura.strftime('%d/%m/%Y %H:%M:%S') }}</h6>
