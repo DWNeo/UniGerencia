@@ -91,45 +91,39 @@ class Usuario(db.Model, UserMixin):
             arquivo_imagem = salva_imagem(form.imagem.data)
             imagem_perfil = arquivo_imagem
         else:
-            imagem_perfil = None
-            
+            imagem_perfil = None 
         # Gera o hash da senha do novo usuário
         hash_senha = bcrypt.generate_password_hash(form.senha.data).decode('utf-8')
-        
         # Cria um usuário conforme dados recebidos do formulário
-        usuario = Usuario(nome=form.nome.data, 
-                          identificacao=form.identificacao.data,
-                          email=form.email.data, 
-                          senha=hash_senha,
-                          imagem_perfil=imagem_perfil,
-                          tipo=form.tipo.data)
-        
-        return usuario
+        return Usuario(nome=form.nome.data, 
+                       identificacao=form.identificacao.data,
+                       email=form.email.data, 
+                       senha=hash_senha,
+                       imagem_perfil=imagem_perfil,
+                       tipo=form.tipo.data)
         
     # Insere um novo usuário no banco de dados
     def insere(usuario):
         db.session.add(usuario)
         db.session.commit()
     
-    # Atualiza um usuário existente específico no banco de dados
+    # Atualiza um usuário existente no banco de dados
     def atualiza(usuario, form):
         # Realiza o tratamento da imagem enviada
         if form.imagem.data:
             arquivo_imagem = salva_imagem(form.imagem.data)
             usuario.imagem_perfil = arquivo_imagem
-        
         # Atualiza o tipo de usuário, se for necessário
         try:
             usuario.tipo = form.tipo.data
         except:
             print(usuario.tipo)
-            
         # Atualiza dados do usuário no banco de dados  
         hash_senha = bcrypt.generate_password_hash(form.senha.data).decode('utf-8')
         usuario.senha = hash_senha
         usuario.nome = form.nome.data
-        current_user.identificacao = form.identificacao.data
-        current_user.email = form.email.data
+        usuario.identificacao = form.identificacao.data
+        usuario.email = form.email.data
         usuario.data_atualizacao = datetime.now().astimezone(fuso_horario)
         db.session.commit()
        
