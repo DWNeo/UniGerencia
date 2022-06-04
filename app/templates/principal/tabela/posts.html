@@ -1,9 +1,9 @@
 <!-- Tabela para rederização de Posts -->
-<div class="table-responsive">
 <table id="table-posts" class="table display dt-responsive nowrap table-hover" style="width:100%">
     <thead>
     <!-- Colunas da Tabela -->
     <tr class="bg-primary text-light">
+        <th class="align-middle"></th>
         <th class="align-middle">#</th>
         <th class="align-middle">Data de Postagem</th>
         <th class="align-middle">Título</th>
@@ -19,6 +19,7 @@
     {% if current_user == post.autor or current_user == post.destinatario or current_user.tipo.name == 'ADMIN' %}
         <tr>
             <!-- Linhas da Tabela -->
+            <td class="align-middle"></td>
             <td class="align-middle">{{ post.id }}</td>
             <td class="align-middle">{{ post.data_postado.strftime('%d/%m/%Y\n%H:%M:%S') }}</td>
             <td class="align-middle">{{ post.titulo }}</td>
@@ -44,4 +45,3 @@
     {% endfor %}
     </tbody>
 </table>
-</div>

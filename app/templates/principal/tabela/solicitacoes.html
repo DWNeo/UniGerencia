@@ -1,9 +1,9 @@
 <!-- Tabela para rederização de Solicitações -->
-<div class="table-responsive">
 <table id="table-solicitacoes" class="table dt-responsive nowrap table-hover" style="width:100%">
     <thead>
     <!-- Colunas da Tabela -->
     <tr class="bg-primary text-light">
+        <th class="align-middle"></th>
         <th class="align-middle">#</th>
         <th class="align-middle">Data de Abertura</th>
         <th class="align-middle">Tipo</th>
@@ -35,6 +35,7 @@
             <tr>
         {% endif %}
             <!-- Linhas da Tabela -->
+            <td class="align-middle"></td>
             <td class="align-middle">{{ solicitacao.id }}</td>
             <td class="align-middle">{{ solicitacao.data_abertura.strftime('%d/%m/%Y %H:%M:%S') }}</td>
             <!-- Nome do Tipo de Solicitação (Equipamento/Sala) -->
@@ -81,4 +82,3 @@
     {% endfor %}
     </tbody>
 </table>
-</div>

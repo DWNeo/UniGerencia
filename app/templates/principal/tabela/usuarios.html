@@ -1,9 +1,9 @@
 <!-- Tabela para rederização de Usuários -->
-<div class="table-responsive">
 <table id="table-usuarios" class="table display dt-responsive nowrap table-hover" style="width:100%">
     <thead>
     <!-- Colunas da Tabela -->
     <tr class="bg-primary text-light">
+        <th class="align-middle"></th>
         <th class="align-middle">#</th>
         <th class="align-middle">Nome</th>
         <th class="align-middle">Identificação</th>
@@ -22,6 +22,7 @@
         <tr>
     {% endif %}
         <!-- Linhas da Tabela -->
+        <td class="align-middle"></td>
         <td class="align-middle">{{ usuario.id }}</td>
         <td class="align-middle">{{ usuario.nome }}</td>
         <td class="align-middle">{{ usuario.identificacao }}</td>
@@ -40,4 +41,3 @@
     {% endfor %}
     </tbody>
 </table>
-</div>
