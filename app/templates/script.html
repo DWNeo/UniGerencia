@@ -5,10 +5,10 @@
         setTimeout(function() {
             $(".alert-dismissable").alert('close');
         }, 5000);  // 5 Segundos
-
+        
         // Configuração do DataTables
         // Todas as tabelas da página inicial fazem uso dessa configuração
-        var table = $('table.display').DataTable({
+        var table = $('#table-solicitacoes').DataTable({
             /* Recebimento de dados via API
             ajax: '/api/solicitacoes',
             columns: [
@@ -21,33 +21,55 @@
                 {data: 'descricao'}
             ], 
             */
+            columns: [
+                {width: '6%'},
+                {width: '15%'},
+                {width: '15%'},
+                {width: '15%'},
+                {width: '15%'},
+                {width: '15%'},
+                {width: '100px'}
+            ], 
             // Propriedades da tabela
             responsive: true,
             colReorder: true,
-            lengthChange: true,
+            lengthChange: false,
             fixedHeader: true,
-            select: true,
+            autoWidth: false,
+            select: false,
             // Butões de funções
-            dom: 'Bfrtip',
+            dom: 'lfBrtip',
             buttons: [
                 {
                     extend: 'excelHtml5',
                     text: 'Excel',
-                    autoFilter: true
+                    autoFilter: true,
+                    exportOptions: {
+                        columns: [0, 1, 2, 3, 4, 5]
+                    }
                 },
                 {
                     extend: 'csvHtml5',
-                    text: 'CSV'
+                    text: 'CSV',
+                    exportOptions: {
+                        columns: [0, 1, 2, 3, 4, 5]
+                    }
                 },
                 {
                     extend: 'pdfHtml5',
                     orientation: 'portrait',
                     pageSize: 'A4',
-                    text: 'PDF'
+                    text: 'PDF',
+                    exportOptions: {
+                        columns: [0, 1, 2, 3, 4, 5]
+                    }
                 },
                 {
                     extend: 'print',
-                    text: 'Imprimir'
+                    text: 'Imprimir',
+                    exportOptions: {
+                        columns: [0, 1, 2, 3, 4, 5]
+                    }
                 },
                 {
                     extend: 'colvis',
@@ -87,6 +109,99 @@
                 }
             }
         });
+        var table = $('table.display').DataTable({
+            columns: [
+                {width: '6%'},
+                {width: '15%'},
+                {width: '20%'},
+                {width: '20%'},
+                {width: '20%'},
+                {width: '100px'}
+            ], 
+            // Propriedades da tabela
+            responsive: true,
+            colReorder: true,
+            lengthChange: false,
+            fixedHeader: true,
+            autoWidth: false,
+            select: false,
+            // Butões de funções
+            dom: 'lfBrtip',
+            buttons: [
+                {
+                    extend: 'excelHtml5',
+                    text: 'Excel',
+                    autoFilter: true,
+                    exportOptions: {
+                        columns: [0, 1, 2, 3, 4]
+                    }
+                },
+                {
+                    extend: 'csvHtml5',
+                    text: 'CSV',
+                    exportOptions: {
+                        columns: [0, 1, 2, 3, 4]
+                    }
+                },
+                {
+                    extend: 'pdfHtml5',
+                    orientation: 'portrait',
+                    pageSize: 'A4',
+                    text: 'PDF',
+                    exportOptions: {
+                        columns: [0, 1, 2, 3, 4]
+                    }
+                },
+                {
+                    extend: 'print',
+                    text: 'Imprimir',
+                    exportOptions: {
+                        columns: [0, 1, 2, 3, 4]
+                    }
+                },
+                {
+                    extend: 'colvis',
+                    text: 'Colunas'
+                }, 
+            ],
+            // Quantidade de registros a exibir
+            "lengthMenu": [[25, 50, 75, 100], [25, 50, 75, 100]],
+            // Ordenação dos registros
+            "order": [[ 0, "desc" ]],
+            // Localização dos textos
+            "language": {
+                "emptyTable": "Nenhum registro encontrado",
+                "info": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+                "infoEmpty": "Mostrando 0 até 0 de 0 registros",
+                "infoFiltered": "(Filtrados de _MAX_ registros)",
+                "infoThousands": ".",
+                "loadingRecords": "Carregando...",
+                "processing": "Processando...",
+                "zeroRecords": "Nenhum registro encontrado",
+                "search": "Pesquisar",
+                "lengthMenu": "Exibir _MENU_ resultados por página",
+                "decimal": ",",
+                "thousands": ".",
+                "paginate": {
+                    "next": "Próximo",
+                    "previous": "Anterior",
+                    "first": "Primeiro",
+                    "last": "Último"
+                },
+                select: {
+                    rows: {
+                        _: "%d linhas selecionadas",
+                        0: "Clique em uma linha para selecionar",
+                        1: "1 linha selecionada"
+                    }
+                }
+            }
+        });
+        $('a[data-toggle="pill"]').on('shown.bs.tab', function(e){
+            $.fn.dataTable.tables( {visible: true, api: true} )
+            .responsive.recalc()
+            .columns.adjust();
+        });   
         // Configuração dos campos que o usam o Select2
         // Os campos de seleção de sala/equipamento em solicitações fazem uso dele
         $('#salas').select2({
