@@ -19,7 +19,7 @@
     {% if equipamento.status.name == 'SOLICITADO' %}
         <tr class="table-success">
     {% elif equipamento.status.name == 'PENDENTE' %}
-        <tr class="table-danger">
+        <tr class="table-danger font-weight-bold">
     {% elif equipamento.status.name == 'EMUSO' %}
         <tr class="table-info">
     {% elif equipamento.status.name == 'DESABILITADO' or equipamento.status.name == 'EMMANUTENCAO' %}

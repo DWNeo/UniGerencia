@@ -22,9 +22,9 @@
         {% if solicitacao.status.name == 'ABERTO' %}
             <tr class="table-secondary">
         {% elif solicitacao.status.name == 'PENDENTE' %}
-            <tr class="table-danger">
+            <tr class="table-danger font-weight-bold">
         {% elif solicitacao.status.name == 'SOLICITADO' %}
-            <tr class="table-warning">
+            <tr class="table-warning font-weight-bold">
         {% elif solicitacao.status.name == 'CONFIRMADO' %}
             <tr class="table-success">
         {% elif solicitacao.status.name == 'EMUSO' %}

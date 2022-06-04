@@ -18,7 +18,7 @@
     {% if sala.status.name == 'SOLICITADO' %}
         <tr class="table-success">
     {% elif sala.status.name == 'PENDENTE' %}
-        <tr class="table-danger">
+        <tr class="table-danger font-weight-bold">
     {% elif sala.status.name == 'EMUSO' %}
         <tr class="table-info">
     {% elif sala.status.name == 'DESABILITADO' or sala.status.name == 'EMMANUTENCAO' %}

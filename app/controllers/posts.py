@@ -70,7 +70,7 @@ def atualiza_post(post_id):
     # do post no banco de dados de acordo com ele
     form = AtualizaPostForm()
     if form.validate_on_submit():
-        Post.atualiza(post)
+        Post.atualiza(post, form)
         flash('Sua mensagem foi atualizada com sucesso!', 'success')
         return redirect(url_for('principal.inicio', tab=2))
     elif request.method == 'GET':
