@@ -1,12 +1,11 @@
 from flask import render_template, url_for, flash, redirect, request, Blueprint
 from flask_login import current_user, logout_user, login_required
 
-from app.models import Post, Solicitacao, Usuario
+from app.models import Post, Solicitacao, Usuario, admin_required
 from app.forms.usuarios import (RegistraForm, LoginForm, AtualizaPerfilForm, 
                                 RedefineSenhaForm, NovaSenhaForm,
-                                AdminRegistraForm, AdminAtualizaPerfilForm)
-                                 
-from app.utils import envia_email_redefinicao, admin_required
+                                AdminRegistraForm, AdminAtualizaPerfilForm)                        
+from app.utils import envia_email_redefinicao
 
 usuarios = Blueprint('usuarios', __name__)
 
@@ -17,7 +16,7 @@ usuarios = Blueprint('usuarios', __name__)
 def usuario(usuario_id):
     # Recupera as 5 últimas solicitações associadas ao usuário
     usuario = Usuario.recupera_id(usuario_id)
-    solicitacoes = Solicitacao.recupera_autor_limite(usuario, 5)
+    solicitacoes = Solicitacao.recupera_ultimas_autor(usuario, 5)
 
     return render_template('usuarios/usuario.html', 
                            title=usuario, usuario=usuario,

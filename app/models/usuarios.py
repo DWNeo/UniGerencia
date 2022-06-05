@@ -1,8 +1,9 @@
 from datetime import datetime
 import enum
+from functools import wraps
 
 from itsdangerous import URLSafeTimedSerializer as Serializer
-from flask import current_app
+from flask import current_app, flash, redirect, url_for
 from flask_login import UserMixin, current_user, login_user
 
 from app import db, bcrypt, login_manager, fuso_horario
@@ -12,6 +13,28 @@ from app.utils import salva_imagem
 @login_manager.user_loader
 def load_user(user_id):
     return Usuario.query.get(int(user_id)) 
+
+# Define um decorator para verificar se o usuário atual é um administrador
+def admin_required(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if Usuario.verifica_admin(current_user):
+            return f(*args, **kwargs)
+        else:
+            flash('Você não tem autorização para acessar esta página.', 'danger')
+        return redirect(url_for('principal.inicio'))
+    return wrap 
+
+# Define um decorator para verificar se o usuário atual é um professor
+def prof_required(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if Usuario.verifica_prof(current_user):
+            return f(*args, **kwargs)
+        else:
+            flash('Você não tem autorização para acessar esta página.', 'danger')
+        return redirect(url_for('principal.inicio'))
+    return wrap 
 
 # Classe enum para os tipos de usuários do sistema
 class TipoUsuario(enum.Enum):
@@ -77,8 +100,17 @@ class Usuario(db.Model, UserMixin):
         return Usuario.query.filter_by(email=usuario_email).filter_by(ativo=True).first()
     
     # Verifica se um usuário é administrador ou não
+    @staticmethod
     def verifica_admin(usuario):
         if usuario.tipo.name == 'ADMIN':
+            return True
+        else:
+            return False
+        
+    # Verifica se um usuário é prof ou administrador
+    @staticmethod
+    def verifica_prof(usuario):
+        if usuario.tipo.name == 'PROF' or usuario.tipo.name == 'ADMIN':
             return True
         else:
             return False

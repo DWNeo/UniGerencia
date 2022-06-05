@@ -2,12 +2,11 @@ from flask import (render_template, url_for, flash,
                    redirect, request, Blueprint)
 from flask_login import login_required
 
-from app.models import (Equipamento, RelatorioEquipamento, SolicitacaoEquipamento, 
-                        TipoEquipamento, Solicitacao)
+from app.models import (Equipamento, RelatorioEquipamento, TipoEquipamento, 
+                        Solicitacao, admin_required)
 from app.forms.equipamentos import (EquipamentoForm, IndisponibilizaEquipamentoForm,
                                     AtualizaEquipamentoForm, TipoEquipamentoForm,
                                     RelatorioEquipamentoForm, AtualizaRelatorioEquipamentoForm)
-from app.utils import admin_required
 
 equipamentos = Blueprint('equipamentos', __name__)
 
@@ -16,15 +15,11 @@ equipamentos = Blueprint('equipamentos', __name__)
 @login_required
 @admin_required
 def equipamento(eqp_id):
-    # Recupera o equipamento por ID
+    # Recupera as 5 últimas solicitações associadas ao equipamento
     equipamento = Equipamento.recupera_id(eqp_id)
+    solicitacoes = Solicitacao.recupera_ultimas_eqp(equipamento, 5)
+    print(solicitacoes)
 
-    # Recupera as últimas solicitações associadas ao equipamento
-    solicitacoes = Solicitacao.query.filter(
-        SolicitacaoEquipamento.equipamentos.contains(equipamento)).filter_by(
-        ativo=True).order_by(SolicitacaoEquipamento.id.desc()).limit(5)
-
-    # Renderiza o template
     return render_template('equipamentos/equipamento.html', 
                            title=equipamento, equipamento=equipamento,
                            solicitacoes=solicitacoes)

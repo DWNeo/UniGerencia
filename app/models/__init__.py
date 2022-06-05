@@ -14,3 +14,5 @@ from .solicitacoes import SolicitacaoSala
 from .solicitacoes import Turno
 from .status import Status
 from .usuarios import Usuario
+from .usuarios import prof_required
+from .usuarios import admin_required

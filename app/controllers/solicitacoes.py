@@ -1,6 +1,4 @@
 from datetime import datetime
-from unicodedata import name 
-import pandas as pd
 
 from flask import (render_template, url_for, flash, 
                    redirect, abort, request, Blueprint)
@@ -8,13 +6,13 @@ from flask_login import current_user, login_required
 
 from app import db, fuso_horario
 from app.models import (Solicitacao, Equipamento, Sala, SolicitacaoEquipamento, 
-                        SolicitacaoSala, TipoEquipamento, Turno, Setor)
+                        SolicitacaoSala, TipoEquipamento, Turno, Setor, 
+                        prof_required, admin_required)
 from app.forms.solicitacoes import (SolicitacaoEquipamentoForm, TurnoForm,
                                     SolicitacaoSalaForm, EntregaSolicitacaoForm,
                                     ConfirmaSolicitacaoEquipamentoForm,
-                                    ConfirmaSolicitacaoSalaForm)
-                                 
-from app.utils import envia_email_confirmacao, prof_required, admin_required
+                                    ConfirmaSolicitacaoSalaForm)                            
+from app.utils import envia_email_confirmacao
 
 solicitacoes = Blueprint('solicitacoes', __name__)
 

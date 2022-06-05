@@ -9,28 +9,6 @@ from flask_login import current_user
 
 from app import mail
 
-# Define um decorator para verificar se o usuário atual é um administrador
-def admin_required(f):
-    @wraps(f)
-    def wrap(*args, **kwargs):
-        if current_user.tipo.name == 'ADMIN':
-            return f(*args, **kwargs)
-        else:
-            flash('Você não tem autorização para acessar esta página.', 'danger')
-        return redirect(url_for('principal.inicio'))
-    return wrap 
-
-# Define um decorator para verificar se o usuário atual é um professor
-def prof_required(f):
-    @wraps(f)
-    def wrap(*args, **kwargs):
-        if current_user.tipo.name == 'PROF' or current_user.tipo.name == 'ADMIN':
-            return f(*args, **kwargs)
-        else:
-            flash('Você não tem autorização para acessar esta página.', 'danger')
-        return redirect(url_for('principal.inicio'))
-    return wrap 
-
 # Redimensiona e salva as imagens de perfil na pasta definida
 def salva_imagem(form_picture):
     # Gera um nome aleatório pra imagem e define o diretório pra salvá-la

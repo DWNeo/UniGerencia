@@ -4,10 +4,10 @@ from flask import render_template, url_for, flash, redirect, request, Blueprint
 from flask_login import login_required, current_user
 
 from app import db, fuso_horario
-from app.models import RelatorioSala, Sala, Relatorio, Solicitacao, Setor, SolicitacaoSala
+from app.models import (RelatorioSala, Sala, Relatorio, Solicitacao, Setor,
+                        SolicitacaoSala, prof_required, admin_required)
 from app.forms.salas import (SalaForm, AtualizaSalaForm, IndisponibilizaSalaForm,
                              RelatorioSalaForm, AtualizaRelatorioSalaForm, SetorForm)
-from app.utils import prof_required, admin_required
 
 salas = Blueprint('salas', __name__)
 
@@ -16,16 +16,11 @@ salas = Blueprint('salas', __name__)
 @login_required
 @prof_required
 def sala(sala_id):
-    # Recupera a sala pela ID
-    sala = Sala.query.filter_by(
-        id=sala_id).filter_by(ativo=True).first_or_404()
+    # Recupera as 5 últimas solicitações associadas a sala
+    sala = Sala.recupera_id(sala_id)
+    solicitacoes = Solicitacao.recupera_ultimas_sala(sala, 5)
+    print(solicitacoes)
 
-    # Recupera as últimas solicitações associadas a sala
-    solicitacoes = Solicitacao.query.filter(
-        SolicitacaoSala.salas.contains(sala)).filter_by(ativo=True).order_by(
-        SolicitacaoSala.id.desc()).limit(5)
-
-    # Renderiza o template
     return render_template('salas/sala.html', 
                            title=sala, sala=sala,
                            solicitacoes=solicitacoes)

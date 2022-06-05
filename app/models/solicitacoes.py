@@ -40,9 +40,21 @@ class Solicitacao(db.Model):
         return Solicitacao.query.filter_by(id=sol_id).filter_by(ativo=True).first_or_404()
         
     # Recupera as últimas solicitações de um usuário específico
-    def recupera_autor_limite(usuario, limite):
+    def recupera_ultimas_autor(usuario, limite):
         return Solicitacao.query.filter_by(autor=usuario).filter_by(
             ativo=True).order_by(Solicitacao.id.desc()).limit(limite)
+     
+    # Recupera as últimas solicitações de um equipamento específico
+    def recupera_ultimas_eqp(equipamento, limite):
+        return Solicitacao.query.filter(
+            SolicitacaoEquipamento.equipamentos.contains(equipamento)).filter_by(
+            ativo=True).order_by(SolicitacaoEquipamento.id.desc()).limit(limite)
+        
+    # Recupera as mensagens de um autor de forma paginada
+    def recupera_ultimas_sala(sala, limite):
+        return Solicitacao.query.filter(
+            SolicitacaoSala.salas.contains(sala)).filter_by(
+            ativo=True).order_by(SolicitacaoSala.id.desc()).limit(limite)
 
     # Atualiza o status de um solicitação para 'Pendente'
     def atualiza_status_pendente(solicitacao):
