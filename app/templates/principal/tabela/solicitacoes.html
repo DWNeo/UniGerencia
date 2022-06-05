@@ -20,7 +20,7 @@
     {% if current_user == solicitacao.autor or current_user.tipo.name == 'ADMIN' %}
         <!-- Muda a cor da linha e texto de acordo com o status -->
         {% if solicitacao.status.name == 'ABERTO' %}
-            <tr class="table-secondary">
+            <tr class="table-secondary font-weight-bold">
         {% elif solicitacao.status.name == 'PENDENTE' %}
             <tr class="table-danger font-weight-bold">
         {% elif solicitacao.status.name == 'SOLICITADO' %}

@@ -15,8 +15,8 @@
     <tbody>
     {% for sala in salas %}
     <!-- Muda a cor da linha e texto de acordo com o status -->
-    {% if sala.status.name == 'SOLICITADO' %}
-        <tr class="table-success">
+    {% if sala.status.name == 'CONFIRMADO' %}
+        <tr class="table-success font-weight-bold">
     {% elif sala.status.name == 'PENDENTE' %}
         <tr class="table-danger font-weight-bold">
     {% elif sala.status.name == 'EMUSO' %}

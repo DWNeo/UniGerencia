@@ -18,8 +18,6 @@ def equipamento(eqp_id):
     # Recupera as 5 últimas solicitações associadas ao equipamento
     equipamento = Equipamento.recupera_id(eqp_id)
     solicitacoes = Solicitacao.recupera_ultimas_eqp(equipamento, 5)
-    count = TipoEquipamento.contagem(equipamento.tipo_eqp)
-    print(count)
     return render_template('equipamentos/equipamento.html', 
                            title=equipamento, equipamento=equipamento,
                            solicitacoes=solicitacoes)
@@ -188,7 +186,7 @@ def atualiza_relatorio(eqp_id, relatorio_id):
     # Impede relatórios finalizados de serem atualizados
     relatorio = RelatorioEquipamento.recupera_id(relatorio_id)
     if not RelatorioEquipamento.verifica_aberto(relatorio):
-        flash('Este relatório já foi finalizado.', 'success') 
+        flash('Este relatório já foi finalizado.', 'warning') 
         return redirect(url_for('equipamentos.relatorios', eqp_id=eqp_id))
 
     # Valida o formulário e atualiza o relatório no banco de dados

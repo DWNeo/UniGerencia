@@ -190,7 +190,7 @@ def atualiza_relatorio(sala_id, relatorio_id):
     # Impede relatórios finalizados de serem atualizados
     relatorio = RelatorioSala.recupera_id(relatorio_id)
     if not RelatorioSala.verifica_aberto(relatorio):
-        flash('Este relatório já foi finalizado.', 'success') 
+        flash('Este relatório já foi finalizado.', 'warning') 
         return redirect(url_for('salas.relatorios', sala_id=sala_id))
     
     # Valida o formulário e atualiza o relatório no banco de dados

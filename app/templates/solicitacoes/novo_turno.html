@@ -11,6 +11,8 @@
             {{ render_field(form.hora_inicio) }}
             {{ render_field(form.hora_fim) }}
         </fieldset>
+        <p><strong>Atenção:</strong> Escolha os valores com cuidado, 
+            pois não poderão ser alterados depois!</p>
         <div class="form-group">
             {{ render_button(form.submit) }}
             <a class="btn btn-outline-secondary" href="{{ url_for('principal.inicio') }}"><i class="fas fa-arrow-left"></i> Voltar</a>

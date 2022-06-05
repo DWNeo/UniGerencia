@@ -16,7 +16,7 @@
     <!-- Cria uma nova linha pra cada registro de equipamento ativo -->
     {% for equipamento in equipamentos %}
     <!-- Muda a cor da linha e texto de acordo com o status -->
-    {% if equipamento.status.name == 'SOLICITADO' %}
+    {% if equipamento.status.name == 'CONFIRMADO' %}
         <tr class="table-success font-weight-bold">
     {% elif equipamento.status.name == 'PENDENTE' %}
         <tr class="table-danger font-weight-bold">

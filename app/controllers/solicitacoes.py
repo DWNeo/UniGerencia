@@ -20,11 +20,9 @@ solicitacoes = Blueprint('solicitacoes', __name__)
 @solicitacoes.route("/<int:solicitacao_id>")
 @login_required
 def solicitacao(solicitacao_id):
-    # Recupera a sala pela ID
-    solicitacao = Solicitacao.query.filter_by(
-        id=solicitacao_id).filter_by(ativo=True).first_or_404()
-
     # Permite acesso somente ao autor da solicitação ou a um admin
+    solicitacao = Solicitacao.recupera_id(solicitacao_id)
+    #if not Solicitacao.verifica_autor(solicitacao):
     if solicitacao.autor != current_user and current_user.tipo.name != 'ADMIN':
         abort(403)
 
@@ -38,7 +36,7 @@ def solicitacao(solicitacao_id):
 def nova_solicitacao_equipamento():
     # Recupera lista de turnos e tipos de equipamento do banco
     form = SolicitacaoEquipamentoForm()
-    tipos_equipamento = TipoEquipamento.query.filter_by(ativo=True).all()
+    tipos_equipamento = TipoEquipamento.recupera_tudo()
     lista_tipos=[(tipo.id, tipo) for tipo in tipos_equipamento]
     turnos = Turno.query.filter_by(ativo=True).all()
     lista_turnos = [(turno.id, turno) for turno in turnos]
@@ -55,8 +53,8 @@ def nova_solicitacao_equipamento():
         tipo_eqp = TipoEquipamento.query.filter_by(
             id=form.tipo_equipamento.data).filter_by(ativo=True).first() 
         solicitacao = SolicitacaoEquipamento.query.filter_by(
-            status = 'ABERTO').filter_by(
-                turno_id = form.turno.data).filter_by(ativo=True)
+            status='ABERTO').filter_by(
+            turno_id=form.turno.data).filter_by(ativo=True).first()
             
         # Verifica se há equipamentos disponíveis para a quantidade solicitada
         # Retorna a operação caso não haja equipamentos o suficiente
@@ -65,8 +63,8 @@ def nova_solicitacao_equipamento():
                    Por favor, insira um valor menor.', 'warning')
             return redirect(url_for('principal.inicio'))
         elif solicitacao:
-            flash('Você foi colocado na lista de espera pois a sala\
-                  escolhida não está disponível.', 'warning')
+            flash('Você foi colocado na lista de espera pois o equipamento\
+                  escolhido não está disponível.', 'warning')
             status = 'SOLICITADO'
         else:
             flash('A solicitação foi realizada com sucesso!.', 'success')
@@ -119,18 +117,16 @@ def nova_solicitacao_sala():
         return redirect(url_for('principal.inicio'))
 
     if form.validate_on_submit():
-        setores = Setor.query.filter_by(
-            id=form.setor.data).filter_by(ativo=True).first()
-        solicitacao = SolicitacaoSala.query.filter_by(turno_id = form.turno.data).filter_by(
-                status = 'ABERTO').filter_by(ativo=True).first()
+        setor = Setor.recupera_id(form.setor.data)
+        solicitacao = SolicitacaoSala.query.filter_by(turno_id=form.turno.data).filter_by(
+                status='ABERTO').filter_by(ativo=True).first()
         
         # Verifica se a sala solicitada está disponível
         # Muda o status da solicitação de acordo com o resultado
-        if Setor.contagem(setores) == 0:
+        if Setor.contagem(setor) == 0:
             flash('Não há salas disponíveis neste setor para solicitar.', 'warning')
             return redirect(url_for('principal.inicio'))
-
-        if Setor.contagem(setores) >= form.qtd_preferencia.data and solicitacao == None:
+        if Setor.contagem(setor) >= form.qtd_preferencia.data and solicitacao == None:
             flash('A solicitação foi realizada com sucesso!.', 'success')
             status = 'ABERTO'
         else:
@@ -192,6 +188,10 @@ def confirma_solicitacao(solicitacao_id):
                        é diferente da solicitada.', 'warning')
                 return redirect(url_for('principal.inicio'))
             
+            # Atualiza status das salas da solicitação
+            for sala in lista_salas:
+                sala.status = 'CONFIRMADO'
+            
             # Atualiza o status da sala e da solicitação
             solicitacao.setor.qtd_disponivel -= len(solicitacao.salas)
             solicitacao.status = 'CONFIRMADO'
@@ -210,7 +210,7 @@ def confirma_solicitacao(solicitacao_id):
             form.turno.data = solicitacao.turno.name
             form.setor.data = solicitacao.setor.name
             form.quantidade.data = solicitacao.quantidade
-            form.qtd_disponivel.data = solicitacao.setor.qtd_disponivel
+            form.qtd_disponivel.data = Setor.contagem(solicitacao.setor)
             form.data_inicio_pref.data = solicitacao.data_inicio_pref.strftime('%d/%m/%Y')
             form.data_fim_pref.data = solicitacao.data_fim_pref.strftime('%d/%m/%Y')
 
@@ -258,6 +258,7 @@ def confirma_solicitacao(solicitacao_id):
                        é diferente da solicitada.', 'warning')
                 return redirect(url_for('principal.inicio'))
 
+            # Atualiza status dos equipamentos da solicitação
             for equip in lista_equips:
                 equip.status = 'CONFIRMADO'
 
@@ -278,7 +279,7 @@ def confirma_solicitacao(solicitacao_id):
             form.turno.data = solicitacao.turno
             form.tipo_equipamento.data = solicitacao.tipo_eqp.nome
             form.quantidade.data = solicitacao.quantidade
-            form.qtd_disponivel.data = solicitacao.tipo_eqp.qtd_disponivel
+            form.qtd_disponivel.data = TipoEquipamento.contagem(solicitacao.tipo_eqp)
             form.equipamentos.data = solicitacao.equipamentos
             form.data_inicio_pref.data = solicitacao.data_inicio_pref.strftime('%d/%m/%Y')
             form.data_fim_pref.data = solicitacao.data_fim_pref.strftime('%d/%m/%Y')
