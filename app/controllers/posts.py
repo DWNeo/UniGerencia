@@ -12,7 +12,7 @@ posts = Blueprint('posts', __name__)
 def post(post_id):
     # Permite acesso somente ao autor do post ou a um admin
     post = Post.recupera_id(post_id)
-    if not Post.verifica_autor(post, current_user):
+    if not post.verifica_autor(current_user):
         abort(403)
         
     return render_template('posts/post.html', title=post.titulo, post=post)
@@ -40,7 +40,7 @@ def novo_post():
             post = Post.cria(destinatario, form)
         else:
             post = Post.cria(None, form) 
-        Post.insere(post)
+        post.insere()
         flash('Sua mensagem foi postada com sucesso!', 'success')
         return redirect(url_for('principal.inicio', tab=2))
 
@@ -51,19 +51,17 @@ def novo_post():
 @posts.route("/<int:post_id>/atualizar", methods=['GET', 'POST'])
 @login_required
 def atualiza_post(post_id):
-    # Recupera o post pela ID e retorna erro 404 caso não encontre
-    post = Post.recupera_id(post_id)
-
     # Impede o acesso a página de todos os usuários que 
     # não sejam o autor do post ou um admin
-    if not Post.verifica_autor(post, current_user):
+    post = Post.recupera_id(post_id)
+    if not post.verifica_autor(current_user):
         abort(403)
         
     # Valida o formulário enviado e atualiza o registro
     # do post no banco de dados de acordo com ele
     form = AtualizaPostForm()
     if form.validate_on_submit():
-        Post.atualiza(post, form)
+        post.atualiza(form)
         flash('Sua mensagem foi atualizada com sucesso!', 'success')
         return redirect(url_for('principal.inicio', tab=2))
     elif request.method == 'GET':
@@ -85,10 +83,10 @@ def exclui_post(post_id):
     # Recupera o post pela ID e impede o acesso a página de 
     # todos os usuários que não sejam o autor ou um admin
     post = Post.recupera_id(post_id)
-    if not Post.verifica_autor(post, current_user):
+    if not post.verifica_autor(current_user):
         abort(403)
 
     # Desativa o registro do post
-    Post.exclui(post)
+    post.exclui()
     flash('Sua mensagem foi excluída com sucesso!', 'success')
     return redirect(url_for('principal.inicio', tab=2))

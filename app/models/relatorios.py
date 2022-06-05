@@ -36,28 +36,28 @@ class Relatorio(db.Model):
     tipo = db.Column(db.String(50)) # discriminador
     
     # Verifica se um relatório está em aberto
-    def verifica_aberto(relatorio):
-        if relatorio.status.name == 'ABERTO':
+    def verifica_aberto(self):
+        if self.status.name == 'ABERTO':
             return True
         else:
             return False
         
     # Insere um novo relatório no banco de dados
-    def insere(relatorio):
-        db.session.add(relatorio)
+    def insere(self):
+        db.session.add(self)
         db.session.commit()
         
-    def atualiza(relatorio, form):
+    def atualiza(self, form):
         # Atualiza as datas dependendo do status selecionado
         # Status 'Fechado' -> Data de Finalização
         # Status 'Aberto' -> Data de Atualização
         if form.finalizar.data == True:
-            relatorio.status = 'FECHADO'
-            relatorio.data_finalizacao = datetime.now().astimezone(fuso_horario)
+            self.status = 'FECHADO'
+            self.data_finalizacao = datetime.now().astimezone(fuso_horario)
         else:
-            relatorio.data_atualizacao = datetime.now().astimezone(fuso_horario)
-        relatorio.conteudo = form.conteudo.data
-        relatorio.detalhes = form.detalhes.data
+            self.data_atualizacao = datetime.now().astimezone(fuso_horario)
+        self.conteudo = form.conteudo.data
+        self.detalhes = form.detalhes.data
         db.session.commit()
     
     __mapper_args__ = {
@@ -110,13 +110,13 @@ class RelatorioSala(Relatorio):
                              usuario_id=current_user.id,
                              sala_id=sala_id)
 
-    def verifica_aberto(relatorio):
+    def verifica_aberto(self):
         return super().verifica_aberto()
     
-    def insere(relatorio):
+    def insere(self):
         return super().insere()
     
-    def atualiza(relatorio, form):
+    def atualiza(self, form):
         return super().atualiza(form)
     
     def __repr__(self):
@@ -167,13 +167,13 @@ class RelatorioEquipamento(Relatorio):
                                     usuario_id=current_user.id,
                                     equipamento_id=eqp_id)
     
-    def verifica_aberto(relatorio):
+    def verifica_aberto(self):
         return super().verifica_aberto()
     
-    def insere(relatorio):
+    def insere(self):
         return super().insere()
         
-    def atualiza(relatorio, form):
+    def atualiza(self, form):
         return super().atualiza(form)
     
     def __repr__(self):

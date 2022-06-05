@@ -58,111 +58,117 @@ class Solicitacao(db.Model):
             SolicitacaoSala.salas.contains(sala)).filter_by(
             ativo=True).order_by(SolicitacaoSala.id.desc()).limit(limite)
 
-    def verifica_autor(solicitacao, usuario):
-        if  solicitacao.autor == usuario or solicitacao.autor.tipo.name == 'AMDIN':
+    def verifica_autor(self, usuario):
+        if self.autor == usuario or self.autor.tipo.name == 'AMDIN':
             return True
         else:
             return False
         
-    def verifica_aberto(solicitacao):
-        if (solicitacao.status.name == 'ABERTO' or 
-            solicitacao.status.name == 'SOLICITADO'):
+    def verifica_aberto(self):
+        if self.status.name == 'ABERTO' or self.status.name == 'SOLICITADO':
             return True
         else:
             return False
         
-    def verifica_em_uso(solicitacao):
-        if (solicitacao.status.name == 'EMUSO' or 
-            solicitacao.status.name == 'PENDENTE'):
+    def verifica_em_uso(self):
+        if self.status.name == 'EMUSO':
+            return True
+        else:
+            return False
+        
+    def verifica_pendente(self):
+        if self.status.name == 'PENDENTE':
             return True
         else:
             return False
     
-    def verifica_atraso(solicitacao):
+    def verifica_atraso(self):
         if (datetime.now().astimezone(fuso_horario) > 
-            solicitacao.data_devolucao.astimezone(fuso_horario)):
+            self.data_devolucao.astimezone(fuso_horario)):
             return True
         else:
             return False
         
     # Insere a solicitação no banco de dados
-    def insere(solicitacao):
-        db.session.add(solicitacao)
+    def insere(self):
+        db.session.add(self)
         db.session.commit()
         return
     
     # Atualiza o status de um solicitação para 'Confirmado'
-    def confirma(solicitacao):
-        solicitacao.status = 'CONFIRMADO'
-        if solicitacao.tipo == 'EQUIPAMENTO':
-            for equipamento in solicitacao.equipamentos:
+    def confirma(self):
+        self.status = 'CONFIRMADO'
+        if self.tipo == 'EQUIPAMENTO':
+            for equipamento in self.equipamentos:
                 equipamento.status = 'CONFIRMADO'
-        if solicitacao.tipo == 'SALA':
-            for sala in solicitacao.salas:
+        if self.tipo == 'SALA':
+            for sala in self.salas:
                 sala.status = 'CONFIRMADO'     
         db.session.commit()
         
     # Atualiza o status de um solicitação para 'Em Uso'
-    def em_uso(solicitacao, form):
-        solicitacao.status = 'EMUSO'
-        solicitacao.data_devolucao = form.data_devolucao.data
-        solicitacao.data_retirada = datetime.now().astimezone(fuso_horario)
-        if solicitacao.tipo == 'EQUIPAMENTO':
-            for equipamento in solicitacao.equipamentos:
+    def em_uso(self, form):
+        self.status = 'EMUSO'
+        self.data_devolucao = form.data_devolucao.data
+        self.data_retirada = datetime.now().astimezone(fuso_horario)
+        if self.tipo == 'EQUIPAMENTO':
+            for equipamento in self.equipamentos:
                 equipamento.status = 'EMUSO'
-        if solicitacao.tipo == 'SALA':
-            for sala in solicitacao.salas: 
+        if self.tipo == 'SALA':
+            for sala in self.salas: 
                 sala.status = 'EMUSO'
         db.session.commit()
     
     # Atualiza o status de um solicitação para 'Pendente'
-    def atualiza_status_pendente(solicitacao):
-        solicitacao.status = 'PENDENTE'
-        if solicitacao.tipo == 'EQUIPAMENTO':
-            for equipamento in solicitacao.equipamentos:
+    def atualiza_status_pendente(self):
+        self.status = 'PENDENTE'
+        if self.tipo == 'EQUIPAMENTO':
+            for equipamento in self.equipamentos:
                 equipamento.status = 'PENDENTE'
-        if solicitacao.tipo == 'SALA':
-            for sala in solicitacao.salas:
+        if self.tipo == 'SALA':
+            for sala in self.salas:
                 sala.status = 'PENDENTE'     
         db.session.commit()
        
     # Atualiza o status de um solicitação para 'Finalizado' 
-    def finaliza(solicitacao):
-        solicitacao.status = 'FECHADO'
-        solicitacao.data_finalizacao = datetime.now().astimezone(fuso_horario)
-        if solicitacao.tipo == 'EQUIPAMENTO':
-            for equipamento in solicitacao.equipamentos:
+    def finaliza(self):
+        self.status = 'FECHADO'
+        self.data_finalizacao = datetime.now().astimezone(fuso_horario)
+        if self.tipo == 'EQUIPAMENTO':
+            for equipamento in self.equipamentos:
                 equipamento.status = 'ABERTO'
-        if solicitacao.tipo == 'SALA':
-            for sala in solicitacao.salas:
+        if self.tipo == 'SALA':
+            for sala in self.salas:
                 sala.status = 'ABERTO'
         db.session.commit()
        
     # Atualiza o status de um solicitação para 'Cancelado' 
-    def cancela(solicitacao):
-        solicitacao.status = 'CANCELADO'
-        solicitacao.data_cancelamento = datetime.now().astimezone(fuso_horario)
-        if (solicitacao.status.name != 'ABERTO' and 
-            solicitacao.status.name != 'SOLICITADO'):
-            if solicitacao.equipamentos:
-                for equipamento in solicitacao.equipamentos:
-                    equipamento.status = 'ABERTO'
-            if solicitacao.salas:
-                for sala in solicitacao.salas:
-                    sala.status = 'ABERTO' 
+    def cancela(self):
+        if self.status != 'ABERTO' and self.status != 'SOLICITADO':
+            if self.tipo == 'EQUIPAMENTO':
+                if self.equipamentos:
+                    for equipamento in self.equipamentos:
+                        equipamento.status = 'ABERTO'
+            if self.tipo == 'SALA':
+                if self.salas:
+                    for sala in self.salas:
+                        sala.status = 'ABERTO' 
+        self.status = 'CANCELADO'
+        self.data_cancelamento = datetime.now().astimezone(fuso_horario)
         db.session.commit()
         
     # Desativa o registro de uma solicitação no banco de dados
-    def exclui(solicitacao):
+    def exclui(self):
         # Atualiza o status de equipamentos e salas antes de exluir a solicitação
-        if solicitacao.status == 'CONFIRMADO':
-            if solicitacao.equipamentos:
-                for equipamento in solicitacao.equipamentos:
+        if self.status.name == 'CONFIRMADO':
+            if self.equipamentos:
+                for equipamento in self.equipamentos:
                     equipamento.status = 'ABERTO'
-            if solicitacao.salas:
-                for sala in solicitacao.salas:
+            if self.salas:
+                for sala in self.salas:
                     sala.status = 'ABERTO'
-        solicitacao.ativo = False
+        self.status = 'FECHADO'
+        self.ativo = False
         db.session.commit()
     
     def to_dict(self):
@@ -230,13 +236,10 @@ class SolicitacaoSala(Solicitacao):
                                data_fim_pref=form.data_fim_pref.data,
                                status=status)
     
-    def insere(solicitacao):
+    def insere(self):
         return super().insere()
     
-    def atualiza(solicitacao):
-        return super().atualiza()
-    
-    def exclui(solicitacao):
+    def exclui(self):
         return super().exclui()
     
     __mapper_args__ = {
@@ -267,13 +270,10 @@ class SolicitacaoEquipamento(Solicitacao):
                                       data_fim_pref=form.data_fim_pref.data,
                                       status=status) 
         
-    def insere(solicitacao):
+    def insere(self):
         return super().insere()
     
-    def atualiza(solicitacao):
-        return super().atualiza()
-    
-    def exclui(solicitacao):
+    def exclui(self):
         return super().exclui()
     
     __mapper_args__ = {
@@ -305,8 +305,8 @@ class Turno(db.Model):
                      data_inicio=form.data_inicio.data, 
                      data_fim=form.data_fim.data)
     
-    def insere(turno):
-        db.session.add(turno)
+    def insere(self):
+        db.session.add(self)
         db.session.commit()
     
     def __repr__(self):

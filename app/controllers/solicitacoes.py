@@ -4,15 +4,14 @@ from flask import (render_template, url_for, flash,
                    redirect, abort, request, Blueprint)
 from flask_login import current_user, login_required
 
-from app import db, fuso_horario
+from app import db
 from app.models import (Solicitacao, Equipamento, Sala, SolicitacaoEquipamento, 
                         SolicitacaoSala, TipoEquipamento, Turno, Setor, 
                         prof_required, admin_required)
 from app.forms.solicitacoes import (SolicitacaoEquipamentoForm, TurnoForm,
                                     SolicitacaoSalaForm, EntregaSolicitacaoForm,
                                     ConfirmaSolicitacaoEquipamentoForm,
-                                    ConfirmaSolicitacaoSalaForm)
-from app.models.usuarios import Usuario                            
+                                    ConfirmaSolicitacaoSalaForm)                          
 from app.utils import envia_email_confirmacao
 
 solicitacoes = Blueprint('solicitacoes', __name__)
@@ -23,7 +22,7 @@ solicitacoes = Blueprint('solicitacoes', __name__)
 def solicitacao(solicitacao_id):
     # Permite acesso somente ao autor da solicitação ou a um admin
     solicitacao = Solicitacao.recupera_id(solicitacao_id)
-    if not Solicitacao.verifica_autor(solicitacao, current_user):
+    if not solicitacao.verifica_autor(current_user):
         abort(403)
 
     return render_template('solicitacoes/solicitacao.html', 
@@ -49,32 +48,21 @@ def nova_solicitacao_equipamento():
         flash('Não há tipos ou turnos cadastrados para solicitar equipamentos.', 'warning')
         return redirect(url_for('principal.inicio'))
 
-    if form.validate_on_submit():
-        ''' [Em Verificação]
-        solicitacao = SolicitacaoEquipamento.query.filter_by(
-            status='ABERTO').filter_by(
-            turno_id=form.turno.data).filter_by(ativo=True).first()
-        '''   
+    if form.validate_on_submit(): 
         # Verifica se há equipamentos disponíveis para a quantidade solicitada
         # Retorna a operação caso não haja equipamentos o suficiente
         tipo_eqp = TipoEquipamento.recupera_id(form.tipo_equipamento.data)
-        if form.qtd_preferencia.data > TipoEquipamento.contagem(tipo_eqp):
-            flash('A quantidade solicitada de equipamentos excede a disponível.\
-                   Por favor, insira um valor menor.', 'warning')
-            return redirect(url_for('principal.inicio'))
-        else:
+        if TipoEquipamento.contagem(tipo_eqp) >= form.qtd_preferencia.data:
             flash('A solicitação foi realizada com sucesso!.', 'success')
-            status = 'ABERTO'
-        ''' [Em Verificação]
-        elif solicitacao:
-            flash('Você foi colocado na lista de espera pois o equipamento\
-                  escolhido não está disponível.', 'warning')
             status = 'SOLICITADO'
-        '''
+        else:
+            flash('Você foi colocado na lista de espera pois o tipo\
+                  escolhido não possui equipamentos disponíveis.', 'warning')
+            status = 'ABERTO'
+
         # Insere a nova solicitação no banco de dados
         solicitacao = SolicitacaoEquipamento.cria(status, form)
-        SolicitacaoEquipamento.insere(solicitacao)
-        flash('A solicitação foi realizada com sucesso!.', 'success')
+        solicitacao.insere()
         return redirect(url_for('principal.inicio'))
 
     return render_template('solicitacoes/nova_solicitacao_equipamento.html', 
@@ -103,28 +91,20 @@ def nova_solicitacao_sala():
         return redirect(url_for('principal.inicio'))
 
     if form.validate_on_submit():
-        setor = Setor.recupera_id(form.setor.data)
-        ''' [EM VERIFICAÇÃO]
-        solicitacao = SolicitacaoSala.query.filter_by(turno_id=form.turno.data).filter_by(
-                status='ABERTO').filter_by(ativo=True).first()
-        '''
-        solicitacao = None
         # Verifica se a sala solicitada está disponível
         # Muda o status da solicitação de acordo com o resultado
-        if Setor.contagem(setor) == 0:
-            flash('Não há salas disponíveis neste setor para solicitar.', 'warning')
-            return redirect(url_for('principal.inicio'))
-        if Setor.contagem(setor) >= form.qtd_preferencia.data and solicitacao == None:
+        setor = Setor.recupera_id(form.setor.data)
+        if Setor.contagem(setor) >= form.qtd_preferencia.data:
             flash('A solicitação foi realizada com sucesso!.', 'success')
-            status = 'ABERTO'
+            status = 'SOLICITADO'
         else:
             flash('Você foi colocado na lista de espera pois o setor\
                   escolhido não possui salas disponíveis.', 'warning')
-            status = 'SOLICITADO'
+            status = 'ABERTO'
                
         # Insere a nova solicitação no banco de dados
         solicitacao = SolicitacaoSala.cria(status, form)
-        SolicitacaoSala.insere(solicitacao)
+        solicitacao.insere()
         return redirect(url_for('principal.inicio'))
 
     return render_template('solicitacoes/nova_solicitacao_sala.html', 
@@ -279,7 +259,7 @@ def entrega_solicitacao(solicitacao_id):
     form = EntregaSolicitacaoForm()
     if form.validate_on_submit():
         # Altera o status da sala/equipamentos associados para 'Em Uso'
-        Solicitacao.em_uso(solicitacao, form)
+        solicitacao.em_uso(form)
         flash('A entrega foi confirmada com sucesso!', 'success')
     else:
         flash('A data de devolução inserida é inválida.', 'warning')
@@ -293,12 +273,12 @@ def entrega_solicitacao(solicitacao_id):
 def recebe_solicitacao(solicitacao_id):
     # Verifica o status da solicitação para permitir seu recebimento 
     solicitacao = Solicitacao.recupera_id(solicitacao_id)
-    if not Solicitacao.verifica_em_uso(solicitacao):
+    if not (solicitacao.verifica_em_uso() or solicitacao.verifica_pendente()):
         flash('Esta solicitação não está em uso!', 'warning')
         return redirect(url_for('principal.inicio'))
     
     # Atualiza o registro da solicitação
-    Solicitacao.finaliza(solicitacao)
+    solicitacao.finaliza(solicitacao)
     flash('O recebimento foi confirmado com sucesso!', 'success')
     return redirect(url_for('principal.inicio'))
 
@@ -308,16 +288,16 @@ def recebe_solicitacao(solicitacao_id):
 def cancela_solicitacao(solicitacao_id):
     # Permite acesso somente ao autor da solicitação ou a um admin
     solicitacao = Solicitacao.recupera_id(solicitacao_id)
-    if not Solicitacao.verifica_autor(solicitacao, current_user):
+    if not solicitacao.verifica_autor(current_user):
         abort(403)
 
     # Verifica o status da solicitação para permitir seu cancelamento
-    if Solicitacao.verifica_em_uso(solicitacao):
+    if (solicitacao.verifica_em_uso() or solicitacao.verifica_pendente()):
         flash('Esta solicitação não pode ser mais cancelada!', 'warning')
         return redirect(url_for('principal.inicio'))
 
     # Altera o status de sala/equipamentos associados a solicitação
-    Solicitacao.cancela(solicitacao)
+    solicitacao.cancela()
     flash('A solicitação foi cancelada com sucesso!', 'success')
     return redirect(url_for('principal.inicio'))
 
@@ -328,12 +308,12 @@ def cancela_solicitacao(solicitacao_id):
 def exclui_solicitacao(solicitacao_id):
     # Impede a exclusão de solicitações indevidas
     solicitacao = Solicitacao.recupera_id(solicitacao_id)
-    if Solicitacao.verifica_em_uso(solicitacao):
+    if (solicitacao.verifica_em_uso() or solicitacao.verifica_pendente()):
         flash('Não é possível excluir uma solicitação em uso.', 'warning')
         return redirect(url_for('principal.inicio'))
     
     # Atualiza o status dos equipamentos e salas antes de excluir a solicitação
-    Solicitacao.exclui(solicitacao)
+    solicitacao.exclui()
     flash('A solicitação foi excluída com sucesso!', 'success')
     return redirect(url_for('principal.inicio'))
 
@@ -347,7 +327,7 @@ def novo_turno():
     form = TurnoForm()
     if form.validate_on_submit():
         turno = Turno.cria(form)
-        Turno.insere(turno)
+        turno.insere()
         flash('O turno foi cadastrado com sucesso!', 'success') 
         return redirect(url_for('principal.inicio'))
 

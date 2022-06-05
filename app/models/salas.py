@@ -41,15 +41,15 @@ class Sala(db.Model):
         return Sala.query.filter_by(id=sala_id).filter_by(ativo=True).first_or_404()
     
     # Verifica se uma sala está disponível
-    def verifica_disponibilidade(sala):
-        if sala.status.name == 'ABERTO':
+    def verifica_disponibilidade(self):
+        if self.status.name == 'ABERTO':
             return True
         else:
             return False
     
     # Verifica se uma sala está desabilitada
-    def verifica_desabilitado(sala):
-        if sala.status.name == 'DESABILITADO':
+    def verifica_desabilitado(self):
+        if self.status.name == 'DESABILITADO':
             return True
         else:
             return False    
@@ -60,49 +60,49 @@ class Sala(db.Model):
                     qtd_aluno=form.qtd_aluno.data)
         
     # Insere uma nova sala no banco de dados
-    def insere(sala):
-        db.session.add(sala)
+    def insere(self):
+        db.session.add(self)
         db.session.commit()
         
     # Atualiza uma sala existente no banco de dados
-    def atualiza(sala, form):
-        sala.setor_id = form.setor.data
-        sala.qtd_aluno = form.qtd_aluno.data
-        sala.data_atualizacao = datetime.now().astimezone(fuso_horario)
+    def atualiza(self, form):
+        self.setor_id = form.setor.data
+        self.qtd_aluno = form.qtd_aluno.data
+        self.data_atualizacao = datetime.now().astimezone(fuso_horario)
         db.session.commit()
     
     # Verifica se um equipamento está disponível
-    def verifica_disponibilidade(sala):
-        if sala.status.name == 'ABERTO':
+    def verifica_disponibilidade(self):
+        if self.status.name == 'ABERTO':
             return True
         else:
             return False
         
     # Verifica se uma sala está desabilitada
-    def verifica_desabilitado(sala):
-        if (sala.status.name == 'DESABILITADO' or
-            sala.status.name == 'EMMANUTENCAO'):
+    def verifica_desabilitado(self):
+        if (self.status.name == 'DESABILITADO' or
+            self.status.name == 'EMMANUTENCAO'):
             return True
         else:
             return False 
         
     # Disponibiliza novamente a sala para solicitações    
-    def disponibiliza(sala):
-        sala.motivo_indisponibilidade = None
-        sala.status = 'ABERTO'
-        sala.data_atualizacao = datetime.now().astimezone(fuso_horario)
+    def disponibiliza(self):
+        self.motivo_indisponibilidade = None
+        self.status = 'ABERTO'
+        self.data_atualizacao = datetime.now().astimezone(fuso_horario)
         db.session.commit()
         
     # Indisponibiliza a sala para solicitações    
-    def indisponibiliza(sala, form):
-        sala.motivo_indisponibilidade = form.motivo.data
-        sala.status = 'DESABILITADO'
-        sala.data_atualizacao = datetime.now().astimezone(fuso_horario)
+    def indisponibiliza(self, form):
+        self.motivo_indisponibilidade = form.motivo.data
+        self.status = 'DESABILITADO'
+        self.data_atualizacao = datetime.now().astimezone(fuso_horario)
         db.session.commit()
 
     # Desativa o registro de uma sala no banco de dados
-    def exclui(sala):
-        sala.ativo = False
+    def exclui(self):
+        self.ativo = False
         db.session.commit()
         
     def __repr__(self):
@@ -135,15 +135,15 @@ class Setor(db.Model):
         return Setor(name=form.nome.data)
         
     # Insere um novo setor no banco de dados
-    def insere(setor):
-        db.session.add(setor)
+    def insere(self):
+        db.session.add(self)
         db.session.commit()
     
     # Retorna o número de salas disponíveis de um setor
-    def contagem(setor):
+    def contagem(self):
         return Sala.query.filter_by(status='ABERTO').filter_by(
-            setor=setor).filter_by(ativo=True).count()
+            setor=self).filter_by(ativo=True).count()
     
     def __repr__(self):
-        return f"{self.name} - Quantidade Disponível: {Setor.contagem(self)}"
+        return f"{self.name} - Quantidade Disponível: {self.contagem()}"
     

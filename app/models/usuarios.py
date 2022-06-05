@@ -101,24 +101,24 @@ class Usuario(db.Model, UserMixin):
     
     # Verifica se um usuário é administrador ou não
     @staticmethod
-    def verifica_admin(usuario):
-        if usuario.tipo.name == 'ADMIN':
+    def verifica_admin(self):
+        if self.tipo.name == 'ADMIN':
             return True
         else:
             return False
         
     # Verifica se um usuário é prof ou administrador
     @staticmethod
-    def verifica_prof(usuario):
-        if usuario.tipo.name == 'PROF' or usuario.tipo.name == 'ADMIN':
+    def verifica_prof(self):
+        if self.tipo.name == 'PROF' or self.tipo.name == 'ADMIN':
             return True
         else:
             return False
         
     # Verifica a senha inserida e realiza login do usuário
-    def login(usuario, form):
-        if usuario and bcrypt.check_password_hash(usuario.senha, form.senha.data):
-            login_user(usuario, remember=form.lembrar.data)
+    def login(self, form):
+        if self and bcrypt.check_password_hash(self.senha, form.senha.data):
+            login_user(self, remember=form.lembrar.data)
             return True
         else:
             return False
@@ -142,41 +142,41 @@ class Usuario(db.Model, UserMixin):
                        tipo=form.tipo.data)
         
     # Insere um novo usuário no banco de dados
-    def insere(usuario):
-        db.session.add(usuario)
+    def insere(self):
+        db.session.add(self)
         db.session.commit()
     
     # Atualiza um usuário existente no banco de dados
-    def atualiza(usuario, form):
+    def atualiza(self, form):
         # Realiza o tratamento da imagem enviada
         if form.imagem.data:
             arquivo_imagem = salva_imagem(form.imagem.data)
-            usuario.imagem_perfil = arquivo_imagem
+            self.imagem_perfil = arquivo_imagem
         # Atualiza o tipo de usuário, se for necessário
         try:
-            usuario.tipo = form.tipo.data
+            self.tipo = form.tipo.data
         except:
-            print(usuario.tipo)
+            print(self.tipo)
         # Atualiza dados do usuário no banco de dados  
         hash_senha = bcrypt.generate_password_hash(form.senha.data).decode('utf-8')
-        usuario.senha = hash_senha
-        usuario.nome = form.nome.data
-        usuario.identificacao = form.identificacao.data
-        usuario.email = form.email.data
-        usuario.data_atualizacao = datetime.now().astimezone(fuso_horario)
+        self.senha = hash_senha
+        self.nome = form.nome.data
+        self.identificacao = form.identificacao.data
+        self.email = form.email.data
+        self.data_atualizacao = datetime.now().astimezone(fuso_horario)
         db.session.commit()
        
     # Redefine a senha de um usuário existente
-    def nova_senha(usuario, senha):
+    def nova_senha(self, senha):
         # Gera um novo hash com base na nova senha
         hash_senha = bcrypt.generate_password_hash(senha).decode('utf-8')
-        usuario.senha = hash_senha
-        usuario.data_atualizacao = datetime.now().astimezone(fuso_horario)
+        self.senha = hash_senha
+        self.data_atualizacao = datetime.now().astimezone(fuso_horario)
         db.session.commit()
     
     # Desativa o registro de um usuário no banco de dados
-    def exclui(usuario):
-        usuario.ativo = False
+    def exclui(self):
+        self.ativo = False
         db.session.commit()
 
     def __repr__(self):

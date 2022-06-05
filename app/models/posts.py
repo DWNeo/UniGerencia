@@ -37,8 +37,8 @@ class Post(db.Model):
             Post.data_postado.desc()).paginate(page=pagina, per_page=num)
     
     # Verifica se um usuário é o autor de uma mensagem (ou um admin)
-    def verifica_autor(post, usuario):
-        if post.autor == usuario or usuario.tipo.name == 'ADMIN':
+    def verifica_autor(self, usuario):
+        if self.autor == usuario or usuario.tipo.name == 'ADMIN':
             return True
         else:
             return False
@@ -51,20 +51,20 @@ class Post(db.Model):
                     autor=current_user)
         
     # Insere uma nova mensagem no banco de dados
-    def insere(post):
-        db.session.add(post)
+    def insere(self):
+        db.session.add(self)
         db.session.commit()
         
     # Atualiza uma mensagem existente no banco de dados
-    def atualiza(post, form):
-        post.titulo = form.titulo.data
-        post.conteudo = form.conteudo.data
-        post.data_atualizacao = datetime.now().astimezone(fuso_horario)
+    def atualiza(self, form):
+        self.titulo = form.titulo.data
+        self.conteudo = form.conteudo.data
+        self.data_atualizacao = datetime.now().astimezone(fuso_horario)
         db.session.commit()
         
     # Desativa o registro de uma mensagem no banco de dados
-    def exclui(post):
-        post.ativo = False
+    def exclui(self):
+        self.ativo = False
         db.session.commit()
 
     def __repr__(self):

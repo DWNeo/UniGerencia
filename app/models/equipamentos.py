@@ -39,16 +39,16 @@ class Equipamento(db.Model):
         return Equipamento.query.filter_by(id=eqp_id).filter_by(ativo=True).first_or_404()
     
     # Verifica se um equipamento está disponível
-    def verifica_disponibilidade(equipamento):
-        if equipamento.status.name == 'ABERTO':
+    def verifica_disponibilidade(self):
+        if self.status.name == 'ABERTO':
             return True
         else:
             return False
     
     # Verifica se um equipamento está desabilitado
-    def verifica_desabilitado(equipamento):
-        if (equipamento.status.name == 'DESABILITADO' or
-            equipamento.status.name == 'EMMANUTENCAO'):
+    def verifica_desabilitado(self):
+        if (self.status.name == 'DESABILITADO' or
+            self.status.name == 'EMMANUTENCAO'):
             return True
         else:
             return False    
@@ -60,35 +60,33 @@ class Equipamento(db.Model):
                            tipo_eqp_id=form.tipo_eqp.data)
         
     # Insere um novo equipamento no banco de dados
-    def insere(equipamento):
-        db.session.add(equipamento)
+    def insere(self):
+        db.session.add(self)
         db.session.commit()
         
     # Atualiza um equipamento existente no banco de dados
-    def atualiza(equipamento, form):
-        equipamento.descricao = form.descricao.data
-        equipamento.data_atualizacao = datetime.now().astimezone(fuso_horario)
+    def atualiza(self, form):
+        self.descricao = form.descricao.data
+        self.data_atualizacao = datetime.now().astimezone(fuso_horario)
         db.session.commit()
         
     # Disponibiliza novamente o equipamento para solicitações    
-    def disponibiliza(equipamento):
-        TipoEquipamento.atualiza_qtd(equipamento.tipo_eqp, +1)
-        equipamento.motivo_indisponibilidade = None
-        equipamento.status = 'ABERTO'
-        equipamento.data_atualizacao = datetime.now().astimezone(fuso_horario)
+    def disponibiliza(self):
+        self.motivo_indisponibilidade = None
+        self.status = 'ABERTO'
+        self.data_atualizacao = datetime.now().astimezone(fuso_horario)
         db.session.commit()
         
     # Indisponibiliza o equipamento para solicitações    
-    def indisponibiliza(equipamento, form):
-        TipoEquipamento.atualiza_qtd(equipamento.tipo_eqp, -1)
-        equipamento.motivo_indisponibilidade = form.motivo.data
-        equipamento.status = 'DESABILITADO'
-        equipamento.data_atualizacao = datetime.now().astimezone(fuso_horario)
+    def indisponibiliza(self, form):
+        self.motivo_indisponibilidade = form.motivo.data
+        self.status = 'DESABILITADO'
+        self.data_atualizacao = datetime.now().astimezone(fuso_horario)
         db.session.commit()
         
     # Desativa o registro de um equipamento no banco de dados
-    def exclui(equipamento):
-        equipamento.ativo = False
+    def exclui(self):
+        self.ativo = False
         db.session.commit()
         
     def __repr__(self):
@@ -121,15 +119,15 @@ class TipoEquipamento(db.Model):
         return TipoEquipamento(nome=form.nome.data)
     
     # Insere um novo tipo no banco de dados
-    def insere(tipo_eqp):
-        db.session.add(tipo_eqp)
+    def insere(self):
+        db.session.add(self)
         db.session.commit()
         
     # Retorna o número de equipamentos disponíveis de um tipo
-    def contagem(tipo_eqp):
+    def contagem(self):
         return Equipamento.query.filter_by(status='ABERTO').filter_by(
-            tipo_eqp=tipo_eqp).filter_by(ativo=True).count()
+            tipo_eqp=self).filter_by(ativo=True).count()
     
     def __repr__(self):
-        return f"{self.nome} - Qtd. Disponível: {TipoEquipamento.contagem(self)}"
+        return f"{self.nome} - Qtd. Disponível: {self.contagem()}"
     

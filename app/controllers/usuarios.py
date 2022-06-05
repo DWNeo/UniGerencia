@@ -34,7 +34,7 @@ def registrar():
     form = RegistraForm()
     if form.validate_on_submit():
         usuario = Usuario.cria(form)
-        Usuario.insere(usuario)
+        usuario.insere()
         flash('Sua conta foi registrada com sucesso!\
               Você já pode realizar o login.', 'success')
         return redirect(url_for('usuarios.login'))
@@ -55,7 +55,7 @@ def login():
         # Verifica se o email e o hash da senha inserida estão ambos
         # corretos e só então realiza o login do usuário
         usuario = Usuario.recupera_email(form.email.data)
-        if Usuario.login(usuario, form):
+        if usuario.login(form):
             # Após o login, redireciona o usuário para a última página acessada
             prox_pagina = request.args.get('next')
             if (prox_pagina):
@@ -83,7 +83,7 @@ def perfil():
     # o registro do usuário atual no banco de dados
     form = AtualizaPerfilForm()
     if form.validate_on_submit():
-        Usuario.atualiza(current_user, form)
+        current_user.atualiza(form)
         flash('Sua conta foi atualizada com sucesso!', 'success')
         return redirect(url_for('usuarios.perfil'))  
     elif request.method == 'GET':
@@ -121,7 +121,8 @@ def novo_usuario():
     form = AdminRegistraForm()
     if form.validate_on_submit():
         # Insere novo usuário após validação do formulário
-        Usuario.insere(form)
+        usuario = Usuario.cria(form)
+        usuario.insere()
         flash('A conta foi registrada com sucesso!.', 'success')
         return redirect(url_for('principal.inicio', tab=5))
 
@@ -137,7 +138,7 @@ def atualiza_usuario(usuario_id):
     usuario = Usuario.recupera_id(usuario_id) 
     form = AdminAtualizaPerfilForm()
     if form.validate_on_submit():
-        Usuario.atualiza(usuario, form)
+        usuario.atualiza(form)
         flash('A conta do usuário foi atualizada com sucesso!', 'success')
         return redirect(url_for('principal.inicio', tab=5))
     elif request.method == 'GET':
@@ -162,7 +163,7 @@ def exclui_usuario(usuario_id):
         return redirect(url_for('principal.inicio', tab=5))
     
     # Desativa o registro do usuário especificado
-    Usuario.exclui(usuario)
+    usuario.exclui()
     flash('O usuário foi excluído com sucesso!', 'success')
     
     return redirect(url_for('principal.inicio', tab=5))
@@ -203,7 +204,7 @@ def redefinir_token(token):
 
     form = NovaSenhaForm()
     if form.validate_on_submit():
-        Usuario.nova_senha(usuario, form.senha.data)
+        usuario.nova_senha(form.senha.data)
         flash('Sua senha foi atualizada com sucesso!\
               Você já pode realizar login usando ela.', 'success')
         return redirect(url_for('usuarios.login'))

@@ -3,7 +3,7 @@ from flask import (render_template, url_for, flash,
 from flask_login import login_required
 
 from app.models import (Equipamento, RelatorioEquipamento, TipoEquipamento, 
-                        Relatorio, Solicitacao, admin_required)
+                        Solicitacao, admin_required)
 from app.forms.equipamentos import (EquipamentoForm, IndisponibilizaEquipamentoForm,
                                     AtualizaEquipamentoForm, TipoEquipamentoForm,
                                     RelatorioEquipamentoForm, AtualizaRelatorioEquipamentoForm)
@@ -42,7 +42,7 @@ def novo_equipamento():
     # novo registro de equipamento no banco de dados
     if form.validate_on_submit():
         equipamento = Equipamento.cria(form)
-        Equipamento.insere(equipamento)
+        equipamento.insere()
         flash('O equipamento foi cadastrado com sucesso!', 'success') 
         return redirect(url_for('principal.inicio', tab=3))
 
@@ -60,7 +60,7 @@ def novo_tipo_equipamento():
     form = TipoEquipamentoForm()
     if form.validate_on_submit():
         tipo_eqp = TipoEquipamento.cria(form)
-        TipoEquipamento.insere(tipo_eqp)
+        tipo_eqp.insere()
         flash('O tipo de equipamento foi cadastrado com sucesso!', 'success') 
         return redirect(url_for('principal.inicio', tab=3))
 
@@ -78,7 +78,7 @@ def atualiza_equipamento(eqp_id):
     equipamento = Equipamento.recupera_id(eqp_id)
     form = AtualizaEquipamentoForm()
     if form.validate_on_submit():
-        Equipamento.atualiza(equipamento)
+        equipamento.atualiza(form)
         flash('O equipamento foi atualizado com sucesso!', 'success')  
         return redirect(url_for('principal.inicio', tab=3))
     elif request.method == 'GET':
@@ -96,12 +96,12 @@ def disponibiliza_equipamento(eqp_id):
     # Valida os dados do formulário enviado e altera o status
     # do equipamento escolhido para 'Disponível'
     equipamento = Equipamento.recupera_id(eqp_id)
-    if Equipamento.verifica_disponibilidade(equipamento):
+    if equipamento.verifica_disponibilidade():
         flash('Esse equipamento já está disponível.', 'warning')
         return redirect(url_for('principal.inicio', tab=3))
 
     # Atualiza os registros do equipamento e do seu tipo
-    Equipamento.disponibiliza(equipamento)
+    equipamento.disponibiliza()
     flash('O equipamento foi disponibilizado com sucesso!', 'success') 
     return redirect(url_for('principal.inicio', tab=3))
 
@@ -115,12 +115,12 @@ def indisponibiliza_equipamento(eqp_id):
     form = IndisponibilizaEquipamentoForm()
     if form.validate_on_submit():
         equipamento = Equipamento.recupera_id(eqp_id)
-        if not Equipamento.verifica_disponibilidade(equipamento):
+        if not equipamento.verifica_disponibilidade():
             flash('Você não pode tornar este equipamento indisponível.', 'warning')
             return redirect(url_for('principal.inicio', tab=3))
 
         # Atualiza os registros do equipamento e do seu tipo
-        Equipamento.indisponibiliza(equipamento, form)
+        equipamento.indisponibiliza(form)
         flash('O equipamento foi indisponibilizado com sucesso!', 'success') 
         return redirect(url_for('principal.inicio', tab=3))
 
@@ -135,14 +135,14 @@ def indisponibiliza_equipamento(eqp_id):
 def exclui_equipamento(eqp_id):
     # Impede um equipamento de ser indevidamente excluído
     equipamento = Equipamento.recupera_id(eqp_id)
-    if not Equipamento.verifica_disponibilidade(equipamento):
-        if not Equipamento.verifica_desabilitado(equipamento):
+    if not equipamento.verifica_disponibilidade():
+        if not equipamento.verifica_desabilitado():
             flash('Não é possível excluir uma equipamento\
                 solicitado ou em uso.', 'warning')
             return redirect(url_for('principal.inicio', tab=3))
 
     # Desativa o registro do equipamento
-    Equipamento.exclui(equipamento)
+    equipamento.exclui()
     flash('O equipamento foi excluído com sucesso!', 'success')
     return redirect(url_for('principal.inicio', tab=3))
 
@@ -170,7 +170,7 @@ def novo_relatorio(eqp_id):
     form = RelatorioEquipamentoForm()
     if form.validate_on_submit():
         relatorio = RelatorioEquipamento.cria(equipamento.id, form)
-        RelatorioEquipamento.insere(relatorio)
+        relatorio.insere()
         flash('O relatório foi cadastrado com sucesso!', 'success') 
         return redirect(url_for('equipamentos.relatorios', eqp_id=eqp_id))
 
@@ -185,14 +185,14 @@ def novo_relatorio(eqp_id):
 def atualiza_relatorio(eqp_id, relatorio_id):
     # Impede relatórios finalizados de serem atualizados
     relatorio = RelatorioEquipamento.recupera_id(relatorio_id)
-    if not RelatorioEquipamento.verifica_aberto(relatorio):
+    if not relatorio.verifica_aberto():
         flash('Este relatório já foi finalizado.', 'warning') 
         return redirect(url_for('equipamentos.relatorios', eqp_id=eqp_id))
 
     # Valida o formulário e atualiza o relatório no banco de dados
     form = AtualizaRelatorioEquipamentoForm()
     if form.validate_on_submit():
-        RelatorioEquipamento.atualiza(relatorio, form)
+        relatorio.atualiza(form)
         flash('O relatório foi atualizado com sucesso!', 'success') 
         return redirect(url_for('equipamentos.relatorios', eqp_id=eqp_id))
     elif request.method == 'GET':

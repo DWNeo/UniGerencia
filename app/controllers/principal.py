@@ -40,7 +40,7 @@ def inicio():
                 if Solicitacao.verifica_autor(solicitacao, current_user):
                     flash('Você possui uma solicitação atrasada.', 'warning')  
                 # Exibe uma mensagem de alerta para o admin
-                if Usuario.verifica_admin(current_user):
+                if current_user.verifica_admin():
                     flash('Existe uma nova solicitação em atraso.', 'warning')
 
     # Importa o formulário para entrega de solicitações
