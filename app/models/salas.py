@@ -32,6 +32,10 @@ class Sala(db.Model):
     def recupera_tudo():
         return Sala.query.filter_by(ativo=True).all()
     
+    def recupera_disponivel_setor(setor_id):
+        return Sala.query.filter_by(setor_id=setor_id).filter_by(
+               status='ABERTO').filter_by(ativo=True).all()
+    
     # Recupera a sala pela ID e retorna erro 404 caso contrário
     def recupera_id(sala_id):
         return Sala.query.filter_by(id=sala_id).filter_by(ativo=True).first_or_404()

@@ -3,7 +3,7 @@ from flask import (render_template, url_for, flash,
 from flask_login import login_required
 
 from app.models import (Equipamento, RelatorioEquipamento, TipoEquipamento, 
-                        Solicitacao, admin_required)
+                        Relatorio, Solicitacao, admin_required)
 from app.forms.equipamentos import (EquipamentoForm, IndisponibilizaEquipamentoForm,
                                     AtualizaEquipamentoForm, TipoEquipamentoForm,
                                     RelatorioEquipamentoForm, AtualizaRelatorioEquipamentoForm)

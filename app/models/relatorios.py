@@ -34,6 +34,32 @@ class Relatorio(db.Model):
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), 
                            nullable=False)
     tipo = db.Column(db.String(50)) # discriminador
+    
+    # Verifica se um relatório está em aberto
+    def verifica_aberto(relatorio):
+        if relatorio.status.name == 'ABERTO':
+            return True
+        else:
+            return False
+        
+    # Insere um novo relatório no banco de dados
+    def insere(relatorio):
+        db.session.add(relatorio)
+        db.session.commit()
+        
+    def atualiza(relatorio, form):
+        # Atualiza as datas dependendo do status selecionado
+        # Status 'Fechado' -> Data de Finalização
+        # Status 'Aberto' -> Data de Atualização
+        if form.finalizar.data == True:
+            relatorio.status = 'FECHADO'
+            relatorio.data_finalizacao = datetime.now().astimezone(fuso_horario)
+        else:
+            relatorio.data_atualizacao = datetime.now().astimezone(fuso_horario)
+        relatorio.conteudo = form.conteudo.data
+        relatorio.detalhes = form.detalhes.data
+        db.session.commit()
+    
     __mapper_args__ = {
         'polymorphic_identity': 'RELATORIO',
         'polymorphic_on': tipo
@@ -65,13 +91,6 @@ class RelatorioSala(Relatorio):
     def recupera_tudo_sala(sala):
         return RelatorioSala.query.filter_by(
             sala_id=sala.id).filter_by(ativo=True).all()
-        
-    # Verifica se um relatório está em aberto
-    def verifica_aberto(relatorio):
-        if relatorio.status.name == 'ABERTO':
-            return True
-        else:
-            return False
     
     # Cria um novo relatório de sala para ser inserido
     def cria(sala_id, form):
@@ -90,25 +109,16 @@ class RelatorioSala(Relatorio):
                              data_finalizacao=data_finalizacao,
                              usuario_id=current_user.id,
                              sala_id=sala_id)
-            
-    # Insere um novo relatório no banco de dados
-    def insere(relatorio):
-        db.session.add(relatorio)
-        db.session.commit()
-        
-    def atualiza(relatorio, form):
-        # Atualiza as datas dependendo do status selecionado
-        # Status 'Fechado' -> Data de Finalização
-        # Status 'Aberto' -> Data de Atualização
-        if form.finalizar.data == True:
-            relatorio.status = 'FECHADO'
-            relatorio.data_finalizacao = datetime.now().astimezone(fuso_horario)
-        else:
-            relatorio.data_atualizacao = datetime.now().astimezone(fuso_horario)
-        relatorio.conteudo = form.conteudo.data
-        relatorio.detalhes = form.detalhes.data
-        db.session.commit()
 
+    def verifica_aberto(relatorio):
+        return super().verifica_aberto()
+    
+    def insere(relatorio):
+        return super().insere()
+    
+    def atualiza(relatorio, form):
+        return super().atualiza(form)
+    
     def __repr__(self):
         return f"Relatório #{self.id} - {self.tipo} - {self.status}"
 
@@ -139,13 +149,6 @@ class RelatorioEquipamento(Relatorio):
         return RelatorioEquipamento.query.filter_by(
             equipamento_id=equipamento.id).filter_by(ativo=True).all()
         
-    # Verifica se um relatório está em aberto
-    def verifica_aberto(relatorio):
-        if relatorio.status.name == 'ABERTO':
-            return True
-        else:
-            return False
-    
     # Cria um novo relatório de equipamento para ser inserido
     def cria(eqp_id, form):
         if form.finalizar.data == True:
@@ -163,24 +166,15 @@ class RelatorioEquipamento(Relatorio):
                                     data_finalizacao=data_finalizacao,
                                     usuario_id=current_user.id,
                                     equipamento_id=eqp_id)
-        
-    # Insere um novo relatório no banco de dados
+    
+    def verifica_aberto(relatorio):
+        return super().verifica_aberto()
+    
     def insere(relatorio):
-        db.session.add(relatorio)
-        db.session.commit()
+        return super().insere()
         
     def atualiza(relatorio, form):
-        # Atualiza as datas dependendo do status selecionado
-        # Status 'Fechado' -> Data de Finalização
-        # Status 'Aberto' -> Data de Atualização
-        if form.finalizar.data == True:
-            relatorio.status = 'FECHADO'
-            relatorio.data_finalizacao = datetime.now().astimezone(fuso_horario)
-        else:
-            relatorio.data_atualizacao = datetime.now().astimezone(fuso_horario)
-        relatorio.conteudo = form.conteudo.data
-        relatorio.detalhes = form.detalhes.data
-        db.session.commit()
+        return super().atualiza(form)
     
     def __repr__(self):
         return f"Relatório #{self.id} - {self.tipo} - {self.status}"

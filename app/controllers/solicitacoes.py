@@ -11,7 +11,8 @@ from app.models import (Solicitacao, Equipamento, Sala, SolicitacaoEquipamento,
 from app.forms.solicitacoes import (SolicitacaoEquipamentoForm, TurnoForm,
                                     SolicitacaoSalaForm, EntregaSolicitacaoForm,
                                     ConfirmaSolicitacaoEquipamentoForm,
-                                    ConfirmaSolicitacaoSalaForm)                            
+                                    ConfirmaSolicitacaoSalaForm)
+from app.models.usuarios import Usuario                            
 from app.utils import envia_email_confirmacao
 
 solicitacoes = Blueprint('solicitacoes', __name__)
@@ -22,11 +23,9 @@ solicitacoes = Blueprint('solicitacoes', __name__)
 def solicitacao(solicitacao_id):
     # Permite acesso somente ao autor da solicitação ou a um admin
     solicitacao = Solicitacao.recupera_id(solicitacao_id)
-    #if not Solicitacao.verifica_autor(solicitacao):
-    if solicitacao.autor != current_user and current_user.tipo.name != 'ADMIN':
+    if not Solicitacao.verifica_autor(solicitacao, current_user):
         abort(403)
 
-    # Renderiza o template
     return render_template('solicitacoes/solicitacao.html', 
                            title=solicitacao, solicitacao=solicitacao)
 
@@ -35,13 +34,14 @@ def solicitacao(solicitacao_id):
 @login_required
 def nova_solicitacao_equipamento():
     # Recupera lista de turnos e tipos de equipamento do banco
-    form = SolicitacaoEquipamentoForm()
     tipos_equipamento = TipoEquipamento.recupera_tudo()
     lista_tipos=[(tipo.id, tipo) for tipo in tipos_equipamento]
-    turnos = Turno.query.filter_by(ativo=True).all()
+    turnos = Turno.recupera_tudo()
     lista_turnos = [(turno.id, turno) for turno in turnos]
     
     # Preenche as listas de seleção
+    # Retorna usuário pra tela inicial se não dados cadastrados
+    form = SolicitacaoEquipamentoForm()
     if lista_tipos and lista_turnos:
         form.tipo_equipamento.choices = lista_tipos
         form.turno.choices = lista_turnos
@@ -50,42 +50,33 @@ def nova_solicitacao_equipamento():
         return redirect(url_for('principal.inicio'))
 
     if form.validate_on_submit():
-        tipo_eqp = TipoEquipamento.query.filter_by(
-            id=form.tipo_equipamento.data).filter_by(ativo=True).first() 
+        ''' [Em Verificação]
         solicitacao = SolicitacaoEquipamento.query.filter_by(
             status='ABERTO').filter_by(
             turno_id=form.turno.data).filter_by(ativo=True).first()
-            
+        '''   
         # Verifica se há equipamentos disponíveis para a quantidade solicitada
         # Retorna a operação caso não haja equipamentos o suficiente
+        tipo_eqp = TipoEquipamento.recupera_id(form.tipo_equipamento.data)
         if form.qtd_preferencia.data > TipoEquipamento.contagem(tipo_eqp):
             flash('A quantidade solicitada de equipamentos excede a disponível.\
                    Por favor, insira um valor menor.', 'warning')
             return redirect(url_for('principal.inicio'))
+        else:
+            flash('A solicitação foi realizada com sucesso!.', 'success')
+            status = 'ABERTO'
+        ''' [Em Verificação]
         elif solicitacao:
             flash('Você foi colocado na lista de espera pois o equipamento\
                   escolhido não está disponível.', 'warning')
             status = 'SOLICITADO'
-        else:
-            flash('A solicitação foi realizada com sucesso!.', 'success')
-            status = 'ABERTO'
-
+        '''
         # Insere a nova solicitação no banco de dados
+        solicitacao = SolicitacaoEquipamento.cria(status, form)
+        SolicitacaoEquipamento.insere(solicitacao)
         flash('A solicitação foi realizada com sucesso!.', 'success')
-        solicitacao = SolicitacaoEquipamento(
-                                  tipo_eqp_id=form.tipo_equipamento.data,
-                                  turno_id=form.turno.data,
-                                  usuario_id=current_user.id,
-                                  descricao = form.descricao.data,
-                                  quantidade = form.qtd_preferencia.data,
-                                  data_inicio_pref=form.data_inicio_pref.data,
-                                  data_fim_pref = form.data_fim_pref.data,
-                                  status=status)   
-        db.session.add(solicitacao)
-        db.session.commit()
         return redirect(url_for('principal.inicio'))
 
-    # Renderiza o template
     return render_template('solicitacoes/nova_solicitacao_equipamento.html', 
                            title='Nova Solicitação de Equipamento', form=form,
                            legend='Nova Solicitação de Equipamento')
@@ -95,20 +86,15 @@ def nova_solicitacao_equipamento():
 @login_required
 @prof_required
 def nova_solicitacao_sala():
-    # Preenche o campo de seleção de salas
-    # Retorna o usuário pra tela inicial se não houver salas cadastradas
-    form = SolicitacaoSalaForm()
-    
-    # Recupera lista de setores do banco
-    setores = Setor.query.filter_by(
-        ativo=True).all()
+    # Recupera lista de setores e turnos do banco
+    setores = Setor.recupera_tudo()
     lista_setores = [(setor.id, setor) for setor in setores]
-    
-    # Recupera lista de turnos do banco
-    turnos = Turno.query.filter_by(ativo=True).all()
+    turnos = Turno.recupera_tudo()
     lista_turnos = [(turno.id, turno) for turno in turnos]
     
     # Preenche as listas de seleção
+    # Retorna usuário pra tela inicial se não dados cadastrados
+    form = SolicitacaoSalaForm()
     if lista_setores and lista_turnos:
         form.setor.choices = lista_setores
         form.turno.choices = lista_turnos
@@ -118,9 +104,11 @@ def nova_solicitacao_sala():
 
     if form.validate_on_submit():
         setor = Setor.recupera_id(form.setor.data)
+        ''' [EM VERIFICAÇÃO]
         solicitacao = SolicitacaoSala.query.filter_by(turno_id=form.turno.data).filter_by(
                 status='ABERTO').filter_by(ativo=True).first()
-        
+        '''
+        solicitacao = None
         # Verifica se a sala solicitada está disponível
         # Muda o status da solicitação de acordo com o resultado
         if Setor.contagem(setor) == 0:
@@ -130,21 +118,13 @@ def nova_solicitacao_sala():
             flash('A solicitação foi realizada com sucesso!.', 'success')
             status = 'ABERTO'
         else:
-            flash('Você foi colocado na lista de espera pois a sala\
-                  escolhida não está disponível.', 'warning')
+            flash('Você foi colocado na lista de espera pois o setor\
+                  escolhido não possui salas disponíveis.', 'warning')
             status = 'SOLICITADO'
-            
+               
         # Insere a nova solicitação no banco de dados
-        solicitacao = SolicitacaoSala(turno_id=form.turno.data,
-                                      usuario_id=current_user.id,
-                                      descricao=form.descricao.data,
-                                      quantidade=form.qtd_preferencia.data,
-                                      setor_id=form.setor.data,
-                                      data_inicio_pref=form.data_inicio_pref.data,
-                                      data_fim_pref=form.data_fim_pref.data,
-                                      status=status)
-        db.session.add(solicitacao)
-        db.session.commit()
+        solicitacao = SolicitacaoSala.cria(status, form)
+        SolicitacaoSala.insere(solicitacao)
         return redirect(url_for('principal.inicio'))
 
     return render_template('solicitacoes/nova_solicitacao_sala.html', 
@@ -156,23 +136,21 @@ def nova_solicitacao_sala():
 @login_required
 @admin_required
 def confirma_solicitacao(solicitacao_id):
-    solicitacao = Solicitacao.query.filter_by(
-        ativo=True).filter_by(id=solicitacao_id).first_or_404()
+    solicitacao = Solicitacao.recupera_id(solicitacao_id)
     
     # Se a solicitação for do tipo 'Sala'...
     if solicitacao.tipo == 'SALA':
-        # Em caso de envio de formulário (POST)
+        # Preenche seletor de salas
         form = ConfirmaSolicitacaoSalaForm()
-        salas = Sala.query.filter_by(setor_id=solicitacao.setor.id).filter_by(
-                status='ABERTO').filter_by(ativo=True).all()
+        salas = Sala.recupera_disponivel_setor(solicitacao.setor.id)
         lista_salas = [(sala.id, sala) for sala in salas]
         if lista_salas:
             form.salas.choices=lista_salas
         else:
             flash('Não há salas disponíveis para confirmar.', 'warning')
             return redirect(url_for('principal.inicio'))
+        
         if form.validate_on_submit():
-
             lista_salas = []
             for sala in form.salas.data:
                 sala = Sala.query.filter_by(id=sala).filter_by(ativo=True).first()
@@ -200,8 +178,6 @@ def confirma_solicitacao(solicitacao_id):
             flash('A solicitação foi confirmada com sucesso!', 'success')
             return redirect(url_for('principal.inicio'))
 
-        
-        # Em caso de carregamento da página (GET)
         # Preenche os campos do formulário
         elif request.method == 'GET':
             form.autor.data = solicitacao.autor.nome
@@ -294,33 +270,16 @@ def confirma_solicitacao(solicitacao_id):
 @login_required
 @admin_required
 def entrega_solicitacao(solicitacao_id):
-    solicitacao = Solicitacao.query.filter_by(
-        id=solicitacao_id).filter_by(ativo=True).first_or_404()
-
     # Permite a entrega somente de solicitações confirmadas
+    solicitacao = Solicitacao.recupera_id(solicitacao_id)
     if solicitacao.status.name != 'CONFIRMADO':
         flash('Esta solicitação não foi confirmada!', 'warning')
         return redirect(url_for('principal.inicio'))
 
-    # Em caso de envio de formulário (POST)
     form = EntregaSolicitacaoForm()
     if form.validate_on_submit():
-        # Define a data prevista de devolução da solicitação
-        # com base na data recebida no formulário
-        solicitacao.data_devolucao = form.data_devolucao.data
-        
         # Altera o status da sala/equipamentos associados para 'Em Uso'
-        if solicitacao.tipo == 'EQUIPAMENTO':
-            for equipamento in solicitacao.equipamentos:
-                equipamento.status = 'EMUSO'
-        if solicitacao.tipo == 'SALA':
-            for sala in solicitacao.salas: 
-                sala.status = 'EMUSO'
-
-        # Atualiza o registro da solicitação
-        solicitacao.status = 'EMUSO'
-        solicitacao.data_entrega = datetime.now().astimezone(fuso_horario)
-        db.session.commit()
+        Solicitacao.em_uso(solicitacao, form)
         flash('A entrega foi confirmada com sucesso!', 'success')
     else:
         flash('A data de devolução inserida é inválida.', 'warning')
@@ -332,32 +291,14 @@ def entrega_solicitacao(solicitacao_id):
 @login_required
 @admin_required
 def recebe_solicitacao(solicitacao_id):
-    solicitacao = Solicitacao.query.filter_by(
-        id=solicitacao_id).filter_by(ativo=True).first_or_404()
-
     # Verifica o status da solicitação para permitir seu recebimento 
-    if solicitacao.status.name != 'EMUSO' and solicitacao.status != 'EMATRASO':
+    solicitacao = Solicitacao.recupera_id(solicitacao_id)
+    if not Solicitacao.verifica_em_uso(solicitacao):
         flash('Esta solicitação não está em uso!', 'warning')
         return redirect(url_for('principal.inicio'))
     
-    # Atualiza o status dos equipamentos recebidos para 'Disponível'
-    if solicitacao.tipo == 'EQUIPAMENTO':
-        for equipamento in solicitacao.equipamentos:
-            equipamento.status = 'ABERTO'
-        solicitacao.tipo_eqp.qtd_disponivel += len(solicitacao.equipamentos)
-
-    # Atualiza o status da sala recebida para 'Disponível'
-    # Além disso, verifica se há alguma solicitação em espera da mesma
-    # sala e atualiza o status da primeira realizada, caso exista
-    if solicitacao.tipo == 'SALA':
-        for sala in solicitacao.salas:
-            sala.status = 'ABERTO'
-        solicitacao.setor.qtd_disponivel += len(solicitacao.salas)
-    
     # Atualiza o registro da solicitação
-    solicitacao.status = 'FECHADO'
-    solicitacao.data_finalizacao = datetime.now().astimezone(fuso_horario)
-    db.session.commit()
+    Solicitacao.finaliza(solicitacao)
     flash('O recebimento foi confirmado com sucesso!', 'success')
     return redirect(url_for('principal.inicio'))
 
@@ -365,39 +306,18 @@ def recebe_solicitacao(solicitacao_id):
 @solicitacoes.route("/<int:solicitacao_id>/cancelar", methods=['POST'])
 @login_required
 def cancela_solicitacao(solicitacao_id):
-    solicitacao = Solicitacao.query.filter_by(
-        id=solicitacao_id).filter_by(ativo=True).first_or_404()
-
     # Permite acesso somente ao autor da solicitação ou a um admin
-    if solicitacao.autor != current_user and current_user.tipo.name != 'ADMIN':
+    solicitacao = Solicitacao.recupera_id(solicitacao_id)
+    if not Solicitacao.verifica_autor(solicitacao, current_user):
         abort(403)
 
     # Verifica o status da solicitação para permitir seu cancelamento
-    if (solicitacao.status.name != 'ABERTO' and solicitacao.status.name != 'SOLICITADO'
-        and solicitacao.status.name != 'CONFIRMADO'):
+    if Solicitacao.verifica_em_uso(solicitacao):
         flash('Esta solicitação não pode ser mais cancelada!', 'warning')
         return redirect(url_for('principal.inicio'))
 
-    # Verifica o status da solicitação no momento do cancelamento
-    if solicitacao.status.name != 'ABERTO' and solicitacao.status.name != 'SOLICITADO':
-        # Altera o status da sala/equipamentos associados a solicitação de volta
-        # para 'Disponível' e adiciona a quantidade de equipamentos disponíveis
-        if solicitacao.tipo == 'EQUIPAMENTO':
-            if solicitacao.tipo_eqp:
-                solicitacao.tipo_eqp.qtd_disponivel += len(solicitacao.equipamentos)
-            if solicitacao.equipamentos:
-                for equipamento in solicitacao.equipamentos:
-                    equipamento.status = 'ABERTO'
-        if solicitacao.tipo == 'SALA':
-            if solicitacao.setor:
-                solicitacao.setor.qtd_disponivel += len(solicitacao.salas) 
-            if solicitacao.salas:
-                for sala in solicitacao.salas:
-                    sala.status = 'ABERTO'
-
-    solicitacao.status = 'CANCELADO'
-    solicitacao.data_cancelamento = datetime.now().astimezone(fuso_horario)
-    db.session.commit()
+    # Altera o status de sala/equipamentos associados a solicitação
+    Solicitacao.cancela(solicitacao)
     flash('A solicitação foi cancelada com sucesso!', 'success')
     return redirect(url_for('principal.inicio'))
 
@@ -406,28 +326,14 @@ def cancela_solicitacao(solicitacao_id):
 @login_required
 @admin_required
 def exclui_solicitacao(solicitacao_id):
-    solicitacao = Solicitacao.query.filter_by(
-        id=solicitacao_id).filter_by(ativo=True).first_or_404()
-
     # Impede a exclusão de solicitações indevidas
-    if solicitacao.status == 'EMUSO' or solicitacao.status == 'PENDENTE':
-        flash('Não é possível excluir solicitação em uso.', 'warning')
+    solicitacao = Solicitacao.recupera_id(solicitacao_id)
+    if Solicitacao.verifica_em_uso(solicitacao):
+        flash('Não é possível excluir uma solicitação em uso.', 'warning')
         return redirect(url_for('principal.inicio'))
-
-    # Verifica o status da solicitação no momento da exclusão
-    # Realiza um processo similar ao da função de cancelamento
-    if solicitacao.status == 'CONFIRMADO':
-        if solicitacao.tipo_eqp:
-            solicitacao.tipo_eqp.qtd_disponivel += len(solicitacao.equipamentos)
-        if solicitacao.equipamentos:
-            for equipamento in solicitacao.equipamentos:
-                equipamento.status = 'ABERTO'
-        if solicitacao.salas:
-            for sala in solicitacao.salas:
-                sala.status = 'ABERTO'
-
-    solicitacao.ativo = False
-    db.session.commit()
+    
+    # Atualiza o status dos equipamentos e salas antes de excluir a solicitação
+    Solicitacao.exclui(solicitacao)
     flash('A solicitação foi excluída com sucesso!', 'success')
     return redirect(url_for('principal.inicio'))
 
@@ -440,12 +346,8 @@ def novo_turno():
     # novo registro de turno no banco de dados
     form = TurnoForm()
     if form.validate_on_submit():
-        turno = Turno(name=form.nome.data, 
-                      data_inicio=form.data_inicio.data, 
-                      data_fim=form.data_fim.data)
-        
-        db.session.add(turno)
-        db.session.commit()
+        turno = Turno.cria(form)
+        Turno.insere(turno)
         flash('O turno foi cadastrado com sucesso!', 'success') 
         return redirect(url_for('principal.inicio'))
 
