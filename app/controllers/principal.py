@@ -30,15 +30,14 @@ def inicio():
     # Verifica se há solicitações em uso atrasadas 
     # e atualiza o status das que estão
     for solicitacao in solicitacoes:
-        if solicitacao.status.name == 'EMUSO':
+        if Solicitacao.verifica_em_uso(solicitacao):
             # Compara o horário atual com o previsto para devolução
-            if (datetime.now().astimezone(fuso_horario) > 
-                solicitacao.data_devolucao.astimezone(fuso_horario)):
+            if Solicitacao.verifica_atraso(solicitacao):
                 # Troca o status dos registros associados
                 Solicitacao.atualiza_status_pendente(solicitacao)
                 envia_email_atraso(solicitacao)
                 # Exibe uma mensagem de alerta para o usuário com atraso
-                if current_user == solicitacao.autor:
+                if Solicitacao.verifica_autor(solicitacao, current_user):
                     flash('Você possui uma solicitação atrasada.', 'warning')  
                 # Exibe uma mensagem de alerta para o admin
                 if Usuario.verifica_admin(current_user):
@@ -48,7 +47,6 @@ def inicio():
     # Necessário em um modal presente na tabela de solicitações
     form = EntregaSolicitacaoForm()
     
-    # Renderiza a página principal
     return render_template('principal/inicio.html', tab=tab, form=form,
                            posts=posts, equipamentos=equipamentos, salas=salas, 
                            usuarios=usuarios, solicitacoes=solicitacoes)

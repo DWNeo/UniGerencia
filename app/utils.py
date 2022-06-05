@@ -1,11 +1,9 @@
 import os
 import secrets
-from functools import wraps
 from PIL import Image
 
-from flask import url_for, current_app, flash, redirect
+from flask import url_for, current_app
 from flask_mail import Message
-from flask_login import current_user
 
 from app import mail
 

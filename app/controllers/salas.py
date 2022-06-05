@@ -5,7 +5,7 @@ from flask_login import login_required, current_user
 
 from app import db, fuso_horario
 from app.models import (RelatorioSala, Sala, Relatorio, Solicitacao, Setor,
-                        SolicitacaoSala, prof_required, admin_required)
+                        prof_required, admin_required)
 from app.forms.salas import (SalaForm, AtualizaSalaForm, IndisponibilizaSalaForm,
                              RelatorioSalaForm, AtualizaRelatorioSalaForm, SetorForm)
 
@@ -19,8 +19,6 @@ def sala(sala_id):
     # Recupera as 5 últimas solicitações associadas a sala
     sala = Sala.recupera_id(sala_id)
     solicitacoes = Solicitacao.recupera_ultimas_sala(sala, 5)
-    print(solicitacoes)
-
     return render_template('salas/sala.html', 
                            title=sala, sala=sala,
                            solicitacoes=solicitacoes)
@@ -30,12 +28,11 @@ def sala(sala_id):
 @admin_required
 def novo_setor():
     # Valida os dados do formulário enviado e insere um 
-    # novo registro de sala no banco de dados
+    # novo registro de setor no banco de dados
     form = SetorForm()
     if form.validate_on_submit():
-        setor = Setor(name=form.nome.data)
-        db.session.add(setor)
-        db.session.commit()
+        setor = Setor.cria(form)
+        Setor.insere(setor)
         flash('O Setor foi cadastrado com sucesso!', 'success')
         return redirect(url_for('principal.inicio', tab=4))
 
@@ -50,8 +47,9 @@ def nova_sala():
     # Valida os dados do formulário enviado e insere um 
     # novo registro de sala no banco de dados
     form = SalaForm()
-    setores = Setor.query.filter_by(ativo=True).all()
+    setores = Setor.recupera_tudo()
 
+    # Preenche o seletor de setor para a sala
     lista_setores = [(setor.id, setor) for setor in setores]
     if lista_setores:
         form.setor.choices = lista_setores
@@ -60,13 +58,8 @@ def nova_sala():
         return redirect(url_for('principal.inicio'))
 
     if form.validate_on_submit():
-        setor = Setor.query.filter_by(id=
-                form.setor.data).filter_by(ativo=True).first_or_404()
-        setor.qtd_disponivel += 1
-        sala = Sala(numero=form.numero.data, setor_id=setor.id, 
-                    qtd_aluno=form.qtd_aluno.data)
-        db.session.add(sala)
-        db.session.commit()
+        sala = Sala.cria(form)
+        Sala.insere(sala)
         flash('A sala foi cadastrada com sucesso!', 'success')
         return redirect(url_for('principal.inicio', tab=4))
 
@@ -78,29 +71,23 @@ def nova_sala():
 @login_required
 @admin_required
 def atualiza_sala(sala_id):
-    # Recupera a sala pela ID e retorna erro 404 caso não encontre
-    sala = Sala.query.filter_by(
-        id=sala_id).filter_by(ativo=True).first_or_404()
-    
     # Valida o formulário enviado e atualiza o registro
     # da sala no banco de dados de acordo com ele
+    sala = Sala.recupera_id(sala_id)
     form = AtualizaSalaForm()
-    setores = Setor.query.filter_by(ativo=True).all()
+    
+    # Preenche o seletor de setores
+    setores = Setor.recupera_tudo()
     lista_setores = [(setor.id, setor.name) for setor in setores]
-
     form.setor.choices = lista_setores
 
     if form.validate_on_submit():
-        setor = Setor.query.filter_by(id=form.setor.data).filter_by(ativo=True).first_or_404()
-
-        sala.setor_id = setor.id
-        sala.qtd_aluno = form.qtd_aluno.data
-        sala.data_atualizacao = datetime.now().astimezone(fuso_horario)
-        db.session.commit()
+        Sala.atualiza(sala, form)
         flash('A sala foi atualizada com sucesso!', 'success')
         return redirect(url_for('principal.inicio', tab=4))
     elif request.method == 'GET':
         form.qtd_aluno.data = sala.qtd_aluno
+        form.setor.data = sala.setor_id
 
     return render_template('salas/atualizar_sala.html', 
                            title='Atualizar Sala', form=form, 
@@ -113,20 +100,13 @@ def atualiza_sala(sala_id):
 def disponibiliza_sala(sala_id):
     # Valida os dados do formulário enviado e altera o status
     # do equipamento escolhido para 'Disponível'
-    sala = Sala.query.filter_by(
-        id=sala_id).filter_by(ativo=True).first_or_404()
-    
-    # Verifica se o equipamento está indisponível
-    if sala.status.name != 'DESABILITADO' and sala.status.name != 'EMMANUTENCAO':
+    sala = Sala.recupera_id(sala_id)
+    if Sala.verifica_disponibilidade(sala):
         flash('Essa sala já está disponível.', 'warning')
         return redirect(url_for('principal.inicio', tab=4))
 
     # Altera o registro do equipamento
-    sala.motivo_indisponibilidade = None
-    sala.status = 'ABERTO'
-    sala.data_atualizacao = datetime.now().astimezone(fuso_horario)
-
-    db.session.commit()
+    Sala.disponibiliza(sala)
     flash('A sala foi disponibilizada com sucesso!', 'success') 
     return redirect(url_for('principal.inicio', tab=4))
 
@@ -139,20 +119,14 @@ def indisponibiliza_sala(sala_id):
     # da sala escolhida para 'Indisponível'
     form = IndisponibilizaSalaForm()
     if form.validate_on_submit():
-        sala = Sala.query.filter_by(
-            id=sala_id).filter_by(ativo=True).first_or_404()
-        
         # Verifica se a sala está disponível
-        if sala.status != 'ABERTA':
+        sala = Sala.recupera_id(sala_id)
+        if not Sala.verifica_disponibilidade(sala):
             flash('Você não pode tornar essa sala indisponível.', 'warning')
             return redirect(url_for('principal.inicio', tab=4))
-
+        
         # Altera o registro do equipamento
-        sala.motivo_indisponibilidade = form.motivo.data
-        sala.status = 'DESABILITADO'
-        sala.data_atualizacao = datetime.now().astimezone(fuso_horario)
-
-        db.session.commit()
+        Sala.indisponibiliza(sala, form)
         flash('A sala foi indisponibilizada com sucesso!', 'success') 
         return redirect(url_for('principal.inicio', tab=4))
 
@@ -165,23 +139,15 @@ def indisponibiliza_sala(sala_id):
 @login_required
 @admin_required
 def exclui_sala(sala_id):
-    # Recupera a sala pela ID
-    sala = Sala.query.filter_by(
-        id=sala_id).filter_by(ativo=True).first_or_404()
-
     # Impede uma sala de ser indevidamente excluída
-    if sala.status != 'ABERTO' and sala.status != 'DESABILITADO':
-        flash('Não é possível excluir uma sala solicitada ou em uso.', 'warning')
-        return redirect(url_for('principal.inicio', tab=4))
-
-    if Setor.status.name == 'ABERTO':
-        setor = Setor.query.filter_by(
-            id=sala.setor_id).filter_by(ativo=True).first()
-        setor.qtd_disponivel -= 1
-
+    sala = Sala.recupera_id(sala_id)
+    if not Sala.verifica_disponibilidade(sala):
+        if not Sala.verifica_desabilitado(sala):
+            flash('Não é possível excluir uma sala solicitada ou em uso.', 'warning')
+            return redirect(url_for('principal.inicio', tab=4))
+    
     # Desativa o registro da sala
-    sala.ativo = False
-    db.session.commit()
+    Sala.exclui(sala)
     flash('A Sala foi excluída com sucesso!', 'success')
     return redirect(url_for('principal.inicio', tab=4))
 
@@ -191,10 +157,8 @@ def exclui_sala(sala_id):
 @admin_required
 def relatorios(sala_id):
     # Recupera os relatórios do equipamento pela ID
-    sala = Sala.query.filter_by(
-        id=sala_id).filter_by(ativo=True).first_or_404()
-    relatorios = RelatorioSala.query.filter_by(
-        sala_id=sala.id).filter_by(ativo=True).all()
+    sala = Sala.recupera_id(sala_id)
+    relatorios = RelatorioSala.recupera_tudo_sala(sala)
 
     return render_template('salas/relatorios.html', 
                            title='Relatórios da Sala',
@@ -209,17 +173,8 @@ def novo_relatorio(sala_id):
     # Valida o formulário e insere o novo relatório no banco de dados
     form = RelatorioSalaForm()
     if form.validate_on_submit():
-        status = 'ABERTO'
-        relatorio = RelatorioSala(tipo_relatorio=form.tipo.data, 
-                              conteudo=form.conteudo.data,
-                              manutencao=form.manutencao.data,
-                              reforma=form.reforma.data,
-                              detalhes=form.detalhes.data,
-                              status = status,
-                              usuario_id=current_user.id,
-                              sala_id=sala_id)
-        db.session.add(relatorio)
-        db.session.commit()
+        relatorio = RelatorioSala.cria(sala_id, form)
+        RelatorioSala.insere(relatorio)
         flash('O relatório foi cadastrado com sucesso!', 'success') 
         return redirect(url_for('salas.relatorios', sala_id=sala_id))
 
@@ -228,37 +183,20 @@ def novo_relatorio(sala_id):
                            legend='Novo Relatório', form=form)
 
 
-@salas.route("/<int:sala_id>/relatorios/<int:id>/atualizar", methods=['GET', 'POST'])
+@salas.route("/<int:sala_id>/relatorios/<int:relatorio_id>/atualizar", methods=['GET', 'POST'])
 @login_required
 @admin_required
-def atualiza_relatorio(sala_id, id):
-    # Recupera o relatório pela ID
-    relatorio = Relatorio.query.filter_by(
-        id=id).filter_by(ativo=True).first_or_404()
-    # Valida o formulário e atualiza o relatório no banco de dados
-    form = AtualizaRelatorioSalaForm()
-
+def atualiza_relatorio(sala_id, relatorio_id):
     # Impede relatórios finalizados de serem atualizados
-    if relatorio.status.name == 'FECHADO':
+    relatorio = RelatorioSala.recupera_id(relatorio_id)
+    if not RelatorioSala.verifica_aberto(relatorio):
         flash('Este relatório já foi finalizado.', 'success') 
         return redirect(url_for('salas.relatorios', sala_id=sala_id))
-
+    
+    # Valida o formulário e atualiza o relatório no banco de dados
+    form = AtualizaRelatorioSalaForm()
     if form.validate_on_submit():
-        relatorio.conteudo = form.conteudo.data
-        relatorio.detalhes = form.detalhes.data
-       
-
-        # Atualiza as datas dependendo do status selecionado
-        # Status 'Finalizado' -> Data de Finalização
-        # Status 'Aberto' -> Data de Atualização
-        if form.status.data == True:
-            relatorio.status = 'FECHADO'
-            relatorio.data_finalizacao = datetime.now().astimezone(fuso_horario)
-        else:
-            relatorio.data_atualizacao = datetime.now().astimezone(fuso_horario)
-
-        # Atualiza o relatório
-        db.session.commit()
+        RelatorioSala.atualiza(relatorio, form)
         flash('O relatório foi atualizado com sucesso!', 'success') 
         return redirect(url_for('salas.relatorios', sala_id=sala_id))
     elif request.method == 'GET':
@@ -267,7 +205,7 @@ def atualiza_relatorio(sala_id, id):
         form.manutencao.data = relatorio.manutencao
         form.reforma.data = relatorio.reforma
         form.detalhes.data = relatorio.detalhes
-        form.status.data = False
+        form.finalizar.data = False
 
     return render_template('salas/atualizar_relatorio.html', 
                            title='Atualizar Relatório', sala_id=sala_id,

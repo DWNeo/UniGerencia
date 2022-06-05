@@ -27,7 +27,7 @@
                 <!-- Botões de Ação-->
                 <a class="btn-lg btn-outline-info" href="#" data-toggle="modal" data-target="#visualizarRelatorio{{ relatorio.id }}"><i class="fas fa-search"></i></a>
                 {% if relatorio.status.name == 'ABERTO' %}
-                <a class="btn-lg btn-outline-secondary" href="{{ url_for('salas.atualiza_relatorio', sala_id=sala_id,id=relatorio.id) }}"><i class="fas fa-edit"></i></a>
+                <a class="btn-lg btn-outline-secondary" href="{{ url_for('salas.atualiza_relatorio', sala_id=sala_id,relatorio_id=relatorio.id) }}"><i class="fas fa-edit"></i></a>
                 {% endif %}
             </td>
         </tr>  

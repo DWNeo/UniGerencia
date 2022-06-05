@@ -49,46 +49,57 @@ class Sala(db.Model):
             return True
         else:
             return False    
-        '''
-    # Cria um novo equipamento para ser inserido
+        
+    # Cria uma nova sala para ser inserido
     def cria(form):
-        return Equipamento(patrimonio=form.patrimonio.data, 
-                           descricao=form.descricao.data, 
-                           tipo_eqp_id=form.tipo_eqp.data)
+        return Sala(numero=form.numero.data, setor_id=form.setor.data, 
+                    qtd_aluno=form.qtd_aluno.data)
         
-    # Insere um novo equipamento no banco de dados
-    def insere(equipamento):
-        tipo_eqp = TipoEquipamento.recupera_id(equipamento.tipo_eqp_id)
-        TipoEquipamento.atualiza_qtd(tipo_eqp, +1)
-        db.session.add(equipamento)
+    # Insere uma nova sala no banco de dados
+    def insere(sala):
+        db.session.add(sala)
         db.session.commit()
         
-    # Atualiza um equipamento existente no banco de dados
-    def atualiza(equipamento, form):
-        equipamento.descricao = form.descricao.data
-        equipamento.data_atualizacao = datetime.now().astimezone(fuso_horario)
+    # Atualiza uma sala existente no banco de dados
+    def atualiza(sala, form):
+        sala.setor_id = form.setor.data
+        sala.qtd_aluno = form.qtd_aluno.data
+        sala.data_atualizacao = datetime.now().astimezone(fuso_horario)
+        db.session.commit()
+    
+    # Verifica se um equipamento está disponível
+    def verifica_disponibilidade(sala):
+        if sala.status.name == 'ABERTO':
+            return True
+        else:
+            return False
+        
+    # Verifica se uma sala está desabilitada
+    def verifica_desabilitado(sala):
+        if (sala.status.name == 'DESABILITADO' or
+            sala.status.name == 'EMMANUTENCAO'):
+            return True
+        else:
+            return False 
+        
+    # Disponibiliza novamente a sala para solicitações    
+    def disponibiliza(sala):
+        sala.motivo_indisponibilidade = None
+        sala.status = 'ABERTO'
+        sala.data_atualizacao = datetime.now().astimezone(fuso_horario)
         db.session.commit()
         
-    # Disponibiliza novamente o equipamento para solicitações    
-    def disponibiliza(equipamento):
-        equipamento.motivo_indisponibilidade = None
-        equipamento.status = 'ABERTO'
-        equipamento.data_atualizacao = datetime.now().astimezone(fuso_horario)
+    # Indisponibiliza a sala para solicitações    
+    def indisponibiliza(sala, form):
+        sala.motivo_indisponibilidade = form.motivo.data
+        sala.status = 'DESABILITADO'
+        sala.data_atualizacao = datetime.now().astimezone(fuso_horario)
         db.session.commit()
-        
-    # Indisponibiliza o equipamento para solicitações    
-    def indisponibiliza(equipamento, motivo):
-        equipamento.motivo_indisponibilidade = motivo
-        equipamento.status = 'DESABILITADO'
-        equipamento.data_atualizacao = datetime.now().astimezone(fuso_horario)
+
+    # Desativa o registro de uma sala no banco de dados
+    def exclui(sala):
+        sala.ativo = False
         db.session.commit()
-        
-    # Desativa o registro de um equipamento no banco de dados
-    def exclui(equipamento):
-        if equipamento.status.name == 'ABERTO':
-            TipoEquipamento.atualiza_qtd(equipamento.tipo_eqp, -1)
-        equipamento.ativo = False
-        db.session.commit()'''
         
     def __repr__(self):
         return f"{self.numero} - {self.setor.name} - Qtde. Alunos: {self.qtd_aluno}"
@@ -115,6 +126,20 @@ class Setor(db.Model):
     def recupera_id(setor_id):
         return Setor.query.filter_by(id=setor_id).filter_by(ativo=True).first_or_404()
     
+    # Cria um novo setor para ser inserido
+    def cria(form):
+        return Setor(name=form.nome.data)
+        
+    # Insere um novo setor no banco de dados
+    def insere(setor):
+        db.session.add(setor)
+        db.session.commit()
+    
+    # Retorna o número de salas disponíveis de um setor
+    def contagem(setor):
+        return Sala.query.filter_by(status='ABERTO').filter_by(
+            setor=setor).filter_by(ativo=True).count()
+    
     def __repr__(self):
-        return f"{self.name} - Quantidade Disponível: {self.qtd_disponivel}"
+        return f"{self.name} - Quantidade Disponível: {Setor.contagem(self)}"
     

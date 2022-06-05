@@ -1,5 +1,5 @@
 <!-- Tabela para rederização de Solicitações -->
-<table id="table-solicitacoes" class="table dt-responsive nowrap table-hover" style="width:100%">
+<table id="table-solicitacoes" class="table stripe order-column dt-responsive nowrap table-hover" style="width:100%">
     <thead>
     <!-- Colunas da Tabela -->
     <tr class="bg-primary text-light">
@@ -30,7 +30,7 @@
         {% elif solicitacao.status.name == 'EMUSO' %}
             <tr class="table-info font-weight-bold">
         {% elif solicitacao.status.name == 'CANCELADO' or solicitacao.status.name == 'FECHADO' %}
-            <tr class="text-secondary">
+            <tr class="">
         {% else %}
             <tr>
         {% endif %}

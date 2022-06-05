@@ -56,6 +56,25 @@ class Solicitacao(db.Model):
             SolicitacaoSala.salas.contains(sala)).filter_by(
             ativo=True).order_by(SolicitacaoSala.id.desc()).limit(limite)
 
+    def verifica_autor(solicitacao, usuario):
+        if usuario == solicitacao.autor:
+            return True
+        else:
+            return False
+        
+    def verifica_em_uso(solicitacao):
+        if solicitacao.status.name == 'EMUSO':
+            return True
+        else:
+            return False
+    
+    def verifica_atraso(solicitacao):
+        if (datetime.now().astimezone(fuso_horario) > 
+                solicitacao.data_devolucao.astimezone(fuso_horario)):
+            return True
+        else:
+            return False
+    
     # Atualiza o status de um solicitação para 'Pendente'
     def atualiza_status_pendente(solicitacao):
         solicitacao.status = 'PENDENTE'

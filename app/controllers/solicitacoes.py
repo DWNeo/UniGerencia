@@ -60,7 +60,7 @@ def nova_solicitacao_equipamento():
             
         # Verifica se há equipamentos disponíveis para a quantidade solicitada
         # Retorna a operação caso não haja equipamentos o suficiente
-        if form.qtd_preferencia.data > tipo_eqp.qtd_disponivel:
+        if form.qtd_preferencia.data > TipoEquipamento.contagem(tipo_eqp):
             flash('A quantidade solicitada de equipamentos excede a disponível.\
                    Por favor, insira um valor menor.', 'warning')
             return redirect(url_for('principal.inicio'))
@@ -126,11 +126,11 @@ def nova_solicitacao_sala():
         
         # Verifica se a sala solicitada está disponível
         # Muda o status da solicitação de acordo com o resultado
-        if setores.qtd_disponivel == 0:
+        if Setor.contagem(setores) == 0:
             flash('Não há salas disponíveis neste setor para solicitar.', 'warning')
             return redirect(url_for('principal.inicio'))
 
-        if setores.qtd_disponivel >= form.qtd_preferencia.data and solicitacao == None:
+        if Setor.contagem(setores) >= form.qtd_preferencia.data and solicitacao == None:
             flash('A solicitação foi realizada com sucesso!.', 'success')
             status = 'ABERTO'
         else:

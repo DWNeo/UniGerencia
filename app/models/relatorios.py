@@ -56,6 +56,59 @@ class RelatorioSala(Relatorio):
     
     sala = db.relationship('Sala', back_populates='relatorios')
 
+    # Recupera o relatório pela ID e retorna erro 404 caso contrário
+    def recupera_id(relatorio_id):
+        return RelatorioSala.query.filter_by(
+            id=relatorio_id).filter_by(ativo=True).first_or_404()
+        
+    # Recupera todos os relatórios de uma sala
+    def recupera_tudo_sala(sala):
+        return RelatorioSala.query.filter_by(
+            sala_id=sala.id).filter_by(ativo=True).all()
+        
+    # Verifica se um relatório está em aberto
+    def verifica_aberto(relatorio):
+        if relatorio.status.name == 'ABERTO':
+            return True
+        else:
+            return False
+    
+    # Cria um novo relatório de sala para ser inserido
+    def cria(sala_id, form):
+        if form.finalizar.data == True:
+            status = 'FECHADO'
+            data_finalizacao = datetime.now().astimezone(fuso_horario)
+        else:
+            status = 'ABERTO'
+            data_finalizacao = None
+        return RelatorioSala(tipo_relatorio=form.tipo.data, 
+                             conteudo=form.conteudo.data,
+                             manutencao=form.manutencao.data,
+                             reforma=form.reforma.data,
+                             detalhes=form.detalhes.data,
+                             status=status,
+                             data_finalizacao=data_finalizacao,
+                             usuario_id=current_user.id,
+                             sala_id=sala_id)
+            
+    # Insere um novo relatório no banco de dados
+    def insere(relatorio):
+        db.session.add(relatorio)
+        db.session.commit()
+        
+    def atualiza(relatorio, form):
+        # Atualiza as datas dependendo do status selecionado
+        # Status 'Fechado' -> Data de Finalização
+        # Status 'Aberto' -> Data de Atualização
+        if form.finalizar.data == True:
+            relatorio.status = 'FECHADO'
+            relatorio.data_finalizacao = datetime.now().astimezone(fuso_horario)
+        else:
+            relatorio.data_atualizacao = datetime.now().astimezone(fuso_horario)
+        relatorio.conteudo = form.conteudo.data
+        relatorio.detalhes = form.detalhes.data
+        db.session.commit()
+
     def __repr__(self):
         return f"Relatório #{self.id} - {self.tipo} - {self.status}"
 
@@ -82,9 +135,9 @@ class RelatorioEquipamento(Relatorio):
             id=relatorio_id).filter_by(ativo=True).first_or_404()
         
     # Recupera todas os relatórios de um equipamento
-    def recupera_tudo_eqp(eqp_id):
+    def recupera_tudo_eqp(equipamento):
         return RelatorioEquipamento.query.filter_by(
-            equipamento_id=eqp_id).filter_by(ativo=True).all()
+            equipamento_id=equipamento.id).filter_by(ativo=True).all()
         
     # Verifica se um relatório está em aberto
     def verifica_aberto(relatorio):

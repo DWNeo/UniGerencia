@@ -18,8 +18,8 @@ def equipamento(eqp_id):
     # Recupera as 5 últimas solicitações associadas ao equipamento
     equipamento = Equipamento.recupera_id(eqp_id)
     solicitacoes = Solicitacao.recupera_ultimas_eqp(equipamento, 5)
-    print(solicitacoes)
-
+    count = TipoEquipamento.contagem(equipamento.tipo_eqp)
+    print(count)
     return render_template('equipamentos/equipamento.html', 
                            title=equipamento, equipamento=equipamento,
                            solicitacoes=solicitacoes)
@@ -104,8 +104,6 @@ def disponibiliza_equipamento(eqp_id):
 
     # Atualiza os registros do equipamento e do seu tipo
     Equipamento.disponibiliza(equipamento)
-    tipo_eqp = TipoEquipamento.recupera_id(equipamento.tipo_eqp_id)
-    TipoEquipamento.atualiza_qtd(tipo_eqp, +1)
     flash('O equipamento foi disponibilizado com sucesso!', 'success') 
     return redirect(url_for('principal.inicio', tab=3))
 
@@ -124,9 +122,7 @@ def indisponibiliza_equipamento(eqp_id):
             return redirect(url_for('principal.inicio', tab=3))
 
         # Atualiza os registros do equipamento e do seu tipo
-        Equipamento.indisponibiliza(equipamento, form.motivo.data)
-        tipo_eqp = TipoEquipamento.recupera_id(equipamento.tipo_eqp_id)
-        TipoEquipamento.atualiza_qtd(tipo_eqp, -1)
+        Equipamento.indisponibiliza(equipamento, form)
         flash('O equipamento foi indisponibilizado com sucesso!', 'success') 
         return redirect(url_for('principal.inicio', tab=3))
 
@@ -158,7 +154,8 @@ def exclui_equipamento(eqp_id):
 @admin_required
 def relatorios(eqp_id):
     # Recupera todos os relatórios do equipamento
-    relatorios = RelatorioEquipamento.recupera_tudo_eqp(eqp_id)
+    equipamento = Equipamento.recupera_id(eqp_id)
+    relatorios = RelatorioEquipamento.recupera_tudo_eqp(equipamento)
 
     return render_template('equipamentos/relatorios.html', 
                            title='Relatórios do Equipamento',

@@ -47,7 +47,8 @@ class Equipamento(db.Model):
     
     # Verifica se um equipamento está desabilitado
     def verifica_desabilitado(equipamento):
-        if equipamento.status.name == 'DESABILITADO':
+        if (equipamento.status.name == 'DESABILITADO' or
+            equipamento.status.name == 'EMMANUTENCAO'):
             return True
         else:
             return False    
@@ -60,8 +61,6 @@ class Equipamento(db.Model):
         
     # Insere um novo equipamento no banco de dados
     def insere(equipamento):
-        tipo_eqp = TipoEquipamento.recupera_id(equipamento.tipo_eqp_id)
-        TipoEquipamento.atualiza_qtd(tipo_eqp, +1)
         db.session.add(equipamento)
         db.session.commit()
         
@@ -73,22 +72,22 @@ class Equipamento(db.Model):
         
     # Disponibiliza novamente o equipamento para solicitações    
     def disponibiliza(equipamento):
+        TipoEquipamento.atualiza_qtd(equipamento.tipo_eqp, +1)
         equipamento.motivo_indisponibilidade = None
         equipamento.status = 'ABERTO'
         equipamento.data_atualizacao = datetime.now().astimezone(fuso_horario)
         db.session.commit()
         
     # Indisponibiliza o equipamento para solicitações    
-    def indisponibiliza(equipamento, motivo):
-        equipamento.motivo_indisponibilidade = motivo
+    def indisponibiliza(equipamento, form):
+        TipoEquipamento.atualiza_qtd(equipamento.tipo_eqp, -1)
+        equipamento.motivo_indisponibilidade = form.motivo.data
         equipamento.status = 'DESABILITADO'
         equipamento.data_atualizacao = datetime.now().astimezone(fuso_horario)
         db.session.commit()
         
     # Desativa o registro de um equipamento no banco de dados
     def exclui(equipamento):
-        if equipamento.status.name == 'ABERTO':
-            TipoEquipamento.atualiza_qtd(equipamento.tipo_eqp, -1)
         equipamento.ativo = False
         db.session.commit()
         
@@ -125,12 +124,12 @@ class TipoEquipamento(db.Model):
     def insere(tipo_eqp):
         db.session.add(tipo_eqp)
         db.session.commit()
-    
-    # Atualiza a quantidade de equipamentos disponíveis de um tipo
-    def atualiza_qtd(tipo_eqp, qtd):
-        tipo_eqp.qtd_disponivel += qtd
-        db.session.commit()
+        
+    # Retorna o número de equipamentos disponíveis de um tipo
+    def contagem(tipo_eqp):
+        return Equipamento.query.filter_by(status='ABERTO').filter_by(
+            tipo_eqp=tipo_eqp).filter_by(ativo=True).count()
     
     def __repr__(self):
-        return f"{self.nome} - Qtd. Disponível: {self.qtd_disponivel}"
+        return f"{self.nome} - Qtd. Disponível: {TipoEquipamento.contagem(self)}"
     
