@@ -8,7 +8,7 @@ from flask_login import current_user, login_required
 from app import db
 from app.models import (Solicitacao, Equipamento, Sala, SolicitacaoEquipamento, 
                         SolicitacaoSala, TipoEquipamento, Turno, Setor, 
-                        prof_required, admin_required)
+                        prof_required, admin_required, Usuario)
 from app.forms.solicitacoes import (SolicitacaoEquipamentoForm, TurnoForm,
                                     SolicitacaoSalaForm, EntregaSolicitacaoForm,
                                     ConfirmaSolicitacaoEquipamentoForm,
@@ -33,6 +33,12 @@ def solicitacao(solicitacao_id):
 @solicitacoes.route("/nova/equipamento", methods=['GET', 'POST'])
 @login_required
 def nova_solicitacao_equipamento():
+    # Impede um usuário de realizar mais de uma solicitação por vez
+    if not Usuario.verifica_prof(current_user):
+        if SolicitacaoEquipamento.verifica_existente_usuario(current_user):
+            flash('Você já possui uma solicitação de equipamento em aberto.', 'warning')
+            return redirect(url_for('principal.inicio'))
+    
     # Recupera lista de turnos e tipos de equipamento do banco
     tipos_equipamento = TipoEquipamento.recupera_tudo()
     lista_tipos=[(tipo.id, tipo) for tipo in tipos_equipamento]
@@ -80,6 +86,12 @@ def nova_solicitacao_equipamento():
 @login_required
 @prof_required
 def nova_solicitacao_sala():
+    # Impede um usuário de realizar mais de uma solicitação por vez
+    if not Usuario.verifica_prof(current_user):
+        if SolicitacaoSala.verifica_existente_usuario(current_user):
+            flash('Você já possui uma solicitação de sala em aberto.', 'warning')
+            return redirect(url_for('principal.inicio'))
+        
     # Recupera lista de setores e turnos do banco
     setores = Setor.recupera_tudo()
     lista_setores = [(setor.id, setor) for setor in setores]

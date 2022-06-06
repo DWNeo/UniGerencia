@@ -243,6 +243,15 @@ class SolicitacaoSala(Solicitacao):
     salas = db.relationship('Sala', secondary= solicitacao_s, 
                                     back_populates='solicitacoes')
     
+    def verifica_existente_usuario(usuario):
+        solicitacao = SolicitacaoSala.query.filter_by(autor=usuario).filter_by(
+                      ativo=True).order_by(SolicitacaoSala.id.desc()).first()
+        if (solicitacao.status.name != 'CANCELADO' and 
+            solicitacao.status.name != 'FECHADO'):
+            return True
+        else:
+            return False
+    
     def cria(status, form):
         return SolicitacaoSala(turno_id=form.turno.data,
                                usuario_id=current_user.id,
@@ -277,6 +286,15 @@ class SolicitacaoEquipamento(Solicitacao):
                                    back_populates='solicitacoes')
     tipo_eqp = db.relationship('TipoEquipamento', back_populates='solicitacoes')
 
+    def verifica_existente_usuario(usuario):
+        solicitacao = SolicitacaoEquipamento.query.filter_by(autor=usuario).filter_by(
+                      ativo=True).order_by(SolicitacaoEquipamento.id.desc()).first()
+        if (solicitacao.status.name != 'CANCELADO' and 
+            solicitacao.status.name != 'FECHADO'):
+            return True
+        else:
+            return False
+        
     def cria(status, form):
         return SolicitacaoEquipamento(tipo_eqp_id=form.tipo_equipamento.data,
                                       turno_id=form.turno.data,
