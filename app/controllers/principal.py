@@ -9,7 +9,7 @@ from app.forms.solicitacoes import EntregaSolicitacaoForm
 principal = Blueprint('principal', __name__)
 
 # Tarefa que roda no fundo para atualizar os status da solicitações
-@scheduler.task('interval', id='atualiza_status', seconds=30, misfire_grace_time=900)
+@scheduler.task('interval', id='atualiza_status', seconds=60, misfire_grace_time=900)
 def atualiza_status_solicitacoes():
     with scheduler.app.app_context():
         # Verifica se há solicitações em uso atrasadas 

@@ -30,7 +30,8 @@ def envia_email_redefinicao(usuario):
                   sender='unigerencia.app@gmail.com',
                   recipients=[usuario.email])
     msg.body = f'''Para redefinir a sua senha, visite o seguinte link:
-{url_for('usuarios.redefinir_token', token=token, _external=True, _scheme='https')}
+{url_for('usuarios.redefinir_token', token=token, _external=True, 
+         _scheme=current_app.config['SCHEME'])}
 
 O link será válido por 30 minutos.
 Se você não fez esse pedido, então apenas ignore este email e nenhuma alteração será feita.
@@ -43,7 +44,8 @@ def envia_email_confirmacao(solicitacao):
                   sender='unigerencia.app@gmail.com',
                   recipients=[solicitacao.autor.email])
     msg.body = f'''Você possui uma solicitação confirmada:
-{url_for('solicitacoes.solicitacao', solicitacao_id=solicitacao.id, _external=True, _scheme='https')}
+{url_for('solicitacoes.solicitacao', solicitacao_id=solicitacao.id, _external=True, 
+         _scheme=current_app.config['SCHEME'])}
 '''
     mail.send(msg)
 
@@ -53,7 +55,8 @@ def envia_email_atraso(solicitacao):
                   sender='unigerencia.app@gmail.com',
                   recipients=[solicitacao.autor.email])
     msg.body = f'''Você possui uma solicitação com devolução atrasada:
-{url_for('solicitacoes.solicitacao', solicitacao_id=solicitacao.id, _external=True, _scheme='https')}
+{url_for('solicitacoes.solicitacao', solicitacao_id=solicitacao.id, _external=True, 
+         _scheme=current_app.config['SCHEME'])}
 
 Por favor, regularize sua situação assim que possível.
 Se você já estiver regularizado, então apenas ignore este email.
@@ -66,6 +69,7 @@ def envia_email_mensagem(post):
                   sender='unigerencia.app@gmail.com',
                   recipients=[post.destinatario.email])
     msg.body = f'''Você recebeu uma nova mensagem:
-{url_for('posts.post', post_id=post.id, _external=True, _scheme='https')}
+{url_for('posts.post', post_id=post.id, _external=True, 
+         _scheme=current_app.config['SCHEME'])}
 '''
     mail.send(msg)

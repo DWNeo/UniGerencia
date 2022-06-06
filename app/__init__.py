@@ -7,7 +7,7 @@ from flask_apscheduler import APScheduler
 from whitenoise import WhiteNoise
 from pytz import timezone
 
-from app.config import Config
+from app.config import ConfigDev, ConfigProd
 
 # Importa os componentes do Flask
 db = SQLAlchemy()
@@ -23,10 +23,10 @@ login_manager.login_view = 'usuarios.login'
 # No caso desta aplicação é o horário de São Paulo (UTC-3)
 fuso_horario = timezone('America/Sao_Paulo')
 
-def create_app(config_class=Config):
+def create_app():
     # Inicializa o Flask e seus componentes
     app = Flask(__name__)
-    app.config.from_object(Config)
+    app.config.from_object(ConfigProd)
 
     db.init_app(app)
     bcrypt.init_app(app)
