@@ -20,7 +20,7 @@
                             {% endif %}
                             <small class="text-muted"><strong>{{ solicitacao.data_abertura.strftime('%d/%m/%Y %H:%M:%S') }}</strong></small>
                         </div>
-                        {% if solicitacao.tipo == 'solicitacoes_salas' %}
+                        {% if solicitacao.tipo == 'SALA' %}
                             {% if solicitacao.setor %}
                                 <h6 class="article-title"><strong>Setor: </strong>{{ solicitacao.setor.name }}</h6>
                             {% endif %}
