@@ -40,6 +40,15 @@ class Solicitacao(db.Model):
     # Recupera a solicitação pela ID e retorna erro 404 caso contrário
     def recupera_id(sol_id):
         return Solicitacao.query.filter_by(id=sol_id).filter_by(ativo=True).first_or_404()
+    
+    # Recupera todas as solicitações em uso no banco de dados
+    def recupera_em_uso():
+        return Solicitacao.query.filter_by(status='EMUSO').filter_by(ativo=True).all()
+    
+    # Recupera todas as solicitações pendentes de um usuário
+    def recupera_pendente_autor(usuario):
+        return Solicitacao.query.filter_by(status='PENDENTE').filter_by(
+            autor=usuario).filter_by(ativo=True).all()
         
     # Recupera as últimas solicitações de um usuário específico
     def recupera_ultimas_autor(usuario, limite):

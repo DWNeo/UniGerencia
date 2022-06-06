@@ -1,16 +1,21 @@
 # Define variáveis de ambiente importantes
 class Config:
+    # Controla o modo debug
+    DEBUG = False
+    
     # Chave criptográfica de sessão do Flask
     SECRET_KEY = 'aj5mUuYnFw3Gy/bL2TYpCXjQGRGbuEgq6I5gBE1ZXjI='
     SALT = 'UniGerência'
-    
+
     # Tempo para expirar os tokens (1800 = 30 minutos)
     MAX_AGE = 1800 
     
     # Ativa o Scheduler
     SCHEDULER_API_ENABLED = True
+    
+    # Define o servidor em que o app está rodando
     #SERVER_NAME = '127.0.0.1:5000'
-    SERVER_NAME = 'unigerencia.herokuapp.com:443'
+    SERVER_NAME = 'unigerencia.herokuapp.com'
 
     # Variáveis do SQLAlchemy
     # Configura acesso ao banco de dados
