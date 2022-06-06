@@ -137,7 +137,8 @@ def confirma_solicitacao(solicitacao_id):
         if lista_salas:
             form.salas.choices=lista_salas
         else:
-            flash('Não há salas disponíveis para confirmar.', 'warning')
+            flash('Não há salas disponíveis no setor selecionado\
+                  para confirmar.', 'warning')
             return redirect(url_for('principal.inicio'))
     
         if form.validate_on_submit():
@@ -184,7 +185,8 @@ def confirma_solicitacao(solicitacao_id):
         if lista_equips:
             form.equipamentos.choices = lista_equips
         else:
-            flash('Não há equipamentos disponíveis para confirmar.', 'warning')
+            flash('Não há equipamentos disponíveis do tipo\
+                  selecionado para confirmar.', 'warning')
             return redirect(url_for('principal.inicio'))
         
         if form.validate_on_submit():
