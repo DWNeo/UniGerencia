@@ -232,7 +232,7 @@ def confirma_solicitacao(solicitacao_id):
 def entrega_solicitacao(solicitacao_id):
     # Permite a entrega somente de solicitações confirmadas
     solicitacao = Solicitacao.recupera_id(solicitacao_id)
-    if solicitacao.status.name != 'CONFIRMADO':
+    if not solicitacao.verifica_confirmado():
         flash('Esta solicitação não foi confirmada!', 'warning')
         return redirect(url_for('principal.inicio'))
 

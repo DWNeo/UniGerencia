@@ -56,9 +56,9 @@ class SolicitacaoSalaForm(FlaskForm):
         DataRequired(message=obrigatorio), 
         Length(max=50, message=max_50)])
     data_inicio_pref = DateField('Data de Início Preferencial', 
-        format='%Y-%m-%d', default=datetime.today())
+        format='%Y-%m-%d', default=datetime.now().astimezone(fuso_horario).date())
     data_fim_pref = DateField('Data de Fim Preferencial', 
-        format='%Y-%m-%d', default=datetime.today())
+        format='%Y-%m-%d', default=datetime.now().astimezone(fuso_horario).date())
     submit = SubmitField('Solicitar')
 
     # Valida as datas de início e fim inseridas no formulário
@@ -125,12 +125,12 @@ class EntregaSolicitacaoForm(FlaskForm):
         render_kw={'disabled':''})
     data_fim_pref = StringField('Data de Fim Preferencial', 
         render_kw={'disabled':''})
-    data_devolucao = DateTimeLocalField('Data de Devolução', 
-        format='%Y-%m-%dT%H:%M', default=datetime.now().astimezone(fuso_horario))
+    data_devolucao = DateField('Data de Devolução', 
+        format='%Y-%m-%d', default=datetime.now().astimezone(fuso_horario).date())
     submit = SubmitField('Confirmar')
 
     def validate_data_devolucao(self, data_devolucao):
-        if data_devolucao.data < datetime.now():
+        if data_devolucao.data < datetime.now().astimezone(fuso_horario).date():
             raise ValidationError(data_invalida)
 
 

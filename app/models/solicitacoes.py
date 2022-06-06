@@ -76,6 +76,12 @@ class Solicitacao(db.Model):
         else:
             return False
         
+    def verifica_confirmado(self):
+        if self.status.name == 'CONFIRMADO':
+            return True
+        else:
+            return False
+        
     def verifica_em_uso(self):
         if self.status.name == 'EMUSO':
             return True
@@ -117,8 +123,11 @@ class Solicitacao(db.Model):
     # Atualiza o status de um solicitação para 'Em Uso'
     def em_uso(self, form):
         self.status = 'EMUSO'
-        self.data_devolucao = form.data_devolucao.data
         self.data_retirada = datetime.now().astimezone(fuso_horario)
+        
+        # Combina data de devolução com o horário final do turno
+        self.data_devolucao = datetime.combine(form.data_devolucao.data, 
+                                               self.turno.data_fim)
         if self.tipo == 'EQUIPAMENTO':
             for equipamento in self.equipamentos:
                 equipamento.status = 'EMUSO'
@@ -318,5 +327,5 @@ class Turno(db.Model):
         db.session.commit()
     
     def __repr__(self):
-        return f"{self.name} - Início: {self.data_inicio} - Fim: {self.data_fim}"
+        return f"{self.name} (Início: {self.data_inicio} / Fim: {self.data_fim})"
     
