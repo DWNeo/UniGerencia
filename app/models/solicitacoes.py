@@ -255,11 +255,11 @@ class SolicitacaoSala(Solicitacao):
     def verifica_existente_usuario(usuario):
         solicitacao = SolicitacaoSala.query.filter_by(autor=usuario).filter_by(
                       ativo=True).order_by(SolicitacaoSala.id.desc()).first()
-        if (solicitacao.status.name != 'CANCELADO' and 
-            solicitacao.status.name != 'FECHADO'):
-            return True
-        else:
-            return False
+        if solicitacao:
+            if (solicitacao.status.name != 'CANCELADO' and 
+                solicitacao.status.name != 'FECHADO'):
+                return True
+        return False
     
     def cria(status, form):
         return SolicitacaoSala(turno_id=form.turno.data,
@@ -298,11 +298,11 @@ class SolicitacaoEquipamento(Solicitacao):
     def verifica_existente_usuario(usuario):
         solicitacao = SolicitacaoEquipamento.query.filter_by(autor=usuario).filter_by(
                       ativo=True).order_by(SolicitacaoEquipamento.id.desc()).first()
-        if (solicitacao.status.name != 'CANCELADO' and 
-            solicitacao.status.name != 'FECHADO'):
-            return True
-        else:
-            return False
+        if solicitacao:
+            if (solicitacao.status.name != 'CANCELADO' and 
+                solicitacao.status.name != 'FECHADO'):
+                return True
+        return False
         
     def cria(status, form):
         return SolicitacaoEquipamento(tipo_eqp_id=form.tipo_equipamento.data,
@@ -354,5 +354,5 @@ class Turno(db.Model):
         db.session.commit()
     
     def __repr__(self):
-        return f"{self.name} (Início: {self.data_inicio} / Fim: {self.data_fim})"
+        return f"{self.name} ({self.data_inicio} ~ {self.data_fim})"
     

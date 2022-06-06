@@ -36,7 +36,7 @@ def nova_solicitacao_equipamento():
     # Impede um usuário de realizar mais de uma solicitação por vez
     if not Usuario.verifica_prof(current_user):
         if SolicitacaoEquipamento.verifica_existente_usuario(current_user):
-            flash('Você já possui uma solicitação de equipamento em aberto.', 'warning')
+            flash('Você já possui uma solicitação em aberto.', 'warning')
             return redirect(url_for('principal.inicio'))
     
     # Recupera lista de turnos e tipos de equipamento do banco
@@ -89,7 +89,7 @@ def nova_solicitacao_sala():
     # Impede um usuário de realizar mais de uma solicitação por vez
     if not Usuario.verifica_prof(current_user):
         if SolicitacaoSala.verifica_existente_usuario(current_user):
-            flash('Você já possui uma solicitação de sala em aberto.', 'warning')
+            flash('Você já possui uma solicitação em aberto.', 'warning')
             return redirect(url_for('principal.inicio'))
         
     # Recupera lista de setores e turnos do banco
