@@ -48,11 +48,9 @@ def inicio():
         lista_tempo.append(tempo_restante) 
         if solicitacao.verifica_pendente():
             # Exibe uma mensagem de alerta para o usuário com atraso
-            if Solicitacao.verifica_autor(solicitacao, current_user):
-                flash('Você possui uma solicitação atrasada.', 'warning')  
-            # Exibe uma mensagem de alerta para o admin
-            elif Usuario.verifica_admin(current_user):
-                flash('Existe uma solicitação em atraso.', 'warning')
+            if solicitacao.verifica_autor(current_user):
+                if not Usuario.verifica_admin(current_user):
+                    flash('Você possui uma solicitação atrasada.', 'warning')  
 
     # Importa o formulário para entrega de solicitações
     # Necessário em um modal presente na tabela de solicitações

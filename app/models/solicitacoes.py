@@ -151,7 +151,7 @@ class Solicitacao(db.Model):
         
         # Combina data de devolução com o horário final do turno
         self.data_devolucao = datetime.combine(form.data_devolucao.data, 
-                                               self.turno.data_fim)
+                                               self.turno.hora_fim)
         if self.tipo == 'EQUIPAMENTO':
             for equipamento in self.equipamentos:
                 equipamento.status = 'EMUSO'
@@ -346,8 +346,8 @@ class Turno(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(20), unique=True, nullable=False)
-    data_inicio = db.Column(db.Time, nullable=False)
-    data_fim = db.Column(db.Time, nullable=False)
+    hora_inicio = db.Column(db.Time, nullable=False)
+    hora_fim = db.Column(db.Time, nullable=False)
     ativo = db.Column(db.Boolean, nullable=False, default=True)
 
     # Um turno pode estar associado a múltiplas solicitações
@@ -361,13 +361,13 @@ class Turno(db.Model):
     
     def cria(form):
         return Turno(name=form.nome.data, 
-                     data_inicio=form.data_inicio.data, 
-                     data_fim=form.data_fim.data)
+                     hora_inicio=form.hora_inicio.data, 
+                     hora_fim=form.hora_fim.data)
     
     def insere(self):
         db.session.add(self)
         db.session.commit()
     
     def __repr__(self):
-        return f"{self.name} ({self.data_inicio} ~ {self.data_fim})"
+        return f"{self.name} ({self.hora_inicio} ~ {self.hora_fim})"
     

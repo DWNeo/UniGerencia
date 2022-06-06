@@ -72,8 +72,8 @@ class SolicitacaoSalaForm(FlaskForm):
         elif self.data_fim_pref.data < self.data_inicio_pref.data:
             self.data_fim_pref.errors.append('Esta data não pode ser antes da de início.')
             return False
-        
-        return True
+        else:
+            return True
 
 
 class ConfirmaSolicitacaoEquipamentoForm(FlaskForm):
@@ -144,7 +144,19 @@ class TurnoForm(FlaskForm):
         format='%H:%M', default=datetime.now().astimezone(fuso_horario))
     submit = SubmitField('Cadastrar')
     
-    def validate_hora_fim(self, hora_inicio, hora_fim):
-        if hora_fim.data < hora_inicio.data:
-            raise ValidationError(data_invalida)
-        
+     # Valida as datas de início e fim inseridas no formulário
+    def validate(self):
+        rv = FlaskForm.validate(self)
+        if not rv:
+            return False
+        if self.hora_fim.data < self.hora_inicio.data:
+            self.hora_inicio.errors.append('Data de inicio não pode ser depois da de início.')
+            self.hora_fim.errors.append('Data de fim não pode ser antes da de início.')
+            return False
+        elif self.hora_fim.data == self.hora_inicio.data:
+            self.hora_inicio.errors.append('As datas não podem ser iguais.')
+            self.hora_fim.errors.append('As datas não podem ser iguais.')
+            return False
+        else:
+            return True
+    
