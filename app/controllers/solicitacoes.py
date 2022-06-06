@@ -128,7 +128,6 @@ def nova_solicitacao_sala():
 @admin_required
 def confirma_solicitacao(solicitacao_id):
     solicitacao = Solicitacao.recupera_id(solicitacao_id)
-    
     # Se a solicitação for do tipo 'Sala'...
     if solicitacao.tipo == 'SALA':
         # Preenche seletor de salas
@@ -140,30 +139,20 @@ def confirma_solicitacao(solicitacao_id):
         else:
             flash('Não há salas disponíveis para confirmar.', 'warning')
             return redirect(url_for('principal.inicio'))
-        
+    
         if form.validate_on_submit():
             lista_salas = []
+            # Realiza uma última verificação de disponibilidade da sala
             for sala in form.salas.data:
-                sala = Sala.query.filter_by(id=sala).filter_by(ativo=True).first()
-                # Realiza uma última verificação de disponibilidade da sala
-                # Cancela a operação caso a sala não esteja mais disponível
-                if sala == None:                    
-                    flash('Uma sala não está mais disponível.', 'warning')
-                    return redirect(url_for('principal.inicio'))
+                sala = Sala.recupera_id(sala)
                 lista_salas.append(sala)
-            solicitacao.salas = lista_salas
-            if len(solicitacao.salas) != solicitacao.quantidade:
+            # Verifica se a quantidade solicitada e selecionada é igual
+            if len(lista_salas) != solicitacao.quantidade:
                 flash('A quantidade de salas selecionadas\
                        é diferente da solicitada.', 'warning')
                 return redirect(url_for('principal.inicio'))
-            
-            # Atualiza status das salas da solicitação
-            for sala in lista_salas:
-                sala.status = 'CONFIRMADO'
-            
             # Atualiza o status da sala e da solicitação
-            solicitacao.status = 'CONFIRMADO'
-            db.session.commit()
+            solicitacao.confirma(lista_salas)
             envia_email_confirmacao(solicitacao)
             flash('A solicitação foi confirmada com sucesso!', 'success')
             return redirect(url_for('principal.inicio'))

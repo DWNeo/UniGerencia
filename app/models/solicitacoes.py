@@ -102,12 +102,14 @@ class Solicitacao(db.Model):
         return
     
     # Atualiza o status de um solicitação para 'Confirmado'
-    def confirma(self):
+    def confirma(self, lista_itens):
         self.status = 'CONFIRMADO'
         if self.tipo == 'EQUIPAMENTO':
+            self.equipamentos = lista_itens
             for equipamento in self.equipamentos:
                 equipamento.status = 'CONFIRMADO'
         if self.tipo == 'SALA':
+            self.salas = lista_itens
             for sala in self.salas:
                 sala.status = 'CONFIRMADO'     
         db.session.commit()
