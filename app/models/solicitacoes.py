@@ -1,4 +1,5 @@
 from datetime import datetime
+import time
 
 from flask_login import current_user
 
@@ -66,6 +67,20 @@ class Solicitacao(db.Model):
         return Solicitacao.query.filter(
             SolicitacaoSala.salas.contains(sala)).filter_by(
             ativo=True).order_by(SolicitacaoSala.id.desc()).limit(limite)
+    
+    # Retorna o tempo restante para a solicitação entrar em atraso
+    def tempo_restante(self):
+        if(self.data_devolucao and self.status.name == 'EMUSO'):
+            agora = datetime.now().astimezone(fuso_horario)
+            tempo_restante = int(datetime.timestamp(self.data_devolucao) - 
+                                  datetime.timestamp(agora))
+            if tempo_restante <= 0:
+                return None
+            minutos, segundos = divmod(tempo_restante, 60)
+            horas, minutos = divmod(minutos, 60)
+            return "%02d:%02d:%02d" % (horas, minutos, segundos)
+        else:
+            return None
 
     def verifica_inicio_hoje(form):
         if form.data_inicio_pref.data == datetime.now().astimezone(fuso_horario).date():
@@ -74,7 +89,7 @@ class Solicitacao(db.Model):
             return False
 
     def verifica_autor(self, usuario):
-        if self.autor == usuario or self.autor.tipo.name == 'AMDIN':
+        if self.autor == usuario or usuario.tipo.name == 'ADMIN':
             return True
         else:
             return False

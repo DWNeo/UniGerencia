@@ -8,6 +8,8 @@
     </button>
     {% if equipamento.status.name == 'ABERTO' %}
     Este equipamento está disponível para ser solicitado.
+    {% elif equipamento.status.name == 'CONFIRMADO' %}
+    Este equipamento está confirmado para uma solicitação.
     {% elif equipamento.status.name == 'EMUSO' %}
     Este equipamento está em uso.
     {% elif equipamento.status.name == 'DESABILITADO' or equipamento.status.name == 'EMMANUTENCAO' %}

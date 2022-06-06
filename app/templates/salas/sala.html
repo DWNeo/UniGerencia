@@ -8,6 +8,8 @@
     </button>
     {% if sala.status.name == 'ABERTO' %}
     Esta sala está disponível para ser solicitada.
+    {% elif sala.status.name == 'CONFIRMADO' %}
+    Esta sala está confirmada para uma solicitação.
     {% elif sala.status.name == 'EMUSO' %}
     Esta sala está em uso.
     {% elif sala.status.name == 'DESABILITADO' or sala.status.name == 'EMMANUTENCAO' %}

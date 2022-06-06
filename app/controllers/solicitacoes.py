@@ -25,9 +25,12 @@ def solicitacao(solicitacao_id):
     solicitacao = Solicitacao.recupera_id(solicitacao_id)
     if not solicitacao.verifica_autor(current_user):
         abort(403)
+    # Calcula o tempo restante para uma solitação
+    tempo_restante= solicitacao.tempo_restante()
 
     return render_template('solicitacoes/solicitacao.html', 
-                           title=solicitacao, solicitacao=solicitacao)
+                           title=solicitacao, solicitacao=solicitacao,
+                           tempo_restante=tempo_restante)
 
 
 @solicitacoes.route("/nova/equipamento", methods=['GET', 'POST'])

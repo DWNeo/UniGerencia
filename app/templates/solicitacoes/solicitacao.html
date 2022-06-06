@@ -12,6 +12,8 @@
     Esta solicitação está na lista de espera.
     {% elif solicitacao.status.name == 'CONFIRMADO' %}
     Esta solicitação foi confirmada. 
+    {% elif solicitacao.status.name == 'EMUSO' %}
+    Esta solicitação está em uso. 
     {% elif solicitacao.status.name == 'CANCELADO' %}
     Esta solicitação foi cancelada.
     {% elif solicitacao.status.name == 'FECHADO' %}
@@ -56,6 +58,9 @@
         {% endif %}
         {% if solicitacao.data_devolucao %}
             <h5 class="article-content"><strong>Data de Devolução Prevista:</strong> {{ solicitacao.data_devolucao.strftime('%d/%m/%Y %H:%M:%S') }}</h5>
+        {% endif %}
+        {% if tempo_restante and solicitacao.status.name == 'EMUSO' %}
+            <h5 class="article-content"><strong>Tempo Restante:</strong> {{ tempo_restante }}</h5>
         {% endif %}
         {% if solicitacao.data_cancelamento %}
             <h5 class="article-content"><strong>Data de Cancelamento:</strong> {{ solicitacao.data_cancelamento.strftime('%d/%m/%Y %H:%M:%S') }}</h5>

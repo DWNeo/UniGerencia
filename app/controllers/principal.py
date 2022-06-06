@@ -39,11 +39,15 @@ def inicio():
     posts = Post.recupera_tudo()
     equipamentos = Equipamento.recupera_tudo()
     salas = Sala.recupera_tudo()
-    usuarios = Usuario.recupera_tudo()
+    usuarios = Usuario.recupera_tudo() 
     
-    # Exibe uma mensagem de alerta para o usuário com atraso
+    # Verifica as solicitações por tempo restante e atrasos
+    lista_tempo = []
     for solicitacao in solicitacoes:
+        tempo_restante = solicitacao.tempo_restante()
+        lista_tempo.append(tempo_restante) 
         if solicitacao.verifica_pendente():
+            # Exibe uma mensagem de alerta para o usuário com atraso
             if Solicitacao.verifica_autor(solicitacao, current_user):
                 flash('Você possui uma solicitação atrasada.', 'warning')  
             # Exibe uma mensagem de alerta para o admin
@@ -56,7 +60,8 @@ def inicio():
     
     return render_template('principal/inicio.html', tab=tab, form=form,
                            posts=posts, equipamentos=equipamentos, salas=salas, 
-                           usuarios=usuarios, solicitacoes=solicitacoes)
+                           usuarios=usuarios, solicitacoes=solicitacoes,
+                           tempo_restante=lista_tempo)
 
 
 @principal.route("/criar_db", methods=['GET'])
