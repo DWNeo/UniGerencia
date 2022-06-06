@@ -179,47 +179,29 @@ def confirma_solicitacao(solicitacao_id):
         # Preenche o campo de seleção de equipamentos disponíveis
         # Retorna o usuário pra tela inicial se não houver nenhum
         form = ConfirmaSolicitacaoEquipamentoForm()
-        equips = Equipamento.query.filter_by(status='ABERTO').filter_by(
-            ativo=True).filter_by(tipo_eqp_id=solicitacao.tipo_eqp_id).all()
+        equips = Equipamento.recupera_disponivel_tipo(solicitacao.tipo_eqp_id)
         lista_equips = [(equip.id, equip) for equip in equips]
         if lista_equips:
             form.equipamentos.choices = lista_equips
         else:
             flash('Não há equipamentos disponíveis para confirmar.', 'warning')
             return redirect(url_for('principal.inicio'))
-
-        # Em caso de envio de formulário (POST)
+        
         if form.validate_on_submit():
             # Realiza uma última verificação de disponibilidade dos equipamentos
             # Cancela a operação caso um equipamento não esteja mais disponível
             lista_equips = []
             for eqp_id in form.equipamentos.data:
-                equipamento = Equipamento.query.filter_by(
-                    id=eqp_id).filter_by(
-                    status='ABERTO').filter_by(ativo=True).first()
-                if equipamento == None:
-                    flash('Um equipamento não está mais disponível.', 'warning')
-                    return redirect(url_for('principal.inicio'))
                 # Adiciona cada equipamento verificado pra uma lista
+                equipamento = Equipamento.recupera_id(eqp_id)
                 lista_equips.append(equipamento)
-
-            # Associa os equipamentos da lista à solicitação
-            solicitacao.equipamentos = lista_equips
-
-            # Verifica se a quantidade de equipamentos selecionados pelo
-            # admin é igual a quantidade solicitada
-            if len(solicitacao.equipamentos) != solicitacao.quantidade:
+            # Verifica se a quantidade solicitada e selecionada é igual
+            if len(lista_equips) != solicitacao.quantidade:
                 flash('A quantidade de equipamentos selecionados\
                        é diferente da solicitada.', 'warning')
                 return redirect(url_for('principal.inicio'))
-
-            # Atualiza status dos equipamentos da solicitação
-            for equip in lista_equips:
-                equip.status = 'CONFIRMADO'
-
             # Atualiza a quantidade de equipamentos disponíveis
-            solicitacao.status = 'CONFIRMADO'
-            db.session.commit()
+            solicitacao.confirma(lista_equips)
             envia_email_confirmacao(solicitacao)
             flash('A solicitação foi confirmada com sucesso!', 'success')
             return redirect(url_for('principal.inicio'))
@@ -276,7 +258,7 @@ def recebe_solicitacao(solicitacao_id):
         return redirect(url_for('principal.inicio'))
     
     # Atualiza o registro da solicitação
-    solicitacao.finaliza(solicitacao)
+    solicitacao.finaliza()
     flash('O recebimento foi confirmado com sucesso!', 'success')
     return redirect(url_for('principal.inicio'))
 

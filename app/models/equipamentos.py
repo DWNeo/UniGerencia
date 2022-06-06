@@ -38,6 +38,10 @@ class Equipamento(db.Model):
     def recupera_id(eqp_id):
         return Equipamento.query.filter_by(id=eqp_id).filter_by(ativo=True).first_or_404()
     
+    def recupera_disponivel_tipo(tipo_eqp_id):
+        return Equipamento.query.filter_by(status='ABERTO').filter_by(
+            ativo=True).filter_by(tipo_eqp_id=tipo_eqp_id).all()
+    
     # Verifica se um equipamento está disponível
     def verifica_disponibilidade(self):
         if self.status.name == 'ABERTO':
