@@ -1,4 +1,5 @@
 from datetime import datetime
+from re import S
 
 from flask import (render_template, url_for, flash, 
                    redirect, abort, request, Blueprint)
@@ -49,19 +50,24 @@ def nova_solicitacao_equipamento():
         return redirect(url_for('principal.inicio'))
 
     if form.validate_on_submit(): 
-        # Verifica se há equipamentos disponíveis para a quantidade solicitada
-        # Retorna a operação caso não haja equipamentos o suficiente
-        tipo_eqp = TipoEquipamento.recupera_id(form.tipo_equipamento.data)
-        if TipoEquipamento.contagem(tipo_eqp) >= form.qtd_preferencia.data:
-            flash('A solicitação foi realizada com sucesso!.', 'success')
-            status = 'SOLICITADO'
+        # Define o status de acordo com a data de início preferencial
+        if Solicitacao.verifica_inicio_hoje(form):
+            # Verifica se a quantidade solicitada está disponível
+            tipo_eqp = TipoEquipamento.recupera_id(form.tipo_equipamento.data)
+            if form.qtd_preferencia.data > TipoEquipamento.contagem(tipo_eqp):
+                flash('Não há equipamentos suficientes do tipo escolhido.\
+                    Favor escolher uma quantidade menor.', 'warning')
+                return redirect(url_for('principal.inicio'))
+            else:
+                status = 'SOLICITADO'
+                flash('A solicitação foi realizada com sucesso!.', 'success')    
         else:
-            flash('Você foi colocado na lista de espera pois o tipo\
-                  escolhido não possui equipamentos disponíveis.', 'warning')
             status = 'ABERTO'
-
+            flash('Você foi colocado na lista de espera pois\
+                   escolheu outro dia como preferência.', 'warning')     
+        
         # Insere a nova solicitação no banco de dados
-        solicitacao = SolicitacaoEquipamento.cria(status, form)
+        solicitacao = SolicitacaoEquipamento.cria(status, form)  
         solicitacao.insere()
         return redirect(url_for('principal.inicio'))
 
@@ -91,17 +97,22 @@ def nova_solicitacao_sala():
         return redirect(url_for('principal.inicio'))
 
     if form.validate_on_submit():
-        # Verifica se a sala solicitada está disponível
-        # Muda o status da solicitação de acordo com o resultado
-        setor = Setor.recupera_id(form.setor.data)
-        if Setor.contagem(setor) >= form.qtd_preferencia.data:
-            flash('A solicitação foi realizada com sucesso!.', 'success')
-            status = 'SOLICITADO'
+        # Define o status de acordo com a data de início preferencial
+        if Solicitacao.verifica_inicio_hoje(form):
+            # Verifica se a quantidade solicitada está disponível
+            setor = Setor.recupera_id(form.setor.data)
+            if form.qtd_preferencia.data > Setor.contagem(setor):
+                flash('Não há salas suficientes no setor escolhido.\
+                    Favor escolher uma quantidade menor.', 'warning')
+                return redirect(url_for('principal.inicio')) 
+            else:
+                status = 'SOLICITADO'
+                flash('A solicitação foi realizada com sucesso!.', 'success')     
         else:
-            flash('Você foi colocado na lista de espera pois o setor\
-                  escolhido não possui salas disponíveis.', 'warning')
             status = 'ABERTO'
-               
+            flash('Você foi colocado na lista de espera pois\
+                   escolheu outro dia como preferência.', 'warning')
+            
         # Insere a nova solicitação no banco de dados
         solicitacao = SolicitacaoSala.cria(status, form)
         solicitacao.insere()

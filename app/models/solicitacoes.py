@@ -58,6 +58,12 @@ class Solicitacao(db.Model):
             SolicitacaoSala.salas.contains(sala)).filter_by(
             ativo=True).order_by(SolicitacaoSala.id.desc()).limit(limite)
 
+    def verifica_inicio_hoje(form):
+        if form.data_inicio_pref.data == datetime.now().astimezone(fuso_horario).date():
+            return True
+        else:
+            return False
+
     def verifica_autor(self, usuario):
         if self.autor == usuario or self.autor.tipo.name == 'AMDIN':
             return True

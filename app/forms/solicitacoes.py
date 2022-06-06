@@ -29,14 +29,20 @@ class SolicitacaoEquipamentoForm(FlaskForm):
     data_fim_pref = DateField('Data de Fim Preferencial', 
         format='%Y-%m-%d', default=datetime.today())
     submit = SubmitField('Solicitar')
-
-    def validate_data_preferencial(self, data_inicio_pref, data_fim_pref):
-        if data_inicio_pref.data < datetime.today():
-            raise ValidationError(data_invalida)
-        if data_fim_pref.data < data_inicio_pref.data:
-            raise ValidationError(data_invalida)
-
-
+    
+    def validate(self):
+        rv = FlaskForm.validate(self)
+        if not rv:
+            return False
+        # Valida as datas de início e fim inseridas no formulário
+        if self.data_inicio_pref.data < datetime.now().astimezone(fuso_horario).date():
+            self.data_inicio_pref.errors.append('Esta data não pode ser antes de hoje.')
+            return False
+        elif self.data_fim_pref.data < self.data_inicio_pref.data:
+            self.data_fim_pref.errors.append('Esta data não pode ser antes da de início.')
+            return False
+        
+        return True
 class SolicitacaoSalaForm(FlaskForm):
 
     turno = SelectField('Turno', validators=[
@@ -55,11 +61,19 @@ class SolicitacaoSalaForm(FlaskForm):
         format='%Y-%m-%d', default=datetime.today())
     submit = SubmitField('Solicitar')
 
-    def validate_data_preferencial(self, data_inicio_pref, data_fim_pref):
-        if data_inicio_pref.data < datetime.today():
-            raise ValidationError(data_invalida)
-        if data_fim_pref.data < data_inicio_pref.data:
-            raise ValidationError(data_invalida)
+    def validate(self):
+        rv = FlaskForm.validate(self)
+        if not rv:
+            return False
+        # Valida as datas de início e fim inseridas no formulário
+        if self.data_inicio_pref.data < datetime.now().astimezone(fuso_horario).date():
+            self.data_inicio_pref.errors.append('Esta data não pode ser antes de hoje.')
+            return False
+        elif self.data_fim_pref.data < self.data_inicio_pref.data:
+            self.data_fim_pref.errors.append('Esta data não pode ser antes da de início.')
+            return False
+        
+        return True
 
 
 class ConfirmaSolicitacaoEquipamentoForm(FlaskForm):
