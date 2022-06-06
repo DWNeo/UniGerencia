@@ -66,7 +66,7 @@ class Post(db.Model):
     def exclui(self):
         self.ativo = False
         db.session.commit()
-
+        
     def __repr__(self):
         return f"Post: {self.titulo} ({self.data_postado})"
     

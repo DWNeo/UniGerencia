@@ -1,12 +1,15 @@
 alembic==1.7.7
+APScheduler==3.9.1
 bcrypt==3.2.2
 blinker==1.4
+cchardet==2.1.7
 cffi==1.15.0
 click==8.1.3
 colorama==0.4.4
 dnspython==2.2.1
 email-validator==1.2.1
 Flask==2.1.2
+Flask-APScheduler==1.12.3
 Flask-Bcrypt==1.0.1
 Flask-Login==0.6.1
 Flask-Mail==0.9.1
@@ -14,6 +17,7 @@ Flask-SQLAlchemy==2.5.1
 Flask-WTF==1.0.1
 greenlet==1.1.2
 gunicorn==20.1.0
+heybrochecklog==1.3.3
 idna==3.3
 itsdangerous==2.1.2
 Jinja2==3.1.2
@@ -25,8 +29,11 @@ Pillow==9.1.1
 pycparser==2.21
 python-dateutil==2.8.2
 pytz==2022.1
+pytz-deprecation-shim==0.1.0.post0
 six==1.16.0
 SQLAlchemy==1.4.36
+tzdata==2022.1
+tzlocal==4.2
 Werkzeug==2.1.2
 whitenoise==6.0.0
 WTForms==2.3.3

@@ -1,8 +1,9 @@
-from flask import Flask
+from flask import Flask, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from flask_mail import Mail
+from flask_apscheduler import APScheduler
 from whitenoise import WhiteNoise
 from pytz import timezone
 
@@ -13,6 +14,7 @@ db = SQLAlchemy()
 bcrypt = Bcrypt()
 mail = Mail()
 login_manager = LoginManager()
+scheduler = APScheduler()
 
 # Define a tela de login padrão
 login_manager.login_view = 'usuarios.login'
@@ -30,6 +32,8 @@ def create_app(config_class=Config):
     bcrypt.init_app(app)
     login_manager.init_app(app)
     mail.init_app(app)
+    scheduler.init_app(app)
+    scheduler.start()
     
     # Importa os controllers
     from app.controllers.api import api

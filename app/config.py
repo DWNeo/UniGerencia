@@ -6,6 +6,11 @@ class Config:
     
     # Tempo para expirar os tokens (1800 = 30 minutos)
     MAX_AGE = 1800 
+    
+    # Ativa o Scheduler
+    SCHEDULER_API_ENABLED = True
+    #SERVER_NAME = '127.0.0.1:5000'
+    SERVER_NAME = 'unigerencia.herokuapp.com:443'
 
     # Variáveis do SQLAlchemy
     # Configura acesso ao banco de dados

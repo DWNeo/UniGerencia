@@ -60,3 +60,12 @@ Se você já estiver regularizado, então apenas ignore este email.
 '''
     mail.send(msg)
     
+# Envia um email de aviso para um usuário com uma nova mensagem recebida
+def envia_email_mensagem(post):
+    msg = Message('UniGerência: Aviso de Nova Mensagem',
+                  sender='unigerencia.app@gmail.com',
+                  recipients=[post.destinatario.email])
+    msg.body = f'''Você recebeu uma nova mensagem:
+{url_for('posts.post', post_id=post.id, _external=True)}
+'''
+    mail.send(msg)

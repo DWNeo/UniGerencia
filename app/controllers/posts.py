@@ -3,6 +3,7 @@ from flask_login import current_user, login_required
 
 from app.models import Post, Usuario
 from app.forms.posts import PostForm, PostAdminForm, AtualizaPostForm
+from app.utils import envia_email_mensagem
 
 posts = Blueprint('posts', __name__)
 
@@ -41,6 +42,7 @@ def novo_post():
         else:
             post = Post.cria(None, form) 
         post.insere()
+        envia_email_mensagem(post)
         flash('Sua mensagem foi postada com sucesso!', 'success')
         return redirect(url_for('principal.inicio', tab=2))
 
