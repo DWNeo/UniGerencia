@@ -99,7 +99,6 @@ class TipoEquipamento(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(20), unique=True, nullable=False)
-    qtd_disponivel = db.Column(db.Integer, nullable=False, default=0)
     ativo = db.Column(db.Boolean, nullable=False, default=True)
 
     # Um tipo está associado a múltiplos equipamentos e solicitações

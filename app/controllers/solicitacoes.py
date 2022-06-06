@@ -162,7 +162,6 @@ def confirma_solicitacao(solicitacao_id):
                 sala.status = 'CONFIRMADO'
             
             # Atualiza o status da sala e da solicitação
-            solicitacao.setor.qtd_disponivel -= len(solicitacao.salas)
             solicitacao.status = 'CONFIRMADO'
             db.session.commit()
             envia_email_confirmacao(solicitacao)
@@ -230,7 +229,6 @@ def confirma_solicitacao(solicitacao_id):
                 equip.status = 'CONFIRMADO'
 
             # Atualiza a quantidade de equipamentos disponíveis
-            solicitacao.tipo_eqp.qtd_disponivel -= len(solicitacao.equipamentos)
             solicitacao.status = 'CONFIRMADO'
             db.session.commit()
             envia_email_confirmacao(solicitacao)

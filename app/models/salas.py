@@ -115,7 +115,6 @@ class Setor(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True, nullable=False)
-    qtd_disponivel = db.Column(db.Integer, nullable=False, default=0)
     ativo = db.Column(db.Boolean, nullable=False, default=True)
 
     # Um setor pode estar associado a muitas salas e solicitações

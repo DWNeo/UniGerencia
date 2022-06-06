@@ -30,11 +30,11 @@ class SolicitacaoEquipamentoForm(FlaskForm):
         format='%Y-%m-%d', default=datetime.today())
     submit = SubmitField('Solicitar')
     
+    # Valida as datas de início e fim inseridas no formulário
     def validate(self):
         rv = FlaskForm.validate(self)
         if not rv:
             return False
-        # Valida as datas de início e fim inseridas no formulário
         if self.data_inicio_pref.data < datetime.now().astimezone(fuso_horario).date():
             self.data_inicio_pref.errors.append('Esta data não pode ser antes de hoje.')
             return False
@@ -61,11 +61,11 @@ class SolicitacaoSalaForm(FlaskForm):
         format='%Y-%m-%d', default=datetime.today())
     submit = SubmitField('Solicitar')
 
+    # Valida as datas de início e fim inseridas no formulário
     def validate(self):
         rv = FlaskForm.validate(self)
         if not rv:
             return False
-        # Valida as datas de início e fim inseridas no formulário
         if self.data_inicio_pref.data < datetime.now().astimezone(fuso_horario).date():
             self.data_inicio_pref.errors.append('Esta data não pode ser antes de hoje.')
             return False
