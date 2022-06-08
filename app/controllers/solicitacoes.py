@@ -37,7 +37,10 @@ def solicitacao(solicitacao_id):
 @login_required
 def nova_solicitacao_equipamento():
     # Impede um usuário de realizar mais de uma solicitação por vez
+    form = SolicitacaoEquipamentoForm()
     if not Usuario.verifica_prof(current_user):
+        # Limita a quantidade de equipamento para alunos para 1
+        form.qtd_preferencia.data = 1
         if SolicitacaoEquipamento.verifica_existente_usuario(current_user):
             flash('Você já possui uma solicitação em aberto.', 'warning')
             return redirect(url_for('principal.inicio'))
@@ -49,8 +52,7 @@ def nova_solicitacao_equipamento():
     lista_turnos = [(turno.id, turno) for turno in turnos]
     
     # Preenche as listas de seleção
-    # Retorna usuário pra tela inicial se não dados cadastrados
-    form = SolicitacaoEquipamentoForm()
+    # Retorna usuário pra tela inicial se não há dados cadastrados
     if lista_tipos and lista_turnos:
         form.tipo_equipamento.choices = lista_tipos
         form.turno.choices = lista_turnos
@@ -80,9 +82,15 @@ def nova_solicitacao_equipamento():
         solicitacao.insere()
         return redirect(url_for('principal.inicio'))
 
-    return render_template('solicitacoes/nova_solicitacao_equipamento.html', 
-                           title='Nova Solicitação de Equipamento', form=form,
-                           legend='Nova Solicitação de Equipamento')
+    # Renderiza uma página com formulário diferente para alunos
+    if not Usuario.verifica_prof(current_user):
+        return render_template('solicitacoes/nova_solicitacao_equipamento_aluno.html', 
+                               title='Nova Solicitação de Equipamento', form=form,
+                               legend='Nova Solicitação de Equipamento')
+    else:
+        return render_template('solicitacoes/nova_solicitacao_equipamento.html', 
+                               title='Nova Solicitação de Equipamento', form=form,
+                               legend='Nova Solicitação de Equipamento')
 
 
 @solicitacoes.route("/nova/sala", methods=['GET', 'POST'])

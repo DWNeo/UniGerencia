@@ -1,14 +1,14 @@
-from datetime import datetime, date
+from datetime import datetime
 
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, SelectField, SelectMultipleField
-from wtforms.validators import (DataRequired, InputRequired, 
-                                ValidationError, NumberRange, 
-                                Length)
-from wtforms.fields.html5 import IntegerField, DateTimeLocalField, TimeField, DateField
+from wtforms.validators import (DataRequired, InputRequired, ValidationError, 
+                                NumberRange, Length)
+from wtforms.fields.html5 import IntegerField, TimeField, DateField
 
 from app import fuso_horario
-from app.locale import (obrigatorio, data_invalida, num_invalido, max_20, max_50)
+from app.locale import (obrigatorio, data_invalida, num_invalido_2, 
+                        num_invalido_20, max_20, max_50)
 
 
 class SolicitacaoEquipamentoForm(FlaskForm):
@@ -20,7 +20,7 @@ class SolicitacaoEquipamentoForm(FlaskForm):
         InputRequired()], coerce=int)
     qtd_preferencia = IntegerField('Quantidade', validators=[
         DataRequired(message=obrigatorio), 
-        NumberRange(min=1, max=40, message=num_invalido)])
+        NumberRange(min=1, max=10, message=num_invalido_20)])
     descricao = StringField('Descrição', validators=[
         DataRequired(message=obrigatorio), 
         Length(max=50, message=max_50)])
@@ -51,7 +51,7 @@ class SolicitacaoSalaForm(FlaskForm):
         DataRequired(message=obrigatorio)], coerce=int)
     qtd_preferencia = IntegerField('Quantidade', validators=[
         DataRequired(message=obrigatorio), 
-        NumberRange(min=1, max=2, message=num_invalido)])
+        NumberRange(min=1, max=2, message=num_invalido_2)])
     descricao = StringField('Descrição', validators=[
         DataRequired(message=obrigatorio), 
         Length(max=50, message=max_50)])
@@ -150,12 +150,12 @@ class TurnoForm(FlaskForm):
         if not rv:
             return False
         if self.hora_fim.data < self.hora_inicio.data:
-            self.hora_inicio.errors.append('Data de inicio não pode ser depois da de início.')
-            self.hora_fim.errors.append('Data de fim não pode ser antes da de início.')
+            self.hora_inicio.errors.append('Hora de inicio não pode ser depois da de início.')
+            self.hora_fim.errors.append('Hora de fim não pode ser antes da de início.')
             return False
         elif self.hora_fim.data == self.hora_inicio.data:
-            self.hora_inicio.errors.append('As datas não podem ser iguais.')
-            self.hora_fim.errors.append('As datas não podem ser iguais.')
+            self.hora_inicio.errors.append('As horas não podem ser iguais.')
+            self.hora_fim.errors.append('As horas não podem ser iguais.')
             return False
         else:
             return True
