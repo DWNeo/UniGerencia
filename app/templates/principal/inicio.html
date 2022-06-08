@@ -48,18 +48,20 @@
       <!-- Tabela de Posts-->
       {% include 'principal/tabela/posts.html' %}
     </div>
+    {% if current_user.tipo.name == 'ADMIN' %}
     <div class="tab-pane fade {% if tab == 3 %}show active{% endif %}" id="pills-3" role="tabpanel">
-      <!-- Tabela de Equipamentos-->
-      {% include 'principal/tabela/equipamentos.html' %}
+        <!-- Tabela de Equipamentos-->
+        {% include 'principal/tabela/equipamentos.html' %}
     </div>
     <div class="tab-pane fade {% if tab == 4 %}show active{% endif %}" id="pills-4" role="tabpanel">
-      <!-- Tabela de Salas-->
-      {% include 'principal/tabela/salas.html' %}
+        <!-- Tabela de Salas-->
+        {% include 'principal/tabela/salas.html' %}
     </div>
     <div class="tab-pane fade {% if tab == 5 %}show active{% endif %}" id="pills-5" role="tabpanel">
-      <!-- Tabela de Usuários-->
-      {% include 'principal/tabela/usuarios.html' %}
+        <!-- Tabela de Usuários-->
+        {% include 'principal/tabela/usuarios.html' %}
     </div> 
+    {% endif %}
   </div>
   <!-- Modal -->
   {% include 'principal/modal/tipo_solicitacao.html' %}
