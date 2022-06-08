@@ -39,40 +39,47 @@ class Solicitacao(db.Model):
         'polymorphic_on': tipo
     }
     
+    def __repr__(self):
+        return f"Solicitação #{self.id} - {self.tipo} - {self.status.value}"
+    
     # Recupera todas as solicitações presentes no banco de dados
-    def recupera_tudo():
+    def recuperar_tudo():
         return Solicitacao.query.filter_by(ativo=True).all()
     
+    # Recupera todas as solicitações de um autor
+    def recuperar_tudo_autor(usuario):
+        return Solicitacao.query.filter_by(autor=usuario).filter_by(ativo=True).all()
+    
     # Recupera a solicitação pela ID e retorna erro 404 caso contrário
-    def recupera_id(sol_id):
+    def recuperar_id(sol_id):
         return Solicitacao.query.filter_by(id=sol_id).filter_by(ativo=True).first_or_404()
     
     # Recupera todas as solicitações em aberto no banco de dados
-    def recupera_aberto():
+    def recuperar_aberto():
         return Solicitacao.query.filter_by(status='ABERTO').filter_by(ativo=True).all()
     
     # Recupera todas as solicitações em uso no banco de dados
-    def recupera_em_uso():
+    def recuperar_em_uso():
         return Solicitacao.query.filter_by(status='EMUSO').filter_by(ativo=True).all()
     
     # Recupera todas as solicitações pendentes de um usuário
-    def recupera_pendente_autor(usuario):
+    def recuperar_pendente_autor(usuario):
         return Solicitacao.query.filter_by(status='PENDENTE').filter_by(
             autor=usuario).filter_by(ativo=True).all()
         
     # Recupera as últimas solicitações de um usuário específico
-    def recupera_ultimas_autor(usuario, limite):
+    def recuperar_ultimas_autor(usuario, limite):
         return Solicitacao.query.filter_by(autor=usuario).filter_by(
             ativo=True).order_by(Solicitacao.id.desc()).limit(limite)
      
     # Recupera as últimas solicitações de um equipamento específico
-    def recupera_ultimas_eqp(equipamento, limite):
+    def recuperar_ultimas_eqp(equipamento, limite):
         return Solicitacao.query.filter(
             SolicitacaoEquipamento.equipamentos.contains(equipamento)).filter_by(
             ativo=True).order_by(SolicitacaoEquipamento.id.desc()).limit(limite)
         
     # Recupera as mensagens de um autor de forma paginada
-    def recupera_ultimas_sala(sala, limite):
+    def recuperar_ultimas_sala(sala, limite):
         return Solicitacao.query.filter(
             SolicitacaoSala.salas.contains(sala)).filter_by(
             ativo=True).order_by(SolicitacaoSala.id.desc()).limit(limite)
@@ -91,43 +98,43 @@ class Solicitacao(db.Model):
         else:
             return None
 
-    def verifica_inicio_hoje(self):
-        if self.data_inicio_pref == datetime.now().astimezone(fuso_horario).date():
+    def verificar_inicio_hoje(data_inicio_pref):
+        if data_inicio_pref == datetime.now().astimezone(fuso_horario).date():
             return True
         else:
             return False
 
-    def verifica_autor(self, usuario):
+    def verificar_autor(self, usuario):
         if self.autor == usuario or usuario.tipo.name == 'ADMIN':
             return True
         else:
             return False
         
-    def verifica_aberto(self):
+    def verificar_aberto(self):
         if self.status.name == 'ABERTO' or self.status.name == 'SOLICITADO':
             return True
         else:
             return False
         
-    def verifica_confirmado(self):
+    def verificar_confirmado(self):
         if self.status.name == 'CONFIRMADO':
             return True
         else:
             return False
         
-    def verifica_em_uso(self):
+    def verificar_em_uso(self):
         if self.status.name == 'EMUSO':
             return True
         else:
             return False
         
-    def verifica_pendente(self):
+    def verificar_pendente(self):
         if self.status.name == 'PENDENTE':
             return True
         else:
             return False
     
-    def verifica_atraso(self):
+    def verificar_atraso(self):
         if (datetime.now().astimezone(fuso_horario) > 
             self.data_devolucao.astimezone(fuso_horario)):
             return True
@@ -135,7 +142,7 @@ class Solicitacao(db.Model):
             return False
         
     # Insere a solicitação no banco de dados
-    def insere(self):
+    def inserir(self):
         db.session.add(self)
         db.session.commit()
         return
@@ -146,7 +153,7 @@ class Solicitacao(db.Model):
         db.session.commit() 
     
     # Atualiza o status de um solicitação para 'Confirmado'
-    def confirma(self, lista_itens):
+    def confirmar(self, lista_itens):
         self.status = 'CONFIRMADO'
         if self.tipo == 'EQUIPAMENTO':
             self.equipamentos = lista_itens
@@ -185,7 +192,7 @@ class Solicitacao(db.Model):
         db.session.commit()
        
     # Atualiza o status de um solicitação para 'Finalizado' 
-    def finaliza(self):
+    def finalizar(self):
         self.status = 'FECHADO'
         self.data_finalizacao = datetime.now().astimezone(fuso_horario)
         if self.tipo == 'EQUIPAMENTO':
@@ -197,7 +204,7 @@ class Solicitacao(db.Model):
         db.session.commit()
        
     # Atualiza o status de um solicitação para 'Cancelado' 
-    def cancela(self):
+    def cancelar(self):
         if self.status != 'ABERTO' and self.status != 'SOLICITADO':
             if self.tipo == 'EQUIPAMENTO':
                 if self.equipamentos:
@@ -212,7 +219,7 @@ class Solicitacao(db.Model):
         db.session.commit()
         
     # Desativa o registro de uma solicitação no banco de dados
-    def exclui(self):
+    def excluir(self):
         # Atualiza o status de equipamentos e salas antes de exluir a solicitação
         if self.status.name == 'CONFIRMADO':
             if self.equipamentos:
@@ -224,9 +231,6 @@ class Solicitacao(db.Model):
         self.status = 'FECHADO'
         self.ativo = False
         db.session.commit()
-
-    def __repr__(self):
-        return f"Solicitação #{self.id} - {self.tipo} - {self.status.value}"
  
 # Tabela que associa as solicitações às salas
 solicitacao_s = db.Table('solicitacao_s',
@@ -262,7 +266,7 @@ class SolicitacaoSala(Solicitacao):
     }
     
     # Verifica se o usuário já possui uma solicitação não finalizada
-    def verifica_existente_usuario(usuario):
+    def verificar_existente_usuario(usuario):
         solicitacao = SolicitacaoSala.query.filter_by(autor=usuario).filter_by(
                       ativo=True).order_by(SolicitacaoSala.id.desc()).first()
         if solicitacao:
@@ -272,7 +276,7 @@ class SolicitacaoSala(Solicitacao):
         return False
     
     # Cria uma nova solitação de equipamento para ser inserida
-    def cria(status, form):
+    def criar(status, form):
         return SolicitacaoSala(turno_id=form.turno.data,
                                usuario_id=current_user.id,
                                descricao=form.descricao.data,
@@ -282,8 +286,8 @@ class SolicitacaoSala(Solicitacao):
                                data_fim_pref=form.data_fim_pref.data,
                                status=status)
     
-    def insere(self):
-        return super().insere()
+    def inserir(self):
+        return super().inserir()
     
 
 # Classe específica para as solicitações de equipamentos
@@ -305,7 +309,7 @@ class SolicitacaoEquipamento(Solicitacao):
     }
     
     # Verifica se o usuário já possui uma solicitação não finalizada
-    def verifica_existente_usuario(usuario):
+    def verificar_existente_usuario(usuario):
         solicitacao = SolicitacaoEquipamento.query.filter_by(autor=usuario).filter_by(
                       ativo=True).order_by(SolicitacaoEquipamento.id.desc()).first()
         if solicitacao:
@@ -315,7 +319,7 @@ class SolicitacaoEquipamento(Solicitacao):
         return False
         
     # Cria uma nova solitação de sala para ser inserida
-    def cria(status, form):
+    def criar(status, form):
         return SolicitacaoEquipamento(tipo_eqp_id=form.tipo_equipamento.data,
                                       turno_id=form.turno.data,
                                       usuario_id=current_user.id,
@@ -325,8 +329,8 @@ class SolicitacaoEquipamento(Solicitacao):
                                       data_fim_pref=form.data_fim_pref.data,
                                       status=status) 
         
-    def insere(self):
-        return super().insere()
+    def inserir(self):
+        return super().inserir()
     
 
 # Classe para os turnos possíveis para solicitações
@@ -342,22 +346,22 @@ class Turno(db.Model):
 
     # Um turno pode estar associado a múltiplas solicitações
     solicitacoes = db.relationship('Solicitacao', back_populates='turno')
+        
+    def __repr__(self):
+        return f"{self.name} ({self.hora_inicio} ~ {self.hora_fim})"
     
-    def recupera_tudo():
+    def recuperar_tudo():
         return Turno.query.filter_by(ativo=True).all()
     
-    def recupera_id(turno_id):
+    def recuperar_id(turno_id):
         return Turno.query.filter_by(id=turno_id).filter_by(ativo=True).first_or_404()
     
-    def cria(form):
+    def criar(form):
         return Turno(name=form.nome.data, 
                      hora_inicio=form.hora_inicio.data, 
                      hora_fim=form.hora_fim.data)
     
-    def insere(self):
+    def inserir(self):
         db.session.add(self)
         db.session.commit()
-    
-    def __repr__(self):
-        return f"{self.name} ({self.hora_inicio} ~ {self.hora_fim})"
     

@@ -63,12 +63,9 @@
                     {% endif %}
                 {% endif %}
                 {% if current_user == solicitacao.autor or current_user.tipo.name == 'ADMIN' %}
-                    {% if solicitacao.status.name == 'ABERTO' or solicitacao.status.name == 'CONFIRMADO' %}
+                    {% if solicitacao.status.name == 'ABERTO' or solicitacao.status.name == 'SOLICITADO' or solicitacao.status.name == 'CONFIRMADO' %}
                         <a class="btn-lg btn-outline-warning" href="#" data-toggle="modal" data-target="#cancelarSolicitacao{{ solicitacao.id }}"><i class="fas fa-window-close"></i></a>
                     {% endif %}
-                {% endif %}
-                {% if current_user.tipo.name == 'ADMIN' %}
-                    <a class="btn-lg btn-outline-danger" href="#" data-toggle="modal" data-target="#excluirSolicitacao{{ solicitacao.id }}"><i class="fas fa-trash"></i></a>
                 {% endif %}
             </td>
         </tr>

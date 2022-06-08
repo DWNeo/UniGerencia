@@ -35,19 +35,27 @@ class Relatorio(db.Model):
                            nullable=False)
     tipo = db.Column(db.String(50)) # discriminador
     
+    __mapper_args__ = {
+        'polymorphic_identity': 'RELATORIO',
+        'polymorphic_on': tipo
+    }
+    
+    def __repr__(self):
+        return f"Relatório #{self.id} - {self.tipo} - {self.status}"
+    
     # Verifica se um relatório está em aberto
-    def verifica_aberto(self):
+    def verificar_aberto(self):
         if self.status.name == 'ABERTO':
             return True
         else:
             return False
         
     # Insere um novo relatório no banco de dados
-    def insere(self):
+    def inserir(self):
         db.session.add(self)
         db.session.commit()
         
-    def atualiza(self, form):
+    def atualizar(self, form):
         # Atualiza as datas dependendo do status selecionado
         # Status 'Fechado' -> Data de Finalização
         # Status 'Aberto' -> Data de Atualização
@@ -60,10 +68,6 @@ class Relatorio(db.Model):
         self.detalhes = form.detalhes.data
         db.session.commit()
     
-    __mapper_args__ = {
-        'polymorphic_identity': 'RELATORIO',
-        'polymorphic_on': tipo
-    }
 
 # Classe específica para os relatórios de salas
 class RelatorioSala(Relatorio):
@@ -81,19 +85,19 @@ class RelatorioSala(Relatorio):
                            nullable=True)
     
     sala = db.relationship('Sala', back_populates='relatorios')
-
+    
     # Recupera o relatório pela ID e retorna erro 404 caso contrário
-    def recupera_id(relatorio_id):
+    def recuperar_id(relatorio_id):
         return RelatorioSala.query.filter_by(
             id=relatorio_id).filter_by(ativo=True).first_or_404()
         
     # Recupera todos os relatórios de uma sala
-    def recupera_tudo_sala(sala):
+    def recuperar_tudo_sala(sala):
         return RelatorioSala.query.filter_by(
             sala_id=sala.id).filter_by(ativo=True).all()
     
     # Cria um novo relatório de sala para ser inserido
-    def cria(sala_id, form):
+    def criar(sala_id, form):
         if form.finalizar.data == True:
             status = 'FECHADO'
             data_finalizacao = datetime.now().astimezone(fuso_horario)
@@ -110,17 +114,15 @@ class RelatorioSala(Relatorio):
                              usuario_id=current_user.id,
                              sala_id=sala_id)
 
-    def verifica_aberto(self):
-        return super().verifica_aberto()
+    def verificar_aberto(self):
+        return super().verificar_aberto()
     
-    def insere(self):
-        return super().insere()
+    def inserir(self):
+        return super().inserir()
     
-    def atualiza(self, form):
-        return super().atualiza(form)
-    
-    def __repr__(self):
-        return f"Relatório #{self.id} - {self.tipo} - {self.status}"
+    def atualizar(self, form):
+        return super().atualizar(form)
+
 
 # Classe específica para os relatórios de equipamentos
 class RelatorioEquipamento(Relatorio):
@@ -140,17 +142,17 @@ class RelatorioEquipamento(Relatorio):
     }
     
     # Recupera o relatório pela ID e retorna erro 404 caso contrário
-    def recupera_id(relatorio_id):
+    def recuperar_id(relatorio_id):
         return RelatorioEquipamento.query.filter_by(
             id=relatorio_id).filter_by(ativo=True).first_or_404()
         
     # Recupera todas os relatórios de um equipamento
-    def recupera_tudo_eqp(equipamento):
+    def recuperar_tudo_eqp(equipamento):
         return RelatorioEquipamento.query.filter_by(
             equipamento_id=equipamento.id).filter_by(ativo=True).all()
         
     # Cria um novo relatório de equipamento para ser inserido
-    def cria(eqp_id, form):
+    def criar(eqp_id, form):
         if form.finalizar.data == True:
             status = 'FECHADO'
             data_finalizacao = datetime.now().astimezone(fuso_horario)
@@ -167,15 +169,12 @@ class RelatorioEquipamento(Relatorio):
                                     usuario_id=current_user.id,
                                     equipamento_id=eqp_id)
     
-    def verifica_aberto(self):
-        return super().verifica_aberto()
+    def verificar_aberto(self):
+        return super().verificar_aberto()
     
-    def insere(self):
-        return super().insere()
+    def inserir(self):
+        return super().inserir()
         
-    def atualiza(self, form):
-        return super().atualiza(form)
-    
-    def __repr__(self):
-        return f"Relatório #{self.id} - {self.tipo} - {self.status}"
+    def atualizar(self, form):
+        return super().atualizar(form)
     

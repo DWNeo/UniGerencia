@@ -3,7 +3,7 @@ from flask_login import current_user, login_required
 
 from app.models import Post, Usuario
 from app.forms.posts import PostForm, PostAdminForm, AtualizaPostForm
-from app.utils import envia_email_mensagem
+from app.utils import enviar_email_mensagem
 
 posts = Blueprint('posts', __name__)
 
@@ -12,8 +12,9 @@ posts = Blueprint('posts', __name__)
 @login_required
 def post(post_id):
     # Permite acesso somente ao autor do post ou a um admin
-    post = Post.recupera_id(post_id)
-    if not post.verifica_autor(current_user):
+    post = Post.recuperar_id(post_id)
+    
+    if not post.verificar_autor(current_user):
         abort(403)
         
     return render_template('posts/post.html', title=post.titulo, post=post)
@@ -24,9 +25,9 @@ def post(post_id):
 def novo_post():
     # Preenche a lista de seleção de destinatário
     # Administradores podem escolher também o destinatário
-    if Usuario.verifica_admin(current_user):
+    if Usuario.verificar_admin(current_user):
         form = PostAdminForm()
-        usuarios = Usuario.recupera_tudo()
+        usuarios = Usuario.recuperar_tudo()
         lista_usuarios = [(usuario.id, usuario) for usuario in usuarios]
         form.destinatario.choices = lista_usuarios
     else:  
@@ -35,14 +36,14 @@ def novo_post():
     
     if form.validate_on_submit():
         # Cria uma mensagem de acordo com o tipo de usuário
-        if Usuario.verifica_admin(current_user):
+        if Usuario.verificar_admin(current_user):
             destinatario_id = form.destinatario.data
-            destinatario = Usuario.recupera_id(destinatario_id)
-            post = Post.cria(destinatario, form)
+            destinatario = Usuario.recuperar_id(destinatario_id)
+            post = Post.criar(destinatario, form)
         else:
-            post = Post.cria(None, form) 
-        post.insere()
-        envia_email_mensagem(post)
+            post = Post.criar(None, form) 
+        post.inserir()
+        enviar_email_mensagem(post)
         flash('Sua mensagem foi postada com sucesso!', 'success')
         return redirect(url_for('principal.inicio', tab=2))
 
@@ -55,15 +56,15 @@ def novo_post():
 def atualiza_post(post_id):
     # Impede o acesso a página de todos os usuários que 
     # não sejam o autor do post ou um admin
-    post = Post.recupera_id(post_id)
-    if not post.verifica_autor(current_user):
+    post = Post.recuperar_id(post_id)
+    if not post.verificar_autor(current_user):
         abort(403)
         
     # Valida o formulário enviado e atualiza o registro
     # do post no banco de dados de acordo com ele
     form = AtualizaPostForm()
     if form.validate_on_submit():
-        post.atualiza(form)
+        post.atualizar(form)
         flash('Sua mensagem foi atualizada com sucesso!', 'success')
         return redirect(url_for('principal.inicio', tab=2))
     elif request.method == 'GET':
@@ -84,11 +85,11 @@ def atualiza_post(post_id):
 def exclui_post(post_id):
     # Recupera o post pela ID e impede o acesso a página de 
     # todos os usuários que não sejam o autor ou um admin
-    post = Post.recupera_id(post_id)
-    if not post.verifica_autor(current_user):
+    post = Post.recuperar_id(post_id)
+    if not post.verificar_autor(current_user):
         abort(403)
 
     # Desativa o registro do post
-    post.exclui()
+    post.excluir()
     flash('Sua mensagem foi excluída com sucesso!', 'success')
     return redirect(url_for('principal.inicio', tab=2))

@@ -25,9 +25,9 @@ class SolicitacaoEquipamentoForm(FlaskForm):
         DataRequired(message=obrigatorio), 
         Length(max=50, message=max_50)])
     data_inicio_pref = DateField('Data de Início Preferencial', 
-        format='%Y-%m-%d', default=datetime.today())
+        format='%Y-%m-%d', default=datetime.now().astimezone(fuso_horario).date())
     data_fim_pref = DateField('Data de Fim Preferencial', 
-        format='%Y-%m-%d', default=datetime.today())
+        format='%Y-%m-%d', default=datetime.now().astimezone(fuso_horario).date())
     submit = SubmitField('Solicitar')
     
     # Valida as datas de início e fim inseridas no formulário

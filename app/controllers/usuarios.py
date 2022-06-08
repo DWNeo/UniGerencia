@@ -5,7 +5,7 @@ from app.models import Post, Solicitacao, Usuario, admin_required
 from app.forms.usuarios import (RegistraForm, LoginForm, AtualizaPerfilForm, 
                                 RedefineSenhaForm, NovaSenhaForm,
                                 AdminRegistraForm, AdminAtualizaPerfilForm)                        
-from app.utils import envia_email_redefinicao
+from app.utils import enviar_email_redefinicao
 
 usuarios = Blueprint('usuarios', __name__)
 
@@ -15,8 +15,8 @@ usuarios = Blueprint('usuarios', __name__)
 @admin_required
 def usuario(usuario_id):
     # Recupera as 5 últimas solicitações associadas ao usuário
-    usuario = Usuario.recupera_id(usuario_id)
-    solicitacoes = Solicitacao.recupera_ultimas_autor(usuario, 5)
+    usuario = Usuario.recuperar_id(usuario_id)
+    solicitacoes = Solicitacao.recuperar_ultimas_autor(usuario, 5)
 
     return render_template('usuarios/usuario.html', 
                            title=usuario, usuario=usuario,
@@ -33,8 +33,8 @@ def registrar():
     # novo registro de usuário no banco de dados
     form = RegistraForm()
     if form.validate_on_submit():
-        usuario = Usuario.cria(form)
-        usuario.insere()
+        usuario = Usuario.criar(form)
+        usuario.inserir()
         flash('Sua conta foi registrada com sucesso!\
               Você já pode realizar o login.', 'success')
         return redirect(url_for('usuarios.login'))
@@ -54,7 +54,7 @@ def login():
     if form.validate_on_submit():
         # Verifica se o email e o hash da senha inserida estão ambos
         # corretos e só então realiza o login do usuário
-        usuario = Usuario.recupera_email(form.email.data)
+        usuario = Usuario.recuperar_email(form.email.data)
         if usuario.login(form):
             # Após o login, redireciona o usuário para a última página acessada
             prox_pagina = request.args.get('next')
@@ -83,7 +83,7 @@ def perfil():
     # o registro do usuário atual no banco de dados
     form = AtualizaPerfilForm()
     if form.validate_on_submit():
-        current_user.atualiza(form)
+        current_user.atualizar(form)
         flash('Sua conta foi atualizada com sucesso!', 'success')
         return redirect(url_for('usuarios.perfil'))  
     elif request.method == 'GET':
@@ -108,8 +108,8 @@ def posts_usuario(usuario_id):
     pagina = request.args.get('pagina', 1, type=int)
     # Recupera e realiza a paginação dos posts de que o usuário é autor
     # Os posts recuperados depende do argumento acima
-    usuario = Usuario.recupera_id(usuario_id)
-    posts = Post.recupera_autor_paginado(usuario, pagina, 5)
+    usuario = Usuario.recuperar_id(usuario_id)
+    posts = Post.recuperar_autor_paginado(usuario, pagina, 5)
 
     return render_template('usuarios/posts_usuario.html', 
                            posts=posts, usuario=usuario)
@@ -121,8 +121,8 @@ def novo_usuario():
     form = AdminRegistraForm()
     if form.validate_on_submit():
         # Insere novo usuário após validação do formulário
-        usuario = Usuario.cria(form)
-        usuario.insere()
+        usuario = Usuario.criar(form)
+        usuario.inserir()
         flash('A conta foi registrada com sucesso!.', 'success')
         return redirect(url_for('principal.inicio', tab=5))
 
@@ -135,10 +135,10 @@ def novo_usuario():
 def atualiza_usuario(usuario_id):
     # Valida os dados do formulário enviado e atualiza
     # o registro do usuário especificado no banco de dados
-    usuario = Usuario.recupera_id(usuario_id) 
+    usuario = Usuario.recuperar_id(usuario_id) 
     form = AdminAtualizaPerfilForm()
     if form.validate_on_submit():
-        usuario.atualiza(form)
+        usuario.atualizar(form)
         flash('A conta do usuário foi atualizada com sucesso!', 'success')
         return redirect(url_for('principal.inicio', tab=5))
     elif request.method == 'GET':
@@ -157,13 +157,13 @@ def atualiza_usuario(usuario_id):
 @admin_required
 def exclui_usuario(usuario_id):
     # Impede o usuário de excluir a própria conta
-    usuario = Usuario.recupera_id(usuario_id)
+    usuario = Usuario.recuperar_id(usuario_id)
     if current_user.id == usuario.id:
         flash('Não é possível excluir a própria conta!', 'danger')
         return redirect(url_for('principal.inicio', tab=5))
     
     # Desativa o registro do usuário especificado
-    usuario.exclui()
+    usuario.excluir()
     flash('O usuário foi excluído com sucesso!', 'success')
     
     return redirect(url_for('principal.inicio', tab=5))
@@ -178,8 +178,8 @@ def redefinir_senha():
     if form.validate_on_submit():
         # Envia uma mensagem de refinição de senha para o 
         # email do usuário utilizando uma função auxilar
-        usuario = Usuario.recupera_email(form.email.data)
-        envia_email_redefinicao(usuario)
+        usuario = Usuario.recuperar_email(form.email.data)
+        enviar_email_redefinicao(usuario)
         flash('Um email foi enviado com instruções de como\
               proceder com a redefinição da senha.', 'info')
         return redirect(url_for('usuarios.login'))
@@ -196,8 +196,8 @@ def redefinir_token(token):
 
     # Verifica se o token inserido pelo usuário é válido
     # A verificação é realizada com base no token gerado pela
-    # função 'obtem_token_redefinicao' da classe Usuario
-    usuario = Usuario.verifica_token_redefinicao(token)
+    # função 'obter_token_redefinicao' da classe Usuario
+    usuario = Usuario.verificar_token_redefinicao(token)
     if usuario is None:
         flash('Este token é inválido ou já expirou.', 'warning')
         return redirect(url_for('usuarios.redefinir_senha'))

@@ -8,7 +8,7 @@ from flask_mail import Message
 from app import mail
 
 # Redimensiona e salva as imagens de perfil na pasta definida
-def salva_imagem(form_picture):
+def salvar_imagem(form_picture):
     # Gera um nome aleatório pra imagem e define o diretório pra salvá-la
     random_hex = secrets.token_hex(8)
     _, f_ext = os.path.splitext(form_picture.filename)
@@ -24,8 +24,8 @@ def salva_imagem(form_picture):
     return picture_fn
 
 # Envia o email de redefinição de senha com o token gerado
-def envia_email_redefinicao(usuario):
-    token = usuario.obtem_token_redefinicao()
+def enviar_email_redefinicao(usuario):
+    token = usuario.obter_token_redefinicao()
     msg = Message('UniGerência: Pedido de Redefinição de Senha',
                   sender='unigerencia.app@gmail.com',
                   recipients=[usuario.email])
@@ -39,7 +39,7 @@ Se você não fez esse pedido, então apenas ignore este email e nenhuma altera�
     mail.send(msg)
 
 # Envia o email de aviso para um usuário com solicitações confirmadas
-def envia_email_confirmacao(solicitacao):
+def enviar_email_confirmacao(solicitacao):
     msg = Message('UniGerência: Aviso de Solicitação Confirmada',
                   sender='unigerencia.app@gmail.com',
                   recipients=[solicitacao.autor.email])
@@ -50,7 +50,7 @@ def envia_email_confirmacao(solicitacao):
     mail.send(msg)
 
 # Envia o email de aviso para um usuário com solicitações com devolução atrasada
-def envia_email_atraso(solicitacao):
+def enviar_email_atraso(solicitacao):
     msg = Message('UniGerência: Aviso de Devolução Atrasada',
                   sender='unigerencia.app@gmail.com',
                   recipients=[solicitacao.autor.email])
@@ -64,7 +64,7 @@ Se você já estiver regularizado, então apenas ignore este email.
     mail.send(msg)
     
 # Envia um email de aviso para um usuário com uma nova mensagem recebida
-def envia_email_mensagem(post):
+def enviar_email_mensagem(post):
     msg = Message('UniGerência: Aviso de Nova Mensagem',
                   sender='unigerencia.app@gmail.com',
                   recipients=[post.destinatario.email])

@@ -7,7 +7,7 @@ from flask import current_app, flash, redirect, url_for
 from flask_login import UserMixin, current_user, login_user
 
 from app import db, bcrypt, login_manager, fuso_horario
-from app.utils import salva_imagem
+from app.utils import salvar_imagem
 
 # Carrega o usuário que faz login da tabela apropriada
 @login_manager.user_loader
@@ -18,7 +18,7 @@ def load_user(user_id):
 def admin_required(f):
     @wraps(f)
     def wrap(*args, **kwargs):
-        if Usuario.verifica_admin(current_user):
+        if Usuario.verificar_admin(current_user):
             return f(*args, **kwargs)
         else:
             flash('Você não tem autorização para acessar esta página.', 'danger')
@@ -29,7 +29,7 @@ def admin_required(f):
 def prof_required(f):
     @wraps(f)
     def wrap(*args, **kwargs):
-        if Usuario.verifica_prof(current_user):
+        if Usuario.verificar_prof(current_user):
             return f(*args, **kwargs)
         else:
             flash('Você não tem autorização para acessar esta página.', 'danger')
@@ -68,14 +68,17 @@ class Usuario(db.Model, UserMixin):
     solicitacoes = db.relationship('Solicitacao', backref='autor', lazy=True)
     relatorios = db.relationship('Relatorio', backref='autor', lazy=True)
 
+    def __repr__(self):
+        return f"{self.nome} ({self.identificacao})"
+
     # Retorna o token necessário para que o usuário possa redefinir sua senha
-    def obtem_token_redefinicao(self):
+    def obter_token_redefinicao(self):
         s = Serializer(current_app.config['SECRET_KEY'], current_app.config['SALT'])
         return s.dumps({'usuario_id': self.id})
 
     # Verifica se o token fornecido pelo usuário é válido
     @staticmethod
-    def verifica_token_redefinicao(token):
+    def verificar_token_redefinicao(token):
         s = Serializer(current_app.config['SECRET_KEY'], current_app.config['SALT'])
         try:
             usuario_id = s.loads(token, max_age=current_app.config['MAX_AGE'],)['usuario_id']
@@ -84,32 +87,30 @@ class Usuario(db.Model, UserMixin):
         return Usuario.query.get(usuario_id)
     
     # Recupera todos os usuários presentes no banco de dados
-    def recupera_tudo():
+    def recuperar_tudo():
         return Usuario.query.filter_by(ativo=True).all()
     
     # Recupera o usuário pela ID e retorna erro 404 caso contrário
-    def recupera_id(usuario_id):
+    def recuperar_id(usuario_id):
         return Usuario.query.filter_by(id=usuario_id).filter_by(ativo=True).first_or_404()
     
     # Recupera o usuário pelo Identificação
-    def recupera_identificacao(usuario_idf):
+    def recuperar_identificacao(usuario_idf):
         return Usuario.query.filter_by(identificacao=usuario_idf).filter_by(ativo=True).first()
     
     # Recupera o usuário pelo Email
-    def recupera_email(usuario_email):
+    def recuperar_email(usuario_email):
         return Usuario.query.filter_by(email=usuario_email).filter_by(ativo=True).first()
     
     # Verifica se um usuário é administrador ou não
-    @staticmethod
-    def verifica_admin(self):
+    def verificar_admin(self):
         if self.tipo.name == 'ADMIN':
             return True
         else:
             return False
         
     # Verifica se um usuário é prof ou administrador
-    @staticmethod
-    def verifica_prof(self):
+    def verificar_prof(self):
         if self.tipo.name == 'PROF' or self.tipo.name == 'ADMIN':
             return True
         else:
@@ -124,10 +125,10 @@ class Usuario(db.Model, UserMixin):
             return False
     
     # Cria um novo usuário para ser inserido
-    def cria(form):
+    def criar(form):
         # Realiza o tratamento da imagem de perfil enviada
         if form.imagem.data:
-            arquivo_imagem = salva_imagem(form.imagem.data)
+            arquivo_imagem = salvar_imagem(form.imagem.data)
             imagem_perfil = arquivo_imagem
         else:
             imagem_perfil = None 
@@ -142,15 +143,15 @@ class Usuario(db.Model, UserMixin):
                        tipo=form.tipo.data)
         
     # Insere um novo usuário no banco de dados
-    def insere(self):
+    def inserir(self):
         db.session.add(self)
         db.session.commit()
     
     # Atualiza um usuário existente no banco de dados
-    def atualiza(self, form):
+    def atualizar(self, form):
         # Realiza o tratamento da imagem enviada
         if form.imagem.data:
-            arquivo_imagem = salva_imagem(form.imagem.data)
+            arquivo_imagem = salvar_imagem(form.imagem.data)
             self.imagem_perfil = arquivo_imagem
         # Atualiza o tipo de usuário, se for necessário
         try:
@@ -175,10 +176,7 @@ class Usuario(db.Model, UserMixin):
         db.session.commit()
     
     # Desativa o registro de um usuário no banco de dados
-    def exclui(self):
+    def excluir(self):
         self.ativo = False
         db.session.commit()
-
-    def __repr__(self):
-        return f"{self.nome} ({self.identificacao})"
     

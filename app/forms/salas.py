@@ -21,7 +21,7 @@ class SalaForm(FlaskForm):
     submit = SubmitField('Cadastrar')
 
     def validate_numero(self, numero):
-        sala = Sala.query.filter_by(numero=numero.data).first()
+        sala = Sala.recupera_primeiro_numero(numero)
         if sala:
             raise ValidationError(sala_existente)
 

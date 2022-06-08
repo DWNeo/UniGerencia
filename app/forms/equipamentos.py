@@ -20,8 +20,7 @@ class EquipamentoForm(FlaskForm):
     submit = SubmitField('Cadastrar')
 
     def validate_patrimonio(self, patrimonio):
-        equipamento = Equipamento.query.filter_by(
-            patrimonio=patrimonio.data).first()
+        equipamento = Equipamento.recupera_primeiro_patrimonio(patrimonio)
         if equipamento:
             raise ValidationError(patrimonio_existente)
 
@@ -42,8 +41,7 @@ class TipoEquipamentoForm(FlaskForm):
     submit = SubmitField('Cadastrar')
 
     def validate_nome(self, nome):
-        nome = TipoEquipamento.query.filter_by(
-            nome=nome.data).first()
+        nome = TipoEquipamento.recupera_primeiro_nome(nome)
         if nome:
             raise ValidationError(eqp_nome_existente)
 

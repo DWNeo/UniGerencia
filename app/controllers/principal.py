@@ -2,8 +2,9 @@ from flask import render_template, request, flash, Blueprint
 from flask_login import current_user, login_required
 
 from app import db, scheduler
+from app.controllers.equipamentos import equipamento
 from app.models import Post, Equipamento, Sala, Solicitacao, Usuario
-from app.utils import envia_email_atraso
+from app.utils import enviar_email_atraso
 from app.forms.solicitacoes import EntregaSolicitacaoForm
 
 principal = Blueprint('principal', __name__)
@@ -14,18 +15,18 @@ def atualiza_status_solicitacoes():
     with scheduler.app.app_context(): 
         print('Scheduler: Atualizando status das solicitações...')
         # Verifica se há solicitações em uso atrasadas 
-        solicitacoes = Solicitacao.recupera_em_uso()
+        solicitacoes = Solicitacao.recuperar_em_uso()
         for solicitacao in solicitacoes:
-            if solicitacao.verifica_atraso():
+            if solicitacao.verificar_atraso():
                 # Atualiza o status das solicitações que estão
                 solicitacao.pendente()
                 print('Scheduler: Existe uma nova solicitação atrasada.')
                 print('Scheduler: ', solicitacao)
-                envia_email_atraso(solicitacao)
+                enviar_email_atraso(solicitacao)
         # Verifica se há solicitações marcadas o dia atual     
-        solicitacoes = Solicitacao.recupera_aberto()
+        solicitacoes = Solicitacao.recuperar_aberto()
         for solicitacao in solicitacoes:
-            if solicitacao.verifica_inicio_hoje():
+            if solicitacao.verificar_inicio_hoje():
                 # Atualiza o status das solicitações que estão
                 solicitacao.solicitado()
                 print('Scheduler: Existe uma nova solicitação para hoje.')
@@ -40,23 +41,21 @@ def inicio():
     tab = request.args.get('tab', 1, type=int)
     
     # Recupera os registros ativos de cada tabela do banco de dados
-    # A paginação pode ser necessária caso haja uma expectativa
-    # de número de dados grandes o suficiente
-    solicitacoes = Solicitacao.recupera_tudo()
-    posts = Post.recupera_tudo()
-    equipamentos = Equipamento.recupera_tudo()
-    salas = Sala.recupera_tudo()
-    usuarios = Usuario.recupera_tudo() 
+    solicitacoes = Solicitacao.recuperar_tudo()
+    posts = Post.recuperar_tudo()
+    equipamentos = Equipamento.recuperar_tudo()
+    salas = Sala.recuperar_tudo()
+    usuarios = Usuario.recuperar_tudo() 
     
     # Verifica as solicitações por tempo restante e atrasos
     lista_tempo = []
     for solicitacao in solicitacoes:
         tempo_restante = solicitacao.tempo_restante()
         lista_tempo.append(tempo_restante) 
-        if solicitacao.verifica_pendente():
+        if solicitacao.verificar_pendente():
             # Exibe uma mensagem de alerta para o usuário com atraso
-            if solicitacao.verifica_autor(current_user):
-                if not Usuario.verifica_admin(current_user):
+            if solicitacao.verificar_autor(current_user):
+                if not Usuario.verificar_admin(current_user):
                     flash('Você possui uma solicitação atrasada.', 'warning')  
 
     # Importa o formulário para entrega de solicitações

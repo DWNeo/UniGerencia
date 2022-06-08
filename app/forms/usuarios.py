@@ -31,13 +31,13 @@ class RegistraForm(FlaskForm):
 
     # Valida se a identificação inserida no formulário é única
     def validate_identificacao(self, identificacao):
-        usuario = Usuario.recupera_identificacao(identificacao.data)
+        usuario = Usuario.recuperar_identificacao(identificacao.data)
         if usuario:
             raise ValidationError(identificacao_existente)
 
     # Valida se o email inserido no formulário é único
     def validate_email(self, email):
-        usuario = Usuario.recupera_email(email.data)
+        usuario = Usuario.recuperar_email(email.data)
         if usuario:
             raise ValidationError(email_existente)
 
@@ -75,13 +75,13 @@ class AtualizaPerfilForm(FlaskForm):
 
     def validate_identificacao(self, identificacao):
         if identificacao.data != current_user.identificacao:
-            usuario = Usuario.recupera_identificacao(identificacao.data)
+            usuario = Usuario.recuperar_identificacao(identificacao.data)
             if usuario:
                 raise ValidationError(identificacao_existente)
 
     def validate_email(self, email):
         if email.data != current_user.email:
-            usuario = Usuario.recupera_email(email.data)
+            usuario = Usuario.recuperar_email(email.data)
             if usuario:
                 raise ValidationError(email_existente)
 
@@ -130,12 +130,12 @@ class AdminRegistraForm(FlaskForm):
     submit = SubmitField('Registrar')
 
     def validate_identificacao(self, identificacao):
-        usuario = Usuario.recupera_identificacao(identificacao.data)
+        usuario = Usuario.recuperar_identificacao(identificacao.data)
         if usuario:
             raise ValidationError(identificacao_existente)
 
     def validate_email(self, email):
-        usuario = Usuario.recupera_email(email.data)
+        usuario = Usuario.recuperar_email(email.data)
         if usuario:
             raise ValidationError(email_existente)
 
@@ -148,7 +148,7 @@ class RedefineSenhaForm(FlaskForm):
     submit = SubmitField('Redefinir Senha')
 
     def validate_email(self, email):
-        usuario = Usuario.recupera_email(email.data)
+        usuario = Usuario.recuperar_email(email.data)
         if usuario is None:
             raise ValidationError(email_inexistente)
 

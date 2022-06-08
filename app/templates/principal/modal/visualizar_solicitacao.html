@@ -27,7 +27,7 @@
                             {% if solicitacao.salas %}
                                 <h6 class="article-title"><strong>Salas Solicitadas:</strong></h6>
                                 {% for sala in solicitacao.salas %}
-                                    <h6 class="article-title"><strong>-</strong> {{ sala.numero }} </h6>  
+                                    <h6 class="article-title"><strong>-</strong> {{ sala.numero }} (Qtd. Alunos: {{ sala.qtd_aluno }})</h6>  
                                 {% endfor %}
                             {% endif %}
                         {% endif %}
