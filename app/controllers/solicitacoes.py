@@ -121,7 +121,7 @@ def nova_solicitacao_sala():
 
     if form.validate_on_submit():
         # Define o status de acordo com a data de início preferencial
-        if Solicitacao.verifica_inicio_hoje(form):
+        if Solicitacao.verifica_inicio_hoje(form.data_inicio_pref):
             # Verifica se a quantidade solicitada está disponível
             setor = Setor.recupera_id(form.setor.data)
             if form.qtd_preferencia.data > Setor.contagem(setor):

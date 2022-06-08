@@ -34,6 +34,11 @@ class Solicitacao(db.Model):
     
     turno = db.relationship('Turno', back_populates='solicitacoes')
 
+    __mapper_args__ = {
+        'polymorphic_identity': 'SOLICITACAO',
+        'polymorphic_on': tipo
+    }
+    
     # Recupera todas as solicitações presentes no banco de dados
     def recupera_tudo():
         return Solicitacao.query.filter_by(ativo=True).all()
@@ -41,6 +46,10 @@ class Solicitacao(db.Model):
     # Recupera a solicitação pela ID e retorna erro 404 caso contrário
     def recupera_id(sol_id):
         return Solicitacao.query.filter_by(id=sol_id).filter_by(ativo=True).first_or_404()
+    
+    # Recupera todas as solicitações em aberto no banco de dados
+    def recupera_aberto():
+        return Solicitacao.query.filter_by(status='ABERTO').filter_by(ativo=True).all()
     
     # Recupera todas as solicitações em uso no banco de dados
     def recupera_em_uso():
@@ -82,8 +91,8 @@ class Solicitacao(db.Model):
         else:
             return None
 
-    def verifica_inicio_hoje(form):
-        if form.data_inicio_pref.data == datetime.now().astimezone(fuso_horario).date():
+    def verifica_inicio_hoje(self):
+        if self.data_inicio_pref == datetime.now().astimezone(fuso_horario).date():
             return True
         else:
             return False
@@ -131,6 +140,11 @@ class Solicitacao(db.Model):
         db.session.commit()
         return
     
+    # Atualiza o status de um solicitação para 'Solicitado'
+    def solicitado(self):
+        self.status = 'SOLICITADO'    
+        db.session.commit() 
+    
     # Atualiza o status de um solicitação para 'Confirmado'
     def confirma(self, lista_itens):
         self.status = 'CONFIRMADO'
@@ -142,13 +156,12 @@ class Solicitacao(db.Model):
             self.salas = lista_itens
             for sala in self.salas:
                 sala.status = 'CONFIRMADO'     
-        db.session.commit()
+        db.session.commit()  
         
     # Atualiza o status de um solicitação para 'Em Uso'
     def em_uso(self, form):
         self.status = 'EMUSO'
         self.data_retirada = datetime.now().astimezone(fuso_horario)
-        
         # Combina data de devolução com o horário final do turno
         self.data_devolucao = datetime.combine(form.data_devolucao.data, 
                                                self.turno.hora_fim)
@@ -161,7 +174,7 @@ class Solicitacao(db.Model):
         db.session.commit()
     
     # Atualiza o status de um solicitação para 'Pendente'
-    def atualiza_status_pendente(self):
+    def pendente(self):
         self.status = 'PENDENTE'
         if self.tipo == 'EQUIPAMENTO':
             for equipamento in self.equipamentos:
@@ -211,29 +224,6 @@ class Solicitacao(db.Model):
         self.status = 'FECHADO'
         self.ativo = False
         db.session.commit()
-    
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'status': self.status.name,
-            'data_abertura': self.data_abertura,
-            'data_inicio_pref': self.data_inicio_pref,
-            'data_fim_pref': self.data_fim_pref,
-            'data_retirada': self.data_retirada,
-            'data_devolucao': self.data_devolucao,
-            'data_cancelamento': self.data_cancelamento,
-            'data_finalizacao': self.data_finalizacao,
-            'quantidade': self.quantidade,
-            'descricao': self.descricao,
-            'tipo': self.tipo,
-            'usuario_id': self.usuario_id,
-            'turno_id': self.turno_id
-        }
-        
-    __mapper_args__ = {
-        'polymorphic_identity': 'SOLICITACAO',
-        'polymorphic_on': tipo
-    }
 
     def __repr__(self):
         return f"Solicitação #{self.id} - {self.tipo} - {self.status.value}"
@@ -267,6 +257,11 @@ class SolicitacaoSala(Solicitacao):
     salas = db.relationship('Sala', secondary= solicitacao_s, 
                                     back_populates='solicitacoes')
     
+    __mapper_args__ = {
+        'polymorphic_identity': 'SALA',
+    }
+    
+    # Verifica se o usuário já possui uma solicitação não finalizada
     def verifica_existente_usuario(usuario):
         solicitacao = SolicitacaoSala.query.filter_by(autor=usuario).filter_by(
                       ativo=True).order_by(SolicitacaoSala.id.desc()).first()
@@ -276,6 +271,7 @@ class SolicitacaoSala(Solicitacao):
                 return True
         return False
     
+    # Cria uma nova solitação de equipamento para ser inserida
     def cria(status, form):
         return SolicitacaoSala(turno_id=form.turno.data,
                                usuario_id=current_user.id,
@@ -289,12 +285,6 @@ class SolicitacaoSala(Solicitacao):
     def insere(self):
         return super().insere()
     
-    def exclui(self):
-        return super().exclui()
-    
-    __mapper_args__ = {
-        'polymorphic_identity': 'SALA',
-    }
 
 # Classe específica para as solicitações de equipamentos
 class SolicitacaoEquipamento(Solicitacao):
@@ -310,6 +300,11 @@ class SolicitacaoEquipamento(Solicitacao):
                                    back_populates='solicitacoes')
     tipo_eqp = db.relationship('TipoEquipamento', back_populates='solicitacoes')
 
+    __mapper_args__ = {
+        'polymorphic_identity': 'EQUIPAMENTO'
+    }
+    
+    # Verifica se o usuário já possui uma solicitação não finalizada
     def verifica_existente_usuario(usuario):
         solicitacao = SolicitacaoEquipamento.query.filter_by(autor=usuario).filter_by(
                       ativo=True).order_by(SolicitacaoEquipamento.id.desc()).first()
@@ -319,6 +314,7 @@ class SolicitacaoEquipamento(Solicitacao):
                 return True
         return False
         
+    # Cria uma nova solitação de sala para ser inserida
     def cria(status, form):
         return SolicitacaoEquipamento(tipo_eqp_id=form.tipo_equipamento.data,
                                       turno_id=form.turno.data,
@@ -332,12 +328,6 @@ class SolicitacaoEquipamento(Solicitacao):
     def insere(self):
         return super().insere()
     
-    def exclui(self):
-        return super().exclui()
-    
-    __mapper_args__ = {
-        'polymorphic_identity': 'EQUIPAMENTO'
-    }
 
 # Classe para os turnos possíveis para solicitações
 class Turno(db.Model):

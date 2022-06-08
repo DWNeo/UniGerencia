@@ -11,18 +11,25 @@ principal = Blueprint('principal', __name__)
 # Tarefa que roda no fundo para atualizar os status da solicitações
 @scheduler.task('interval', id='atualiza_status', seconds=60, misfire_grace_time=900)
 def atualiza_status_solicitacoes():
-    with scheduler.app.app_context():
-        # Verifica se há solicitações em uso atrasadas 
-        # e atualiza o status das que estão
+    with scheduler.app.app_context(): 
         print('Scheduler: Atualizando status das solicitações...')
+        # Verifica se há solicitações em uso atrasadas 
         solicitacoes = Solicitacao.recupera_em_uso()
         for solicitacao in solicitacoes:
-            if Solicitacao.verifica_atraso(solicitacao):
-                # Troca o status dos registros associados
-                Solicitacao.atualiza_status_pendente(solicitacao)
+            if solicitacao.verifica_atraso():
+                # Atualiza o status das solicitações que estão
+                solicitacao.pendente()
                 print('Scheduler: Existe uma nova solicitação atrasada.')
                 print('Scheduler: ', solicitacao)
                 envia_email_atraso(solicitacao)
+        # Verifica se há solicitações marcadas o dia atual     
+        solicitacoes = Solicitacao.recupera_aberto()
+        for solicitacao in solicitacoes:
+            if solicitacao.verifica_inicio_hoje():
+                # Atualiza o status das solicitações que estão
+                solicitacao.solicitado()
+                print('Scheduler: Existe uma nova solicitação para hoje.')
+                print('Scheduler: ', solicitacao)
                         
 
 @principal.route("/", methods=['GET', 'POST'])
