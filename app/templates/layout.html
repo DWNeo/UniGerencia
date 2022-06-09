@@ -8,25 +8,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-
-    <!-- CSS Principal e do Bootstrap -->
+    <!-- CSS -->
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap4.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
-
-    <!-- CSS do DataTables -->
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.12.1/b-2.2.3/b-colvis-2.2.3/b-html5-2.2.3/b-print-2.2.3/cr-1.5.6/date-1.1.2/fh-3.2.3/r-2.3.0/rg-1.2.0/rr-1.2.8/sc-2.0.6/sp-2.0.1/sl-1.4.0/datatables.min.css"/>
-
-    <!-- CSS do Select2 -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/datatables.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/select2.min.css') }}"/>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/select2-bootstrap.min.css') }}">
-
-    <!-- CSS do Font Awesome -->
     <link rel="stylesheet" type="text/css" href="https://pro.fontawesome.com/releases/v5.15.0/css/all.css">
-
-    <!-- FavIcon e Fonte Roboto -->
-	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}"/>
-    
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
     <!-- Título da Página -->
     {% if title %}
         <title>UniGerência: {{ title }}</title>
@@ -65,7 +55,6 @@
             </div>
         </nav>
     </header>
-
     <main role="main" class="container-fluid">
         <!-- Mensagens de Alerta -->
         <!-- Mensagens retornadas pelas funções flash são exibidas aqui -->
@@ -108,20 +97,14 @@
             </div>
         </div>
     </main>
-
-    <!-- JavaScript do jQuery, Pooper.js e Bootstrap JS -->
+    <!-- JavaScript das Bibliotecas -->
     <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='js/popper_old.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap4.min.js') }}"></script>
-
-    <!-- JavaScript do DataTables -->
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
-    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.12.1/b-2.2.3/b-colvis-2.2.3/b-html5-2.2.3/b-print-2.2.3/cr-1.5.6/date-1.1.2/fh-3.2.3/r-2.3.0/rg-1.2.0/rr-1.2.8/sc-2.0.6/sp-2.0.1/sl-1.4.0/datatables.min.js"></script>
-    
-    <!-- JavaScript do Select2 -->
+    <script type="text/javascript" src="{{ url_for('static', filename='js/datatables.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/pdfmake.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/vfs_fonts.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/select2.min.js') }}"></script>
-
     <!-- Configuração de JavaScript para funcionalidades importantes -->
     {% include 'script.html' %}
 </body>
