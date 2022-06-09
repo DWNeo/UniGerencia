@@ -239,5 +239,17 @@
             },
             "width": '100%'
         });
+        $('#equipamentos_modal').select2({
+            placeholder: "Equipamentos Disponíveis",
+            theme: "bootstrap",
+            allowClear: false,
+            dropdownParent: $("#entregarSolicitacaoEquip35"),
+            "language": {
+                "noResults": function(){
+                    return "Nenhum equipamento encontrado";
+                }
+            },
+            "width": '100%'
+        });
     } );
 </script>

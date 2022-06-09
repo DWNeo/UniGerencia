@@ -5,17 +5,17 @@ from flask_login import current_user, login_required
 
 from app.models import (Solicitacao, Equipamento, Sala, SolicitacaoEquipamento, 
                         SolicitacaoSala, TipoEquipamento, Turno, Setor, 
-                        prof_required, admin_required, Usuario)
+                        Usuario, prof_required, admin_required)
 from app.forms.solicitacoes import (SolicitacaoEquipamentoForm, TurnoForm,
-                                    SolicitacaoSalaForm, EntregaSolicitacaoForm,
-                                    ConfirmaSolicitacaoEquipamentoForm,
-                                    ConfirmaSolicitacaoSalaForm)                          
+                                    SolicitacaoSalaForm,
+                                    EntregaSolicitacaoEquipamentoForm,
+                                    EntregaSolicitacaoSalaForm)                          
 from app.utils import enviar_email_confirmacao
 
 solicitacoes = Blueprint('solicitacoes', __name__)
 
 
-@solicitacoes.route("/<int:solicitacao_id>")
+@solicitacoes.route("/<int:solicitacao_id>", methods=['GET'])
 @login_required
 def solicitacao(solicitacao_id):
     # Permite acesso somente ao autor da solicitação ou a um admin
@@ -132,7 +132,6 @@ def nova_solicitacao_sala():
             status = 'ABERTO'
             flash('Você foi colocado na lista de espera pois\
                    escolheu outro dia como preferência.', 'warning')
-            
         # Insere a nova solicitação no banco de dados
         solicitacao = SolicitacaoSala.criar(status, form)
         solicitacao.inserir()
@@ -143,109 +142,19 @@ def nova_solicitacao_sala():
                            legend='Nova Solicitação de Sala', form=form)
 
 
-@solicitacoes.route("/<int:solicitacao_id>/confirmar", methods=['GET', 'POST'])
+@solicitacoes.route("/<int:solicitacao_id>/confirmar", methods=['POST'])
 @login_required
 @admin_required
 def confirma_solicitacao(solicitacao_id):
+    # Atualiza o status da solicitação
     solicitacao = Solicitacao.recuperar_id(solicitacao_id)
-    # Se a solicitação for do tipo 'Sala'...
-    if solicitacao.tipo == 'SALA':
-        # Preenche seletor de salas
-        form = ConfirmaSolicitacaoSalaForm()
-        salas = Sala.recuperar_disponivel_setor(solicitacao.setor.id)
-        lista_salas = [(sala.id, sala) for sala in salas]
-        if lista_salas:
-            form.salas.choices=lista_salas
-        else:
-            flash('Não há salas disponíveis no setor selecionado\
-                  para confirmar.', 'warning')
-            return redirect(url_for('principal.inicio'))
-    
-        if form.validate_on_submit():
-            lista_salas = []
-            # Realiza uma última verificação de disponibilidade da sala
-            for sala in form.salas.data:
-                sala = Sala.recuperar_id(sala)
-                lista_salas.append(sala)
-            # Verifica se a quantidade solicitada e selecionada é igual
-            if len(lista_salas) != solicitacao.quantidade:
-                flash('A quantidade de salas selecionadas\
-                       é diferente da solicitada.', 'warning')
-                return redirect(url_for('principal.inicio'))
-            # Atualiza o status da sala e da solicitação
-            solicitacao.confirmar(lista_salas)
-            enviar_email_confirmacao(solicitacao)
-            flash('A solicitação foi confirmada com sucesso!', 'success')
-            return redirect(url_for('principal.inicio'))
-
-        # Preenche os campos do formulário
-        elif request.method == 'GET':
-            form.autor.data = solicitacao.autor.nome
-            form.identificacao.data = solicitacao.autor.identificacao
-            form.data_abertura.data = solicitacao.data_abertura.strftime('%d/%m/%Y')
-            form.turno.data = solicitacao.turno.name
-            form.setor.data = solicitacao.setor.name
-            form.quantidade.data = solicitacao.quantidade
-            form.qtd_disponivel.data = Setor.contar(solicitacao.setor)
-            form.data_inicio_pref.data = solicitacao.data_inicio_pref.strftime('%d/%m/%Y')
-            form.data_fim_pref.data = solicitacao.data_fim_pref.strftime('%d/%m/%Y')
-
-        return render_template('solicitacoes/confirmar_solicitacao_sala.html', 
-                               title='Confirmar Solicitação de Sala', form=form,
-                               legend='Confirmar Solicitação de Sala',
-                               solicitacao=solicitacao)
-    
-    # Se a solicitação for do tipo 'Equipamento'...
-    elif solicitacao.tipo == 'EQUIPAMENTO':
-        # Preenche o campo de seleção de equipamentos disponíveis
-        # Retorna o usuário pra tela inicial se não houver nenhum
-        form = ConfirmaSolicitacaoEquipamentoForm()
-        equips = Equipamento.recuperar_disponivel_tipo(solicitacao.tipo_eqp_id)
-        lista_equips = [(equip.id, equip) for equip in equips]
-        if lista_equips:
-            form.equipamentos.choices = lista_equips
-        else:
-            flash('Não há equipamentos disponíveis do tipo\
-                  selecionado para confirmar.', 'warning')
-            return redirect(url_for('principal.inicio'))
-        
-        if form.validate_on_submit():
-            # Realiza uma última verificação de disponibilidade dos equipamentos
-            # Cancela a operação caso um equipamento não esteja mais disponível
-            lista_equips = []
-            for eqp_id in form.equipamentos.data:
-                # Adiciona cada equipamento verificado pra uma lista
-                equipamento = Equipamento.recuperar_id(eqp_id)
-                lista_equips.append(equipamento)
-            # Verifica se a quantidade solicitada e selecionada é igual
-            if len(lista_equips) != solicitacao.quantidade:
-                flash('A quantidade de equipamentos selecionados\
-                       é diferente da solicitada.', 'warning')
-                return redirect(url_for('principal.inicio'))
-            # Atualiza a quantidade de equipamentos disponíveis
-            solicitacao.confirmar(lista_equips)
-            enviar_email_confirmacao(solicitacao)
-            flash('A solicitação foi confirmada com sucesso!', 'success')
-            return redirect(url_for('principal.inicio'))
-
-        # Em caso de carregamento da página (GET)
-        # Preenche os campos do formulário
-        else:
-            form.autor.data = solicitacao.autor.nome
-            form.identificacao.data = solicitacao.autor.identificacao
-            form.data_abertura.data = solicitacao.data_abertura.strftime('%d/%m/%Y %H:%M:%S')
-            form.turno.data = solicitacao.turno
-            form.tipo_equipamento.data = solicitacao.tipo_eqp.nome
-            form.quantidade.data = solicitacao.quantidade
-            form.qtd_disponivel.data = TipoEquipamento.contar(solicitacao.tipo_eqp)
-            form.equipamentos.data = solicitacao.equipamentos
-            form.data_inicio_pref.data = solicitacao.data_inicio_pref.strftime('%d/%m/%Y')
-            form.data_fim_pref.data = solicitacao.data_fim_pref.strftime('%d/%m/%Y')
-
-        return render_template('solicitacoes/confirmar_solicitacao_equipamento.html', 
-                               title='Confirmar Solicitação de Equipamento', 
-                               form=form, solicitacao=solicitacao,
-                               legend='Confirmar Solicitação de Equipamento')
+    if not solicitacao.verificar_aberto():
+        flash('Esta solicitação não está em aberto!', 'warning')
+        return redirect(url_for('principal.inicio'))
+    solicitacao.confirmar()
+    enviar_email_confirmacao(solicitacao)
+    flash('A solicitação foi confirmada com sucesso!', 'success')
+    return redirect(url_for('principal.inicio'))
 
 
 @solicitacoes.route("/<int:solicitacao_id>/entregar", methods=['GET', 'POST'])
@@ -257,17 +166,77 @@ def entrega_solicitacao(solicitacao_id):
     if not solicitacao.verificar_confirmado():
         flash('Esta solicitação não foi confirmada!', 'warning')
         return redirect(url_for('principal.inicio'))
-
-    form = EntregaSolicitacaoForm()
+    # Preenche o campo de seleção de itens disponíveis
+    if solicitacao.tipo == 'EQUIPAMENTO':
+        form = EntregaSolicitacaoEquipamentoForm()
+        equips = Equipamento.recuperar_disponivel_tipo(solicitacao.tipo_eqp_id)
+        lista_equips = [(equip.id, equip) for equip in equips]
+        if lista_equips:
+            form.equipamentos.choices = lista_equips
+        else:
+            flash('Não há equipamentos disponíveis do tipo\
+                    selecionado.', 'warning')
+            return redirect(url_for('principal.inicio'))
+    elif solicitacao.tipo == 'SALA':
+        form = EntregaSolicitacaoSalaForm()
+        salas = Sala.recuperar_disponivel_setor(solicitacao.setor.id)
+        lista_salas = [(sala.id, sala) for sala in salas]
+        if lista_salas:
+            form.salas.choices=lista_salas
+        else:
+            flash('Não há salas disponíveis no setor\
+                  selecionado.', 'warning')
+            return redirect(url_for('principal.inicio'))
+        
     if form.validate_on_submit():
-        # Altera o status da sala/equipamentos associados para 'Em Uso'
-        solicitacao.em_uso(form)
+        # Realiza uma última verificação de disponibilidade dos itens
+        if solicitacao.tipo == 'EQUIPAMENTO':
+            lista_equips = []
+            for eqp_id in form.equipamentos.data:
+                equipamento = Equipamento.recuperar_aberto_id(eqp_id)
+                lista_equips.append(equipamento)
+            if len(lista_equips) == 0:
+                flash('Os equipamentos selecionados não estão\
+                      mais disponíveis.', 'warning')
+                return redirect(url_for('principal.inicio'))
+            solicitacao.entregar(lista_equips, form)
+        elif solicitacao.tipo == 'SALA':
+            lista_salas = []
+            for sala in form.salas.data:
+                sala = Sala.recuperar_aberto_id(sala)
+                lista_salas.append(sala)
+            if len(lista_salas) == 0:
+                flash('As salas selecionadas não estão\
+                      mais disponíveis.', 'warning')
+                return redirect(url_for('principal.inicio'))
+            solicitacao.entregar(lista_salas, form)
         flash('A entrega foi confirmada com sucesso!', 'success')
+        return redirect(url_for('principal.inicio'))
     else:
-        flash('A data de devolução inserida é inválida.', 'warning')
-
-    return redirect(url_for('principal.inicio'))
-
+        if solicitacao.tipo == 'EQUIPAMENTO':
+            form.tipo_equipamento.data = solicitacao.tipo_eqp
+        elif solicitacao.tipo == 'SALA':
+            form.setor.data = solicitacao.setor
+        form.autor.data = solicitacao.autor
+        form.data_abertura.data = solicitacao.data_abertura.strftime('%d/%m/%Y %H:%M:%S')
+        form.descricao.data = solicitacao.descricao
+        form.turno.data = solicitacao.turno
+        form.quantidade.data = solicitacao.quantidade
+        form.data_inicio_pref.data = solicitacao.data_inicio_pref.strftime('%d/%m/%Y')
+        form.data_fim_pref.data = solicitacao.data_fim_pref.strftime('%d/%m/%Y')  
+        form.data_devolucao.data = solicitacao.data_fim_pref
+    
+    # Renderiza template de acordo com o tipo de solicitação
+    if solicitacao.tipo == 'EQUIPAMENTO':
+        return render_template('solicitacoes/entregar_solicitacao_equipamento.html', 
+                            title='Entregar Solicitação de Equipamento', 
+                            legend='Entregar Solicitação de Equipamento',
+                            form=form, solicitacao=solicitacao)
+    elif solicitacao.tipo == 'SALA':
+        return render_template('solicitacoes/entregar_solicitacao_sala.html', 
+                            title='Entregar Solicitação de Sala', 
+                            legend='Entregar Solicitação de Sala',
+                            form=form, solicitacao=solicitacao)
 
 @solicitacoes.route("/<int:solicitacao_id>/receber", methods=['GET', 'POST'])
 @login_required
@@ -278,7 +247,6 @@ def recebe_solicitacao(solicitacao_id):
     if not (solicitacao.verificar_em_uso() or solicitacao.verificar_pendente()):
         flash('Esta solicitação não está em uso!', 'warning')
         return redirect(url_for('principal.inicio'))
-    
     # Atualiza o registro da solicitação
     solicitacao.finalizar()
     flash('O recebimento foi confirmado com sucesso!', 'success')
@@ -292,12 +260,10 @@ def cancela_solicitacao(solicitacao_id):
     solicitacao = Solicitacao.recuperar_id(solicitacao_id)
     if not solicitacao.verificar_autor(current_user):
         abort(403)
-
     # Verifica o status da solicitação para permitir seu cancelamento
     if (solicitacao.verificar_em_uso() or solicitacao.verificar_pendente()):
         flash('Esta solicitação não pode ser mais cancelada!', 'warning')
         return redirect(url_for('principal.inicio'))
-
     # Altera o status de sala/equipamentos associados a solicitação
     solicitacao.cancelar()
     flash('A solicitação foi cancelada com sucesso!', 'success')
@@ -313,7 +279,6 @@ def exclui_solicitacao(solicitacao_id):
     if (solicitacao.verificar_em_uso() or solicitacao.verificar_pendente()):
         flash('Não é possível excluir uma solicitação em uso.', 'warning')
         return redirect(url_for('principal.inicio'))
-    
     # Atualiza o status dos equipamentos e salas antes de excluir a solicitação
     solicitacao.excluir()
     flash('A solicitação foi excluída com sucesso!', 'success')

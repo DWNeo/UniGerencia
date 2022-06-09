@@ -29,7 +29,7 @@ class Sala(db.Model):
     setor = db.relationship('Setor', back_populates='salas')  
 
     def __repr__(self):
-        return f"{self.numero} - {self.setor.name} - Qtde. Alunos: {self.qtd_aluno}"
+        return f"{self.numero} - {self.setor.name} - Qtd. Alunos: {self.qtd_aluno}"
     
     # Recupera todas as salas presentes no banco de dados
     def recuperar_tudo():
@@ -43,6 +43,11 @@ class Sala(db.Model):
     # Recupera a sala pela ID e retorna erro 404 caso contrário
     def recuperar_id(sala_id):
         return Sala.query.filter_by(id=sala_id).filter_by(ativo=True).first_or_404()
+    
+    # Recupera a sala em status aberto pela ID
+    def recuperar_aberto_id(sala_id):
+        return Sala.query.filter_by(id=sala_id).filter_by(
+            status='ABERTO').filter_by(ativo=True).one_or_none()
     
     # Recupera a primeira sala pelo número
     def recupera_primeiro_numero(numero):
@@ -126,6 +131,9 @@ class Setor(db.Model):
     solicitacoes = db.relationship('SolicitacaoSala', back_populates='setor')    
     salas = db.relationship('Sala', back_populates='setor')
     
+    def __repr__(self):
+        return f"{self.name} - Qtd. Disponível: {self.contar()}"
+    
     # Recupera todas os setores presentes no banco de dados
     def recuperar_tudo():
         return Setor.query.filter_by(ativo=True).all()
@@ -147,7 +155,4 @@ class Setor(db.Model):
     def contar(self):
         return Sala.query.filter_by(status='ABERTO').filter_by(
             setor=self).filter_by(ativo=True).count()
-    
-    def __repr__(self):
-        return f"{self.name} - Quantidade Disponível: {self.contar()}"
     

@@ -8,15 +8,15 @@
         <fieldset class="form-group">
             <legend class="border-bottom mb-4">{{ legend }}</legend>
             {{ render_field(form.autor) }}
-            {{ render_field(form.identificacao) }}
             {{ render_field(form.data_abertura) }}
-            {{ render_field(form.turno) }}
+            {{ render_field(form.descricao) }}
             {{ render_field(form.setor) }}
             {{ render_field(form.quantidade) }}
-            {{ render_field(form.qtd_disponivel) }}
             {{ render_field(form.salas) }}
+            {{ render_field(form.turno) }}
             {{ render_field(form.data_inicio_pref) }}
             {{ render_field(form.data_fim_pref) }}
+            {{ render_field(form.data_devolucao) }}
         </fieldset>
         <div class="form-group">
             {{ render_button(form.submit) }}

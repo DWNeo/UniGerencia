@@ -53,10 +53,10 @@
                 <a class="btn-lg btn-outline-info" href="#" data-toggle="modal" data-target="#visualizarSolicitacao{{ solicitacao.id }}"><i class="fas fa-search"></i></a> 
                 {% if current_user.tipo.name == 'ADMIN' %}
                     {% if solicitacao.status.name == 'ABERTO' or solicitacao.status.name == 'SOLICITADO' %}
-                        <a class="btn-lg btn-outline-success" href="{{url_for('solicitacoes.confirma_solicitacao', solicitacao_id=solicitacao.id)}}"><i class="fas fa-check-square"></i></a>
+                    <a class="btn-lg btn-outline-success" href="#" data-toggle="modal" data-target="#confirmarSolicitacao{{ solicitacao.id }}"><i class="fas fa-check-square"></i></a>
                     {% endif %}
                     {% if solicitacao.status.name == 'CONFIRMADO' %}
-                        <a class="btn-lg btn-outline-primary" href="#" data-toggle="modal" data-target="#entregarSolicitacao{{ solicitacao.id }}"><i class="fas fa-upload"></i></a>
+                        <a class="btn-lg btn-outline-primary" href="{{url_for('solicitacoes.entrega_solicitacao', solicitacao_id=solicitacao.id)}}"><i class="fas fa-upload"></i></a>
                     {% endif %}
                     {% if solicitacao.status.name == 'EMUSO' or solicitacao.status.name == 'PENDENTE' %}
                         <a class="btn-lg btn-outline-primary" href="#" data-toggle="modal" data-target="#receberSolicitacao{{ solicitacao.id }}"><i class="fas fa-download"></i></a>
@@ -71,7 +71,7 @@
         </tr>
         <!-- Modals Inclusos -->
         {% include 'principal/modal/visualizar_solicitacao.html' %}
-        {% include 'principal/modal/entregar_solicitacao.html' %}
+        {% include 'principal/modal/confirmar_solicitacao.html' %}
         {% include 'principal/modal/receber_solicitacao.html' %}
         {% include 'principal/modal/cancelar_solicitacao.html' %}
         {% include 'principal/modal/excluir_solicitacao.html' %}

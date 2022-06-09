@@ -9,8 +9,8 @@
                 </button>
             </div>
             <div class="modal-body">
-                <p>Deseja mesmo cancelar esta solicitação?</p>
-                <p><strong>Atenção: Esta operação não pode ser desfeita.</strong></p>
+                <h6>Deseja mesmo cancelar esta solicitação?</h6>
+                <h6><strong>Atenção: Esta operação não pode ser desfeita.</strong></h6>
             </div>
             <div class="modal-footer">
                 <form action="{{ url_for('solicitacoes.cancela_solicitacao', solicitacao_id=solicitacao.id) }}" method="POST">

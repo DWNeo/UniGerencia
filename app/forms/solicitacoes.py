@@ -8,7 +8,7 @@ from wtforms.fields.html5 import IntegerField, TimeField, DateField
 
 from app import fuso_horario
 from app.locale import (obrigatorio, data_invalida, num_invalido_2, 
-                        num_invalido_20, max_20, max_50)
+                        num_invalido_10, max_20, max_50)
 
 
 class SolicitacaoEquipamentoForm(FlaskForm):
@@ -20,7 +20,7 @@ class SolicitacaoEquipamentoForm(FlaskForm):
         InputRequired()], coerce=int)
     qtd_preferencia = IntegerField('Quantidade', validators=[
         DataRequired(message=obrigatorio), 
-        NumberRange(min=1, max=10, message=num_invalido_20)])
+        NumberRange(min=1, max=10, message=num_invalido_10)])
     descricao = StringField('Descrição', validators=[
         DataRequired(message=obrigatorio), 
         Length(max=50, message=max_50)])
@@ -44,7 +44,7 @@ class SolicitacaoEquipamentoForm(FlaskForm):
         
         return True
 class SolicitacaoSalaForm(FlaskForm):
-
+    
     turno = SelectField('Turno', validators=[
         DataRequired(message=obrigatorio)], coerce=int)
     setor = SelectField('Setor', validators=[
@@ -74,65 +74,60 @@ class SolicitacaoSalaForm(FlaskForm):
             return False
         else:
             return True
+        
 
+class EntregaSolicitacaoEquipamentoForm(FlaskForm):
 
-class ConfirmaSolicitacaoEquipamentoForm(FlaskForm):
-
+    equipamentos = SelectMultipleField('Selecione Equipamentos', 
+        validators=[DataRequired(message=obrigatorio)], 
+        render_kw={'multiple':'multiple'}, coerce=int)
     autor = StringField('Autor', render_kw={'disabled':''})
-    identificacao = StringField('Identificação', render_kw={'disabled':''})
     data_abertura = StringField('Data de Abertura', render_kw={'disabled':''})
+    descricao = StringField('Descrição', render_kw={'disabled':''})
+    data_devolucao = DateField('Data de Devolução', 
+        format='%Y-%m-%d', default=datetime.now().astimezone(fuso_horario).date())
     turno = StringField('Turno', render_kw={'disabled':''})
     tipo_equipamento = StringField('Tipo de Equipamento', 
         render_kw={'disabled':''})
     quantidade = IntegerField('Quantidade Solicitada', 
         render_kw={'disabled':''})
-    qtd_disponivel = StringField('Quantidade Disponível', 
-        render_kw={'disabled':''})
-    equipamentos = SelectMultipleField('Equipamentos', 
-        validators=[DataRequired(message=obrigatorio)], 
-        render_kw={'multiple':'multiple'}, coerce=int)
     data_inicio_pref = StringField('Data de Início Preferencial', 
         render_kw={'disabled':''})
     data_fim_pref = StringField('Data de Fim Preferencial', 
         render_kw={'disabled':''})
     submit = SubmitField('Confirmar')
+        
+    def validate_data_devolucao(self, data_devolucao):
+        if data_devolucao.data < datetime.now().astimezone(fuso_horario).date():
+            raise ValidationError(data_invalida)
 
 
-class ConfirmaSolicitacaoSalaForm(FlaskForm):
+class EntregaSolicitacaoSalaForm(FlaskForm):
 
+    salas = SelectMultipleField('Selecione Salas', 
+        validators=[DataRequired(message=obrigatorio)], 
+        render_kw={'multiple':'multiple'}, coerce=int)
     autor = StringField('Autor', render_kw={'disabled':''})
-    identificacao = StringField('Identificação', render_kw={'disabled':''})
     data_abertura = StringField('Data de Abertura', render_kw={'disabled':''})
+    descricao = StringField('Descrição', render_kw={'disabled':''})
+    data_devolucao = DateField('Data de Devolução', 
+        format='%Y-%m-%d', default=datetime.now().astimezone(fuso_horario).date())
     turno = StringField('Turno', render_kw={'disabled':''})
     setor = StringField('Setor', render_kw={'disabled':''})
     quantidade = IntegerField('Quantidade Solicitada', 
         render_kw={'disabled':''})
     qtd_disponivel = StringField('Quantidade Disponível', 
         render_kw={'disabled':''})
-    salas = SelectMultipleField('Salas', 
-        validators=[DataRequired(message=obrigatorio)], 
-        render_kw={'multiple':'multiple'}, coerce=int)
     data_inicio_pref = StringField('Data de Início Preferencial', 
         render_kw={'disabled':''})
     data_fim_pref = StringField('Data de Fim Preferencial', 
         render_kw={'disabled':''})
-    submit = SubmitField('Confirmar')
-
-
-class EntregaSolicitacaoForm(FlaskForm):
-
-    data_inicio_pref = StringField('Data de Início Preferencial', 
-        render_kw={'disabled':''})
-    data_fim_pref = StringField('Data de Fim Preferencial', 
-        render_kw={'disabled':''})
-    data_devolucao = DateField('Data de Devolução', 
-        format='%Y-%m-%d', default=datetime.now().astimezone(fuso_horario).date())
     submit = SubmitField('Confirmar')
 
     def validate_data_devolucao(self, data_devolucao):
         if data_devolucao.data < datetime.now().astimezone(fuso_horario).date():
             raise ValidationError(data_invalida)
-
+                
 
 class TurnoForm(FlaskForm):
     nome = StringField('Nome',  validators=[
@@ -144,7 +139,7 @@ class TurnoForm(FlaskForm):
         format='%H:%M', default=datetime.now().astimezone(fuso_horario))
     submit = SubmitField('Cadastrar')
     
-     # Valida as datas de início e fim inseridas no formulário
+    # Valida as datas de início e fim inseridas no formulário
     def validate(self):
         rv = FlaskForm.validate(self)
         if not rv:

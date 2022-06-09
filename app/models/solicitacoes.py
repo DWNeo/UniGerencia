@@ -153,29 +153,23 @@ class Solicitacao(db.Model):
         db.session.commit() 
     
     # Atualiza o status de um solicitação para 'Confirmado'
-    def confirmar(self, lista_itens):
-        self.status = 'CONFIRMADO'
-        if self.tipo == 'EQUIPAMENTO':
-            self.equipamentos = lista_itens
-            for equipamento in self.equipamentos:
-                equipamento.status = 'CONFIRMADO'
-        if self.tipo == 'SALA':
-            self.salas = lista_itens
-            for sala in self.salas:
-                sala.status = 'CONFIRMADO'     
+    def confirmar(self):
+        self.status = 'CONFIRMADO' 
         db.session.commit()  
         
     # Atualiza o status de um solicitação para 'Em Uso'
-    def em_uso(self, form):
+    def entregar(self, lista_itens, form):
         self.status = 'EMUSO'
         self.data_retirada = datetime.now().astimezone(fuso_horario)
         # Combina data de devolução com o horário final do turno
         self.data_devolucao = datetime.combine(form.data_devolucao.data, 
                                                self.turno.hora_fim)
         if self.tipo == 'EQUIPAMENTO':
+            self.equipamentos = lista_itens
             for equipamento in self.equipamentos:
                 equipamento.status = 'EMUSO'
         if self.tipo == 'SALA':
+            self.salas = lista_itens
             for sala in self.salas: 
                 sala.status = 'EMUSO'
         db.session.commit()

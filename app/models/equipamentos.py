@@ -41,6 +41,11 @@ class Equipamento(db.Model):
     def recuperar_id(eqp_id):
         return Equipamento.query.filter_by(id=eqp_id).filter_by(ativo=True).first_or_404()
     
+    # Recupera o equipamento em status aberto pela ID
+    def recuperar_aberto_id(eqp_id):
+        return Equipamento.query.filter_by(id=eqp_id).filter_by(
+            status='ABERTO').filter_by(ativo=True).one_or_none()
+    
     # Recupera todos os equipamentos disponíveis de um tipo
     def recuperar_disponivel_tipo(tipo_eqp_id):
         return Equipamento.query.filter_by(status='ABERTO').filter_by(

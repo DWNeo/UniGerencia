@@ -2,10 +2,8 @@ from flask import render_template, request, flash, Blueprint
 from flask_login import current_user, login_required
 
 from app import db, scheduler
-from app.controllers.equipamentos import equipamento
 from app.models import Post, Equipamento, Sala, Solicitacao, Usuario
 from app.utils import enviar_email_atraso
-from app.forms.solicitacoes import EntregaSolicitacaoForm
 
 principal = Blueprint('principal', __name__)
 
@@ -57,13 +55,9 @@ def inicio():
             if solicitacao.verificar_autor(current_user):
                 if not Usuario.verificar_admin(current_user):
                     flash('Você possui uma solicitação atrasada.', 'warning')  
-
-    # Importa o formulário para entrega de solicitações
-    # Necessário em um modal presente na tabela de solicitações
-    form = EntregaSolicitacaoForm()
     
-    return render_template('principal/inicio.html', tab=tab, form=form,
-                           posts=posts, equipamentos=equipamentos, salas=salas, 
+    return render_template('principal/inicio.html', tab=tab, posts=posts, 
+                           equipamentos=equipamentos, salas=salas, 
                            usuarios=usuarios, solicitacoes=solicitacoes,
                            tempo_restante=lista_tempo)
 
