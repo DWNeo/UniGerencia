@@ -55,10 +55,9 @@ class Relatorio(db.Model):
         db.session.add(self)
         db.session.commit()
         
+    # Atualiza um relatório existente no banco de dados
     def atualizar(self, form):
         # Atualiza as datas dependendo do status selecionado
-        # Status 'Fechado' -> Data de Finalização
-        # Status 'Aberto' -> Data de Atualização
         if form.finalizar.data == True:
             self.status = 'FECHADO'
             self.data_finalizacao = datetime.now().astimezone(fuso_horario)
@@ -69,9 +68,10 @@ class Relatorio(db.Model):
         db.session.commit()
     
 
-# Classe específica para os relatórios de salas
+# Classe para os relatórios de salas
 class RelatorioSala(Relatorio):
     __tablename__ = 'relatorios_sala'
+    __table_args__ = {'extend_existing': True}
     
     id = db.Column(db.Integer, db.ForeignKey('relatorios.id'), primary_key=True)
     reforma = db.Column(db.Boolean, nullable=False, default=False)
@@ -124,9 +124,10 @@ class RelatorioSala(Relatorio):
         return super().atualizar(form)
 
 
-# Classe específica para os relatórios de equipamentos
+# Classe para os relatórios de equipamentos
 class RelatorioEquipamento(Relatorio):
     __tablename__ = 'relatorios_equipamento'
+    __table_args__ = {'extend_existing': True}
     
     id = db.Column(db.Integer, db.ForeignKey('relatorios.id'), primary_key=True)
     defeito = db.Column(db.Boolean, nullable=False, default=False)

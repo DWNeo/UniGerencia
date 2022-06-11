@@ -1,13 +1,15 @@
+import os
+import secrets
 from datetime import datetime
 import enum
 from functools import wraps
 
+from PIL import Image
 from itsdangerous import URLSafeTimedSerializer as Serializer
 from flask import current_app, flash, redirect, url_for
 from flask_login import UserMixin, current_user, login_user
 
 from app import db, bcrypt, login_manager, fuso_horario
-from app.utils import salvar_imagem
 
 # Carrega o usuário que faz login da tabela apropriada
 @login_manager.user_loader
@@ -36,7 +38,23 @@ def prof_required(f):
         return redirect(url_for('principal.inicio'))
     return wrap 
 
-# Classe enum para os tipos de usuários do sistema
+# Redimensiona e salva as imagens de perfil na pasta definida
+def salvar_imagem(form_picture):
+    # Gera um nome aleatório pra imagem e define o diretório pra salvá-la
+    random_hex = secrets.token_hex(8)
+    _, f_ext = os.path.splitext(form_picture.filename)
+    picture_fn = random_hex + f_ext
+    picture_path = os.path.join(current_app.root_path, 'static/img_perfil', picture_fn)
+
+    # Redimensiona e salva a imagem no caminho acima
+    output_size = (125, 125)
+    i = Image.open(form_picture)
+    i.thumbnail(output_size)
+    i.save(picture_path)
+
+    return picture_fn
+
+# Classe Enum para os tipos de usuários do sistema
 class TipoUsuario(enum.Enum):
     ALUNO = "Aluno"
     PROF = "Professor"

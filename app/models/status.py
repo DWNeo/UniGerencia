@@ -1,6 +1,6 @@
 import enum
 
-# Classe enum que define os status possíveis para diversos objetos
+# Classe Enum que define os status possíveis para diversos objetos
 class Status(enum.Enum):
     ABERTO = 'Aberto'
     SOLICITADO = 'Solicitado' 

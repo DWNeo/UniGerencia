@@ -7,22 +7,6 @@ from flask_mail import Message
 
 from app import mail
 
-# Redimensiona e salva as imagens de perfil na pasta definida
-def salvar_imagem(form_picture):
-    # Gera um nome aleatório pra imagem e define o diretório pra salvá-la
-    random_hex = secrets.token_hex(8)
-    _, f_ext = os.path.splitext(form_picture.filename)
-    picture_fn = random_hex + f_ext
-    picture_path = os.path.join(current_app.root_path, 'static/img_perfil', picture_fn)
-
-    # Redimensiona e salva a imagem no caminho acima
-    output_size = (125, 125)
-    i = Image.open(form_picture)
-    i.thumbnail(output_size)
-    i.save(picture_path)
-
-    return picture_fn
-
 # Envia o email de redefinição de senha com o token gerado
 def enviar_email_redefinicao(usuario):
     token = usuario.obter_token_redefinicao()

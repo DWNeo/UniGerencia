@@ -49,6 +49,7 @@
         <div class="article-metadata mb-3">
             <a class="mr-2" href="{{ url_for('solicitacoes.solicitacao', solicitacao_id=solicitacao.id )}}"><strong>Solicitação #{{ solicitacao.id }}</strong></a>
         </div>
+        <h5 class="article-content"><strong>Autor:</strong> {{ solicitacao.autor }}</h5>
         <h5 class="article-content"><strong>Status:</strong> {{ solicitacao.status.value }}</h5>
     </div>
 </article>

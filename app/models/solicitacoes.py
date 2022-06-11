@@ -1,5 +1,4 @@
 from datetime import datetime
-import time
 
 from flask_login import current_user
 
@@ -74,13 +73,13 @@ class Solicitacao(db.Model):
      
     # Recupera as últimas solicitações de um equipamento específico
     def recuperar_ultimas_eqp(equipamento, limite):
-        return Solicitacao.query.filter(
+        return SolicitacaoEquipamento.query.filter(
             SolicitacaoEquipamento.equipamentos.contains(equipamento)).filter_by(
             ativo=True).order_by(SolicitacaoEquipamento.id.desc()).limit(limite)
         
-    # Recupera as mensagens de um autor de forma paginada
+    # Recupera as últimas solicitações de um usuário específico
     def recuperar_ultimas_sala(sala, limite):
-        return Solicitacao.query.filter(
+        return SolicitacaoSala.query.filter(
             SolicitacaoSala.salas.contains(sala)).filter_by(
             ativo=True).order_by(SolicitacaoSala.id.desc()).limit(limite)
     
@@ -94,46 +93,54 @@ class Solicitacao(db.Model):
                 return None
             minutos, segundos = divmod(tempo_restante, 60)
             horas, minutos = divmod(minutos, 60)
-            return "%02d:%02d:%02d" % (horas, minutos, segundos)
+            dias, horas = divmod(horas, 24)
+            return "%01dd, %01dh, %01dmin" % (dias, horas, minutos)
         else:
             return None
 
+    # Verifica se uma solicitação está marcada para o dia atual
     def verificar_inicio_hoje(data_inicio_pref):
         if data_inicio_pref == datetime.now().astimezone(fuso_horario).date():
             return True
         else:
             return False
 
+    # Verifica se uma solicitação tem como autor um determinado usuário
     def verificar_autor(self, usuario):
         if self.autor == usuario or usuario.tipo.name == 'ADMIN':
             return True
         else:
             return False
         
+    # Verifica se uma solicitação está com o status 'Aberto'
     def verificar_aberto(self):
         if self.status.name == 'ABERTO' or self.status.name == 'SOLICITADO':
             return True
         else:
             return False
         
+    # Verifica se uma solicitação está com o status 'Confirmado'
     def verificar_confirmado(self):
         if self.status.name == 'CONFIRMADO':
             return True
         else:
             return False
-        
+       
+    # Verifica se uma solicitação está com o status 'Em Uso' 
     def verificar_em_uso(self):
         if self.status.name == 'EMUSO':
             return True
         else:
             return False
         
+    # Verifica se uma solicitação está com o status 'Pendente'
     def verificar_pendente(self):
         if self.status.name == 'PENDENTE':
             return True
         else:
             return False
     
+    # Verifica se uma solicitação ultrapassou a data de devolução
     def verificar_atraso(self):
         if (datetime.now().astimezone(fuso_horario) > 
             self.data_devolucao.astimezone(fuso_horario)):

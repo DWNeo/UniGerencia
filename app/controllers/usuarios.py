@@ -49,7 +49,6 @@ def login():
     if current_user.is_authenticated:
         return redirect(url_for('principal.inicio'))
 
-     # Valida os dados do formulário
     form = LoginForm()
     if form.validate_on_submit():
         # Verifica se o email e o hash da senha inserida estão ambos

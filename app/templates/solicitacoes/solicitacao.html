@@ -39,13 +39,33 @@
             {% endif %}
             <small class="text-muted"><strong>{{ solicitacao.data_abertura.strftime('%d/%m/%Y %H:%M:%S') }}</strong></small>
         </div>
-        {% if solicitacao.tipo == 'solicitacoes_equipamentos' %}
-            {% if solicitacao.tipo_eqp.nome %}
-                <h5 class="article-content"><strong>Tipo de Equipamento:</strong> {{ solicitacao.tipo_eqp.nome }}</h5>
-            {% endif %}
-        {% endif %}
+        <h5 class="article-content"><strong>Autor:</strong> {{ solicitacao.autor }}</h5>
         {% if solicitacao.quantidade %}
             <h5 class="article-content"><strong>Quantidade Solicitada:</strong> {{ solicitacao.quantidade }}</h5>
+        {% endif %}
+       
+        {% if solicitacao.tipo == 'EQUIPAMENTO' %}
+            <h5 class="article-content"><strong>Tipo de Equipamento:</strong> {{ solicitacao.tipo_eqp.nome }}</h5>
+            </br>
+            {% if solicitacao.equipamentos %}
+                <h5 class="article-title"><strong>Equipamentos Solicitados:</strong></h5>
+                    {% for equipamento in solicitacao.equipamentos %}
+                        <h5 class="article-title"><strong>{{loop.index}}.</strong> {{ equipamento }}</h5>
+                    {% endfor %}
+                {% endif %}
+        {% elif solicitacao.tipo == 'SALA'%}
+            <h5 class="article-content"><strong>Setor:</strong> {{ solicitacao.setor.name }}</h5>
+            </br>
+            {% if solicitacao.salas %}
+                <h5 class="article-title"><strong>Salas Solicitadas:</strong></h5>
+                {% for sala in solicitacao.salas %}
+                    <h5 class="article-title"><strong>-</strong> {{ sala.numero }} (Qtd. Alunos: {{ sala.qtd_aluno }})</h5>  
+                {% endfor %}
+            {% endif %}
+        {% endif %}
+        </br>
+        {% if solicitacao.turno %}
+            <h5 class="article-content"><strong>Turno:</strong> {{ solicitacao.turno }}</h5>
         {% endif %}
         {% if solicitacao.data_inicio_pref %}
             <h5 class="article-content"><strong>Data Inicio Preferencial:</strong> {{ solicitacao.data_inicio_pref.strftime('%d/%m/%Y') }}</h5>

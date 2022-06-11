@@ -84,7 +84,7 @@ class Sala(db.Model):
         self.data_atualizacao = datetime.now().astimezone(fuso_horario)
         db.session.commit()
     
-    # Verifica se um equipamento está disponível
+    # Verifica se uma sala está disponível
     def verificar_disponibilidade(self):
         if self.status.name == 'ABERTO':
             return True
