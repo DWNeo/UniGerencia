@@ -3,16 +3,16 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="receberSolicitacaoLabel">Confirmar Devolução</h5>
+                <h5 class="modal-title" id="receberSolicitacaoLabel">Finalizar Devolução</h5>
                 <button type="button" class="close" data-dismiss="modal">
                     <span>&times;</spans>
                 </button>
             </div>
             <div class="modal-body">
-                <p>Deseja confirmar a devolução?</p>
+                <p>Deseja finalizar a solicitação?</p>
             </div>
             <div class="modal-footer">
-                <a type="button" class="btn btn-outline-success" href="{{ url_for('solicitacoes.recebe_solicitacao', solicitacao_id=solicitacao.id) }}">Confirmar</a>
+                <a type="button" class="btn btn-outline-primary" href="{{ url_for('solicitacoes.recebe_solicitacao', solicitacao_id=solicitacao.id) }}">Finalizar</a>
             </div>
         </div>
     </div>

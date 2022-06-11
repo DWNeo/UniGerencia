@@ -9,6 +9,7 @@
         <th class="align-middle">Tipo</th>
         <th class="align-middle">Turno</th>
         <th class="align-middle">Autor</th>
+        <th class="align-middle">Tempo Restante</th>
         <th class="align-middle">Status</th>
         <th class="align-middle">Ações</th>
     </tr>
@@ -38,7 +39,6 @@
             <td class="align-middle"></td>
             <td class="align-middle">{{ solicitacao.id }}</td>
             <td class="align-middle">{{ solicitacao.data_abertura.strftime('%d/%m/%Y %H:%M:%S') }}</td>
-            <!-- Nome do Tipo de Solicitação (Equipamento/Sala) -->
             {% if solicitacao.tipo == 'EQUIPAMENTO' %}
                 <td class="align-middle">Equipamento</td>
             {% elif solicitacao.tipo == 'SALA'%}
@@ -46,6 +46,7 @@
             {% endif %}
             <td class="align-middle">{{ solicitacao.turno.name }}</td>
             <td class="align-middle">{{ solicitacao.autor.nome }}</td>
+            <td class="align-middle">{{ tempo_restante(solicitacao) }}</td>
             <td class="align-middle">{{ solicitacao.status.value }}</td>
             <td class="align-middle">
                 <!-- Botões de Ação-->
