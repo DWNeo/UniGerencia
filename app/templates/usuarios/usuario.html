@@ -1,39 +1,45 @@
 <!-- Página para visualizar um equipamento com mais detalhes -->
 {% extends "layout.html" %}
 {% block conteudo %}
-<article class="media content-section">
-    <img class="rounded-circle article-img" src="{{ url_for('static', filename='img_perfil/' + usuario.imagem_perfil) }}">
-    <div class="media-body">
-        <div class="article-metadata">
-            <a class="mr-2"><strong>Email:</strong> {{ usuario.email }}</a>
-            <a class="mr-2"><strong>Tipo:</strong> {{ usuario.tipo.value }}</a>
+<div class="card border-primary mb-3">
+    <h4 class="card-header text-primary border-primary">
+        <img class="rounded-circle article-img" src="{{ url_for('static', filename='img_perfil/' + usuario.imagem_perfil) }}">
+        <strong>{{ usuario.nome }}</strong>
+    </h4>
+    <div class="card-body">
+        <p class="card-text"><strong>Identificação:</strong> {{ usuario.identificacao }}</p> 
+        <p class="card-text"><strong>Email:</strong> {{ usuario.email }}</p>
+        <p class="card-text"><strong>Tipo:</strong> {{ usuario.tipo.value }}</p>   
+    </div>
+    <div class="card-footer">
+        <div class="row">
+            <div class="col-md-6">
+                <a class=""><strong>Data de Cadastro:</strong> {{ usuario.data_cadastro.strftime('%d/%m/%Y %H:%M:%S') }}</a>
+            </div>
+            <div class="col-md-6">
+                {% if usuario.data_atualizacao %}
+                <a class=""><strong>Última Atualização:</strong> {{ usuario.data_atualizacao.strftime('%d/%m/%Y %H:%M:%S') }}</a>
+                {% endif %}
+            </div>
         </div>
-        <h4 class="article-title"><strong>Nome:</strong> {{ usuario.nome }}</h4>
-        <h5 class="article-content"><strong>Identificação:</strong> {{ usuario.identificacao }}</h5>
-        <h5 class="article-content"><strong>Data de Cadastro:</strong> {{ usuario.data_cadastro.strftime('%d/%m/%Y %H:%M:%S') }}</h5>
-        {% if usuario.data_atualizacao %}
-            <h5 class="article-content"><strong>Última Atualização:</strong> {{ usuario.data_atualizacao.strftime('%d/%m/%Y %H:%M:%S') }}</h5>
-        {% endif %}
     </div>
-</article>
-<article class="media content-section">
-    <div class="media-body">
-        <h4 class="article-content text-center"><strong>Últimas Solicitações</strong></h4>
-    </div>
-</article>
+</div>
+<h5 class="card-text text-center"><strong>Últimas Solicitações:</strong></h5>
+<div class="card-group">
 {% for solicitacao in solicitacoes %}
-<article class="media content-section">
-    <div class="media-body">
+<div class="card border-primary">
+    <div class="card-body">
         <div class="article-metadata mb-3">
             <a class="mr-2" href="{{ url_for('solicitacoes.solicitacao', solicitacao_id=solicitacao.id )}}"><strong>Solicitação #{{ solicitacao.id }}</strong></a>
         </div>
         {% if solicitacao.tipo == 'EQUIPAMENTO' %}
-        <h5 class="article-content"><strong>Tipo:</strong> Equipamento</h5>
+        <p class="card-text"><strong>Tipo:</strong> Equipamento</p>
         {% elif solicitacao.tipo == 'SALA' %}
-        <h5 class="article-content"><strong>Tipo:</strong> Sala</h5>
+        <p class="card-text"><strong>Tipo:</strong> Sala</p>
         {% endif %}
-        <h5 class="article-content"><strong>Status:</strong> {{ solicitacao.status.value }}</h5>
+        <p class="card-text"><strong>Status:</strong> {{ solicitacao.status.value }}</p>
     </div>
-</article>
+</div>
 {% endfor %}
+</div>
 {% endblock conteudo %}

@@ -5,7 +5,9 @@
         setTimeout(function() {
             $(".alert-dismissable").alert('close');
         }, 5000);  // 5 Segundos
-        
+        $('.toast').toast({delay: 5000});
+        $('.toast').toast({animation: true});
+        $('.toast').toast('show'); 
         // Configuração do DataTables
         // Todas as tabelas da página inicial fazem uso dessa configuração
         var table = $('#table-solicitacoes').DataTable({
@@ -49,13 +51,6 @@
                     extend: 'excelHtml5',
                     text: 'Excel',
                     autoFilter: true,
-                    exportOptions: {
-                        columns: [1, 2, 3, 4, 5, 7]
-                    }
-                },
-                {
-                    extend: 'csvHtml5',
-                    text: 'CSV',
                     exportOptions: {
                         columns: [1, 2, 3, 4, 5, 7]
                     }
@@ -152,13 +147,6 @@
                     extend: 'excelHtml5',
                     text: 'Excel',
                     autoFilter: true,
-                    exportOptions: {
-                        columns: [1, 2, 3, 4, 5]
-                    }
-                },
-                {
-                    extend: 'csvHtml5',
-                    text: 'CSV',
                     exportOptions: {
                         columns: [1, 2, 3, 4, 5]
                     }

@@ -24,34 +24,44 @@
     Esta sala está em uma solicitação com a devolução atrasada.
 </div>
 {% endif %}
-<article class="media content-section">
-    <div class="media-body">
-        <div class="article-metadata mb-3">
-            <a class="mr-2"><strong>Status:</strong> {{ sala.status.value }}</a>
-            <a class="mr-2"><strong>Setor:</strong> {{ sala.setor.name }}</a>
-            <small class="text-muted"><strong>{{ sala.data_cadastro.strftime('%d/%m/%Y %H:%M:%S') }}</strong></small>
-        </div>
-        <h5 class="article-title"><strong>Sala:</strong> {{ sala.numero }}</h5>
-        <h5 class="article-content"><strong>Qtd. de Alunos:</strong> {{ sala.qtd_aluno }}</h5>
+<div class="card border-primary mb-3">
+    <h4 class="card-header text-primary border-primary">
+        <a><strong>Sala #{{ sala.id }}</strong></a>
+    </h4>
+    <div class="card-body">
+        <p class="card-text"><strong>Número:</strong> {{ sala.numero }}</p>
+        <p class="card-text"><strong>Qtd. de Alunos:</strong> {{ sala.qtd_aluno }}</p>
+        <p class="card-text"><strong>Data de Cadastro:</strong> {{ sala.data_cadastro.strftime('%d/%m/%Y %H:%M:%S') }}</p>
+        {% if sala.data_atualizacao %}
+        <p class="card-text"><strong>Última Atualização:</strong> {{ sala.data_atualizacao.strftime('%d/%m/%Y %H:%M:%S') }}</p>
+        {% endif %}
         {% if sala.motivo_indisponibilidade %}
-            <h5 class="article-content pt-2"><strong>Motivo da Indisponibilidade:</strong> {{ sala.motivo_indisponibilidade }}</h5>
+            <p class="card-text"><strong>Motivo da Indisponibilidade:</strong> {{ sala.motivo_indisponibilidade }}</p>
         {% endif %}
     </div>
-</article>
-<article class="media content-section">
-    <div class="media-body">
-        <h4 class="article-content text-center"><strong>Últimas Solicitações</strong></h4>
+    <div class="card-footer">
+        <div class="row">
+            <div class="col-md-6">
+                <a class=""><strong>Setor:</strong> {{ sala.setor.name }}</a>
+            </div>
+            <div class="col-md-6">
+                <a class=""><strong>Status:</strong> {{ sala.status.value }}</a>
+            </div>
+        </div>
     </div>
-</article>
+</div>
+<h5 class="card-text text-center"><strong>Últimas Solicitações:</strong></h5>
+<div class="card-group">
 {% for solicitacao in solicitacoes %}
-<article class="media content-section">
-    <div class="media-body">
+<div class="card border-primary">
+    <div class="card-body">
         <div class="article-metadata mb-3">
             <a class="mr-2" href="{{ url_for('solicitacoes.solicitacao', solicitacao_id=solicitacao.id )}}"><strong>Solicitação #{{ solicitacao.id }}</strong></a>
         </div>
-        <h5 class="article-content"><strong>Autor:</strong> {{ solicitacao.autor }}</h5>
-        <h5 class="article-content"><strong>Status:</strong> {{ solicitacao.status.value }}</h5>
+        <p class="card-text"><strong>Autor:</strong> {{ solicitacao.autor }}</p>
+        <p class="card-text"><strong>Status:</strong> {{ solicitacao.status.value }}</p>
     </div>
-</article>
+</div>
 {% endfor %}
+</div>
 {% endblock conteudo %}

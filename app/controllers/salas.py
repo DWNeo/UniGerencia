@@ -13,9 +13,9 @@ salas = Blueprint('salas', __name__)
 @login_required
 @prof_required
 def sala(sala_id):
-    # Recupera as 5 últimas solicitações associadas a sala
+    # Recupera as últimas solicitações associadas a sala
     sala = Sala.recuperar_id(sala_id)
-    solicitacoes = Solicitacao.recuperar_ultimas_sala(sala, 5)
+    solicitacoes = Solicitacao.recuperar_ultimas_sala(sala, 3)
     return render_template('salas/sala.html', 
                            title=sala, sala=sala,
                            solicitacoes=solicitacoes)

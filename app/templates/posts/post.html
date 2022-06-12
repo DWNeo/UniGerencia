@@ -1,20 +1,33 @@
 <!-- Página para visualizar um post com mais detalhes -->
 {% extends "layout.html" %}
 {% block conteudo %}
-<article class="media content-section">
-    <img class="rounded-circle article-img" src="{{ url_for('static', filename='img_perfil/' + post.autor.imagem_perfil) }}">
-    <div class="media-body">
-        <div class="article-metadata mb-2">
-            <a class="mr-2" href="{{ url_for('usuarios.posts_usuario', usuario_id=post.autor.id) }}"><strong>Autor: </strong>{{ post.autor.nome }}</a>
-            {% if post.destinatario %}
-            <a class="mr-2" href="{{ url_for('usuarios.posts_usuario', usuario_id=post.destinatario.id) }}"><strong>Destinatário: </strong>{{ post.destinatario.nome }}</a>
-            {% else %}
-            <a class="mr-2" href="#"><strong>Destinatário: </strong>Administradores</a>
-            {% endif %}
-            <small class="text-muted"><strong>Data: </strong>{{ post.data_postado.strftime('%Y-%m-%d') }}</small>
-        </div>
-        <h2 class="article-title"><strong>{{ post.titulo }}</strong></h2>
-        <p class="article-content">{{ post.conteudo }}</p>
+<div class="card border-primary mb-3">
+    <h4 class="card-header text-primary border-primary">
+        <img class="rounded-circle article-img" src="{{ url_for('static', filename='img_perfil/' + post.autor.imagem_perfil) }}">
+        <strong>{{ post.titulo }}</strong>
+    </h4>
+    <ul class="list-group list-group-flush">
+        <li class="list-group-item"><a class="mr-2" href="{{ url_for('usuarios.posts_usuario', usuario_id=post.autor.id) }}"><strong>Autor: </strong>{{ post.autor.nome }}</a></li>
+        {% if post.destinatario %}
+        <li class="list-group-item"><a class="mr-2" href="{{ url_for('usuarios.posts_usuario', usuario_id=post.destinatario.id) }}"><strong>Destinatário: </strong>{{ post.destinatario.nome }}</a></li>
+        {% else %}
+        <li class="list-group-item"><strong>Destinatário:</strong> Administradores</li>
+        {% endif %}
+    </ul>
+    <div class="card-body">
+        <p class="card-text">{{ post.conteudo }}</p>
     </div>
-</article>
+    <div class="card-footer text-muted">
+        <div class="row">
+            <div class="col-md-6">
+                <a class=""><strong>Data de Postagem:</strong> {{ post.data_postado.strftime('%d/%m/%Y %H:%M:%S') }}</a>
+            </div>
+            <div class="col-md-6">
+                {% if post.data_atualizacao %}
+                <a class=""><strong>Última Atualização:</strong> {{ post.data_atualizacao.strftime('%d/%m/%Y %H:%M:%S') }}</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock conteudo %}

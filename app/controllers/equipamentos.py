@@ -14,9 +14,9 @@ equipamentos = Blueprint('equipamentos', __name__)
 @login_required
 @admin_required
 def equipamento(eqp_id):
-    # Recupera as 5 últimas solicitações associadas ao equipamento
+    # Recupera as últimas solicitações associadas ao equipamento
     equipamento = Equipamento.recuperar_id(eqp_id)
-    solicitacoes = Solicitacao.recuperar_ultimas_eqp(equipamento, 5)
+    solicitacoes = Solicitacao.recuperar_ultimas_eqp(equipamento, 3)
     return render_template('equipamentos/equipamento.html', 
                            title=equipamento, equipamento=equipamento,
                            solicitacoes=solicitacoes)

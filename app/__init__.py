@@ -26,7 +26,7 @@ fuso_horario = timezone('America/Sao_Paulo')
 def create_app():
     # Inicializa o Flask e seus componentes
     app = Flask(__name__)
-    app.config.from_object(ConfigProd)
+    app.config.from_object(ConfigDev)
 
     db.init_app(app)
     bcrypt.init_app(app)

@@ -14,9 +14,9 @@ usuarios = Blueprint('usuarios', __name__)
 @login_required
 @admin_required
 def usuario(usuario_id):
-    # Recupera as 5 últimas solicitações associadas ao usuário
+    # Recupera as últimas solicitações associadas ao usuário
     usuario = Usuario.recuperar_id(usuario_id)
-    solicitacoes = Solicitacao.recuperar_ultimas_autor(usuario, 5)
+    solicitacoes = Solicitacao.recuperar_ultimas_autor(usuario, 3)
 
     return render_template('usuarios/usuario.html', 
                            title=usuario, usuario=usuario,
