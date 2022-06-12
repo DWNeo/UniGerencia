@@ -7,7 +7,7 @@ from flask_apscheduler import APScheduler
 from whitenoise import WhiteNoise
 from pytz import timezone
 
-from app.config import ConfigDev, ConfigProd
+from app.config import Config, ConfigProd
 
 # Importa os componentes do Flask
 db = SQLAlchemy()
