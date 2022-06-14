@@ -59,8 +59,8 @@ def inicio():
         salas = Sala.recuperar_tudo()
         usuarios = Usuario.recuperar_tudo() 
     else:
-        solicitacoes = Solicitacao.recuperar_tudo_autor(current_user)
-        posts = Post.recuperar_tudo_autor(current_user)
+        solicitacoes = Solicitacao.recuperar_tudo_usuario(current_user)
+        posts = Post.recuperar_tudo()
         equipamentos = []
         salas = []
         usuarios = []

@@ -1,5 +1,5 @@
 # Define variáveis de ambiente (DESENVOLVIMENTO)
-class Config:
+class ConfigDev:
     # Controla o modo debug
     DEBUG = True
     # Chave criptográfica de sessão do Flask

@@ -40,10 +40,11 @@ def novo_post():
             destinatario_id = form.destinatario.data
             destinatario = Usuario.recuperar_id(destinatario_id)
             post = Post.criar(destinatario, form)
+            post.inserir()
+            enviar_email_mensagem(post)
         else:
-            post = Post.criar(None, form) 
-        post.inserir()
-        enviar_email_mensagem(post)
+            post = Post.criar(None, form)
+            post.inserir()     
         flash('Sua mensagem foi postada com sucesso!', 'success')
         return redirect(url_for('principal.inicio', tab=2))
 

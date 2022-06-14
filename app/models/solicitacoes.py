@@ -46,7 +46,7 @@ class Solicitacao(db.Model):
         return Solicitacao.query.filter_by(ativo=True).all()
     
     # Recupera todas as solicitações de um autor
-    def recuperar_tudo_autor(usuario):
+    def recuperar_tudo_usuario(usuario):
         return Solicitacao.query.filter_by(autor=usuario).filter_by(ativo=True).all()
     
     # Recupera a solicitação pela ID e retorna erro 404 caso contrário

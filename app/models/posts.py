@@ -31,9 +31,10 @@ class Post(db.Model):
         return Post.query.filter_by(ativo=True).all()
     
     # Recupera todas as mensagens de um autor
-    def recuperar_tudo_autor(usuario):
+    def recuperar_tudo_usuario(usuario):
         return Post.query.filter_by(autor=usuario).filter_by(
-            destinatario=usuario).filter_by(ativo=True).all()
+            destinatario=usuario).filter_by(
+            autor=usuario).filter_by(ativo=True).all()
     
     # Recupera o post pela ID e retorna erro 404 caso contrário
     def recuperar_id(post_id):
